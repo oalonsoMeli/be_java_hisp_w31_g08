@@ -1,0 +1,78 @@
+[
+  {
+    "user_id": 1,
+    "user_name": "John Doe",
+    "user_email": "johndoe@example.com",
+    "followed": [
+      {
+        "user_id": 101,
+        "user_name": "Seller A",
+        "user_email": "sellera@example.com",
+        "followers": []
+      },
+      {
+        "user_id": 102,
+        "user_name": "Seller B",
+        "user_email": "sellerb@example.com",
+        "followers": []
+      }
+    ]
+  },
+  {
+    "user_id": 2,
+    "user_name": "Alice Smith",
+    "user_email": "alicesmith@example.com",
+    "followed": [
+      {
+        "user_id": 103,
+        "user_name": "Seller C",
+        "user_email": "sellerc@example.com",
+        "followers": []
+      }
+    ]
+  },
+  {
+    "user_id": 3,
+    "user_name": "Bob Johnson",
+    "user_email": "bobjohnson@example.com",
+    "followed": [
+      {
+        "user_id": 101,
+        "user_name": "Seller A",
+        "user_email": "sellera@example.com",
+        "followers": []
+      },
+      {
+        "user_id": 104,
+        "user_name": "Seller D",
+        "user_email": "sellerd@example.com",
+        "followers": []
+      }
+    ]
+  },
+  {
+    "user_id": 4,
+    "user_name": "Emma Davis",
+    "user_email": "emmadavis@example.com",
+    "followed": []
+  },
+  {
+    "user_id": 5,
+    "user_name": "Michael Brown",
+    "user_email": "michaelbrown@example.com",
+    "followed": [
+      {
+        "user_id": 102,
+        "user_name": "Seller B",
+        "user_email": "sellerb@example.com",
+        "followers": []
+      },
+      {
+        "user_id": 103,
+        "user_name": "Seller C",
+        "user_email": "sellerc@example.com",
+        "followers": []
+      }
+    ]
+  }
+]
