@@ -3,7 +3,6 @@ package com.mercadolibre.socialmeli.repository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.socialmeli.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ResourceUtils;
 
@@ -11,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserRepositoryImpl implements IUserRepository {
@@ -19,6 +19,20 @@ public class UserRepositoryImpl implements IUserRepository {
 
     public UserRepositoryImpl() throws IOException {
         loadDataBase();
+    }
+
+
+    @Override
+    public List<Integer> findUserFollowers(Integer userId) {
+        return listOfUsers.stream()
+                .filter(user -> user.getFollows().contains(userId))
+                .map(User::getUserId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> findUsersById(List<Integer> userFollowersId) {
+        return listOfUsers.stream().filter(user -> userFollowersId.contains(user.getUserId())).collect(Collectors.toList());
     }
 
     public void loadDataBase() {
@@ -40,6 +54,8 @@ public class UserRepositoryImpl implements IUserRepository {
     public User getUserById(Integer userId) {
         return this.listOfUsers.stream().filter(v -> v.getUserId().equals(userId)).findFirst().orElse(null);
     }
+
+    @Override
     public List<User> getAll() {
         return listOfUsers;
     }

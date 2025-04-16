@@ -1,14 +1,16 @@
 package com.mercadolibre.socialmeli.service;
 
-
-import com.mercadolibre.socialmeli.dto.FollowerCountDto;
+import com.mercadolibre.socialmeli.dto.FollowersDto;
+import com.mercadolibre.socialmeli.dto.UserDto;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.model.User;
+import com.mercadolibre.socialmeli.dto.FollowerCountDto;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -19,7 +21,6 @@ public class UserServiceImpl implements IUserService {
     public UserServiceImpl(IUserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
 
     @Override
     public FollowerCountDto getFollowersCountByUserId(Integer userId) {
@@ -45,4 +46,20 @@ public class UserServiceImpl implements IUserService {
         user.getFollows().remove(userToUnfollow);
     }
 
+
+
+    @Override
+    public FollowersDto getUserFollowers(Integer userId) {
+        User user = userRepository.getUserById(userId);
+        if(user == null){
+            throw new NotFoundException("Usuario no encontrado");
+        }
+        List<User> userFollowers = userRepository.findUsersById(
+                userRepository.findUserFollowers(userId)
+        );
+        List<UserDto> userDtos = userFollowers.stream()
+                .map(userFollower -> new UserDto(userFollower.getUserId(), userFollower.getUserName()))
+                .collect(Collectors.toList());
+        return new FollowersDto(user.getUserId(), user.getUserName(), userDtos);
+    }
 }
