@@ -1,5 +1,6 @@
 package com.mercadolibre.socialmeli.service;
 
+import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.socialmeli.dto.FollowedDto;
@@ -39,7 +40,7 @@ public class UserServiceImpl implements IUserService {
         Optional<User> userOptional = this.userRepository.getUserById(userId);
         Optional<User> userTofollow = this.userRepository.getUserById(userIdToFollow);
         if(userOptional.isEmpty() || userTofollow.isEmpty()) {
-            throw new NotFoundException("Usuario no encontrado");
+            throw new BadRequestException("Usuario no encontrado");
         }
         User user =  userOptional.get();
         user.getFollows().add(userIdToFollow);
