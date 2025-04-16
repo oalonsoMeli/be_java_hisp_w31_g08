@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface IUserRepository {
 
     void loadDataBase();
+    boolean followUser(Integer userId, Integer userIdToFollow);
 
     Optional<User> getUserById(Integer userId);
     List<User> getAll();

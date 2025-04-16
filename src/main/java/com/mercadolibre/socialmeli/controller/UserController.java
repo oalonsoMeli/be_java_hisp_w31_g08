@@ -1,5 +1,6 @@
 package com.mercadolibre.socialmeli.controller;
 
+import com.mercadolibre.socialmeli.exception.NotFoundException;
 
 import com.mercadolibre.socialmeli.dto.FollowersDto;
 import com.mercadolibre.socialmeli.service.IUserService;
@@ -23,6 +24,16 @@ public class UserController {
     @Autowired
     public UserController(IUserService userService) {
         this.userService = userService;
+    }
+
+    @PostMapping("/{userId}/follow/{userIdToFollow}")
+    public ResponseEntity<Void> followUser(@PathVariable Integer userId, @PathVariable Integer userIdToFollow) {
+        boolean success = userService.followUser(userId, userIdToFollow);
+        if (success) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     //Obtener  un listado de todos los vendedores a los cuales sigue un determinado usuario (¿A quién sigo?)
