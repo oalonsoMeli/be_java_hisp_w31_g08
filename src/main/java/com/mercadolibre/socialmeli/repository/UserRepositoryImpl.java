@@ -3,6 +3,7 @@ package com.mercadolibre.socialmeli.repository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.socialmeli.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ResourceUtils;
 
@@ -34,4 +35,10 @@ public class UserRepositoryImpl implements IUserRepository {
             throw new RuntimeException("No se pudo parsear el json de usuarios.");
         }
     }
+
+    @Override
+    public List<User> getAll() {
+        return listOfUsers;
+    }
+
 }
