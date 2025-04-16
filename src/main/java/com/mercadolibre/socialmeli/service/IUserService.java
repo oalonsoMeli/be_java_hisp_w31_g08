@@ -10,12 +10,12 @@ import java.util.List;
 public interface IUserService {
     void followUser(Integer userId, Integer userIdToFollow);
 
-    FollowedDto searchFollowedSellers(Integer userId);
+    FollowedDto searchFollowedSellers(Integer userId, String order);
 
     FollowerCountDto getFollowersCountByUserId(Integer userId);
 
     void unfollowUser(Integer userId, Integer userIdToUnfollow);
 
-    FollowersDto getUserFollowers(Integer userId);
+    FollowersDto getUserFollowers(Integer userId, String order);
 
 }
