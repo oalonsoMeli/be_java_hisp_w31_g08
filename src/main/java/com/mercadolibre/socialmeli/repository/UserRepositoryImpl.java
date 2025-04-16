@@ -34,4 +34,14 @@ public class UserRepositoryImpl implements IUserRepository {
             throw new RuntimeException("No se pudo parsear el json de usuarios.");
         }
     }
+
+    @Override
+    public List<User> findAll() {
+        return this.listOfUsers;
+    }
+
+    @Override
+    public User getUserById(Integer userId) {
+        return this.listOfUsers.stream().filter(v -> v.getUserId().equals(userId)).findFirst().orElse(null);
+    }
 }
