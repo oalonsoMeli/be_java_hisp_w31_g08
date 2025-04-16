@@ -43,6 +43,7 @@ public class UserController {
 
     }
 
+
     @PutMapping("/{userId}/unfollow/{userIdToUnfollow}")
     public ResponseEntity<Void> unfollowUser(@PathVariable Integer userId,
                                              @PathVariable Integer userIdToUnfollow) {
