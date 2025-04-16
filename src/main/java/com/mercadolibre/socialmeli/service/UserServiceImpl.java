@@ -13,7 +13,6 @@ import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.dto.FollowerCountDto;
 
 import com.mercadolibre.socialmeli.repository.IUserRepository;
-import com.mercadolibre.socialmeli.repository.UserRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,21 +29,19 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     public UserServiceImpl(IUserRepository userRepository) {
-
         this.userRepository = userRepository;
     }
 
     @Override
-    public void followUser(Integer userId, Integer userIdToFollow) {
-        Optional<User> userOptional = this.userRepository.getUserById(userId);
-        Optional<User> userTofollow = this.userRepository.getUserById(userIdToFollow);
-        if(userOptional.isEmpty() || userTofollow.isEmpty()) {
-            throw new NotFoundException("Usuario no encontrado");
+        public void followUser(Integer userId, Integer userIdToFollow) {
+            Optional<User> userOptional = this.userRepository.getUserById(userId);
+            Optional<User> userTofollow = this.userRepository.getUserById(userIdToFollow);
+            if(userOptional.isEmpty() || userTofollow.isEmpty()) {
+                throw new NotFoundException("Usuario no encontrado");
+            }
+            User user =  userOptional.get();
+            user.getFollows().add(userIdToFollow);
         }
-        User user =  userOptional.get();
-        user.getFollows().add(userIdToFollow);
-
-    }
 
     public FollowedDto searchFollowedSellers(Integer userId) {
         ObjectMapper mapper = new ObjectMapper();
