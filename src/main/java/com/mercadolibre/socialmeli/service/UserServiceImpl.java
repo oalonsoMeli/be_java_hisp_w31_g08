@@ -1,11 +1,14 @@
 package com.mercadolibre.socialmeli.service;
 
+
+import com.mercadolibre.socialmeli.dto.FollowerCountDto;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
-import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -17,25 +20,29 @@ public class UserServiceImpl implements IUserService {
         this.userRepository = userRepository;
     }
 
-    //buscar un usuario en la lista por su ID
-    private User findUserById(Integer userId) {
-        return userRepository.getAll().stream()
-                .filter(u -> u.getUserId().equals(userId))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Usuario con ID " + userId + " no encontrado"));
-    }
+
+    @Override
+    public FollowerCountDto getFollowersCountByUserId(Integer userId) {
+        User user = this.userRepository.getUserById(userId);
+        if(user == null){
+            throw new NotFoundException("No se encontró usuario con ese id");
+        }
+        List<User> users = this.userRepository.getAll();
+        long count = users.stream().filter(v -> v.getFollows().contains(userId)).count();
+        return new FollowerCountDto(user.getUserId(), user.getUserName(), (int) count);
+     }
+
 
     //dar un unfollow de un usuario a un vendedor
     @Override
     public void unfollowUser(Integer userId, Integer userIdToUnfollow) {
-        User user = findUserById(userId);
-        User userToUnfollow = findUserById(userIdToUnfollow);
+        User user = this.userRepository.getUserById(userId);
+        User userToUnfollow = this.userRepository.getUserById(userIdToUnfollow);
 
         if (!user.getFollows().contains(userToUnfollow)) {
             throw new NotFoundException("El usuario no sigue a este vendedor");
         }
         user.getFollows().remove(userToUnfollow);
     }
-
 
 }

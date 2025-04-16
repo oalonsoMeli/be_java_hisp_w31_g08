@@ -37,6 +37,9 @@ public class UserRepositoryImpl implements IUserRepository {
     }
 
     @Override
+    public User getUserById(Integer userId) {
+        return this.listOfUsers.stream().filter(v -> v.getUserId().equals(userId)).findFirst().orElse(null);
+    }
     public List<User> getAll() {
         return listOfUsers;
     }
