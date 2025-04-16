@@ -23,7 +23,7 @@ public class Post {
     @JsonProperty("date")
     private LocalDate date;
     @JsonProperty("product")
-    private ProductDto product;
+    private Product product;
     @JsonProperty("category")
     private Integer category;
     @JsonProperty("price")
