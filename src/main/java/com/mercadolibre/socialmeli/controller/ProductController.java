@@ -1,5 +1,6 @@
 package com.mercadolibre.socialmeli.controller;
 import com.mercadolibre.socialmeli.dto.PostDto;
+import com.mercadolibre.socialmeli.dto.PostsDto;
 import com.mercadolibre.socialmeli.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class ProductController {
     }
 
     @GetMapping("followed/{userId}/list")
-    public ResponseEntity<List<PostDto>> orderByDateAscOrDesc(@RequestParam String order){
+    public ResponseEntity<PostsDto> orderByDateAscOrDesc(@RequestParam String order){
         return new ResponseEntity<>(productService.orderByDateAscOrDesc(order), HttpStatus.OK);
     }
 

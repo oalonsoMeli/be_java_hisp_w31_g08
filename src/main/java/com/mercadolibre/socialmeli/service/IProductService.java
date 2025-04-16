@@ -1,8 +1,6 @@
 package com.mercadolibre.socialmeli.service;
-import com.mercadolibre.socialmeli.dto.PostDto;
-import java.util.List;
+import com.mercadolibre.socialmeli.dto.PostsDto;
 
 public interface IProductService {
-
-    List<PostDto> orderByDateAscOrDesc(String order);
+    PostsDto orderByDateAscOrDesc(String order);
 }

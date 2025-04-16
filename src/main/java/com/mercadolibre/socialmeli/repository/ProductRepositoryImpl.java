@@ -1,4 +1,6 @@
 package com.mercadolibre.socialmeli.repository;
+import com.mercadolibre.socialmeli.dto.PostDto;
+import com.mercadolibre.socialmeli.dto.PostsDto;
 import com.mercadolibre.socialmeli.model.Post;
 import com.mercadolibre.socialmeli.utilities.Constansts;
 import org.springframework.stereotype.Repository;
@@ -14,6 +16,7 @@ public class ProductRepositoryImpl implements IProductRepository {
     @Override
     public List<Post> orderByDateAscOrDesc(String order){
         List<Post> postList = new ArrayList<>();
+
         return switch (order) {
             case Constansts.ORDER_DATE_ASC -> postList.stream().sorted(
                     Comparator.comparing(Post::getDate)).toList();
@@ -22,9 +25,6 @@ public class ProductRepositoryImpl implements IProductRepository {
             default -> postList;
         };
     }
-
-
-
 
 
 }
