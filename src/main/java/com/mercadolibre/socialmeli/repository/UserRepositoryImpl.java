@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -22,11 +21,6 @@ public class UserRepositoryImpl implements IUserRepository {
         loadDataBase();
     }
 
-
-    @Override
-    public Optional<User> findById(Integer userId) {
-        return listOfUsers.stream().filter(user -> user.getUserId() == userId).findFirst();
-    }
 
     @Override
     public List<Integer> findUserFollowers(Integer userId) {
@@ -56,5 +50,14 @@ public class UserRepositoryImpl implements IUserRepository {
         }
     }
 
+    @Override
+    public User getUserById(Integer userId) {
+        return this.listOfUsers.stream().filter(v -> v.getUserId().equals(userId)).findFirst().orElse(null);
+    }
+
+    @Override
+    public List<User> getAll() {
+        return listOfUsers;
+    }
 
 }

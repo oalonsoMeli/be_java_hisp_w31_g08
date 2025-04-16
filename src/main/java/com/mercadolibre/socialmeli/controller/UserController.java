@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,6 +25,19 @@ public class UserController {
         this.userService = userService;
     }
 
+
+    @GetMapping("/{userId}/followers/count")
+    public ResponseEntity<?> getFollowersCountByUserId(@PathVariable Integer userId){
+        return new ResponseEntity<>(this.userService.getFollowersCountByUserId(userId), HttpStatus.OK);
+
+    }
+
+    @PostMapping("/{userId}/unfollow/{userIdToUnfollow}")
+    public ResponseEntity<Void> unfollowUser(@PathVariable Integer userId,
+                                             @PathVariable Integer userIdToUnfollow) {
+        userService.unfollowUser(userId, userIdToUnfollow);
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("/{userId}/followers/list")
     public ResponseEntity<FollowersDto> getFollowers(@PathVariable Integer userId) {
