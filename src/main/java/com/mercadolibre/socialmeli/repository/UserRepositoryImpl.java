@@ -3,6 +3,7 @@ package com.mercadolibre.socialmeli.repository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.socialmeli.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ResourceUtils;
 
@@ -36,12 +37,11 @@ public class UserRepositoryImpl implements IUserRepository {
     }
 
     @Override
-    public List<User> findAll() {
-        return this.listOfUsers;
-    }
-
-    @Override
     public User getUserById(Integer userId) {
         return this.listOfUsers.stream().filter(v -> v.getUserId().equals(userId)).findFirst().orElse(null);
     }
+    public List<User> getAll() {
+        return listOfUsers;
+    }
+
 }

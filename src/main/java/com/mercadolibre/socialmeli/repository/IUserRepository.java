@@ -8,7 +8,8 @@ public interface IUserRepository {
 
     void loadDataBase();
 
-    List<User> findAll();
 
     User getUserById(Integer userId);
+    List<User> getAll();
+
 }
