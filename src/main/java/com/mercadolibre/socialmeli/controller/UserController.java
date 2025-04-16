@@ -25,6 +25,11 @@ public class UserController {
         this.userService = userService;
     }
 
+    //Obtener  un listado de todos los vendedores a los cuales sigue un determinado usuario (¿A quién sigo?)
+    @GetMapping ("/users/{userId}/followed/list")
+    public ResponseEntity<?> getSellers(@PathVariable Integer userId){
+        return new ResponseEntity<>(userService.searchFollowedSellers(userId), HttpStatus.OK);
+    }
 
     @GetMapping("/{userId}/followers/count")
     public ResponseEntity<?> getFollowersCountByUserId(@PathVariable Integer userId){
@@ -43,5 +48,4 @@ public class UserController {
     public ResponseEntity<FollowersDto> getFollowers(@PathVariable Integer userId) {
         return new ResponseEntity<>(userService.getUserFollowers(userId), HttpStatus.OK);
     }
-
 }

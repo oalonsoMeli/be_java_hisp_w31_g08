@@ -2,6 +2,7 @@ package com.mercadolibre.socialmeli.repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercadolibre.socialmeli.dto.FollowedDto;
 import com.mercadolibre.socialmeli.model.User;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ResourceUtils;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Repository
 public class UserRepositoryImpl implements IUserRepository {
@@ -60,5 +62,4 @@ public class UserRepositoryImpl implements IUserRepository {
     public List<User> getAll() {
         return listOfUsers;
     }
-
 }

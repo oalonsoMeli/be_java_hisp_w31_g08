@@ -1,4 +1,5 @@
 package com.mercadolibre.socialmeli.service;
+import com.mercadolibre.socialmeli.dto.FollowedDto;
 
 import com.mercadolibre.socialmeli.dto.FollowerCountDto;
 
@@ -8,10 +9,12 @@ import java.util.List;
 
 public interface IUserService {
 
+    FollowedDto searchFollowedSellers(Integer userId);
+
     FollowerCountDto getFollowersCountByUserId(Integer userId);
 
     void unfollowUser(Integer userId, Integer userIdToUnfollow);
 
-
     FollowersDto getUserFollowers(Integer userId);
+
 }
