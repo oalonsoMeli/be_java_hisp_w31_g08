@@ -1,6 +1,7 @@
 package com.mercadolibre.socialmeli.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,8 @@ import java.time.LocalDate;
 @Setter
 public class PostDto {
 
-    private Integer user_id;
+    @JsonProperty("user_id")
+    private Integer userId;
     private LocalDate date;
     private ProductDto product;
     private Integer category;

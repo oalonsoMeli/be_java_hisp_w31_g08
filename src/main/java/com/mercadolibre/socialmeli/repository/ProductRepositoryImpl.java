@@ -10,8 +10,12 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class ProductRepositoryImpl implements IProductRepository {
@@ -31,4 +35,12 @@ public class ProductRepositoryImpl implements IProductRepository {
     }
 
 
+    public List<Post> getPostsByUserIdsInLastTwoWeeks(Set<Integer> userIds) {
+        LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
+        return listOfProducts.stream()
+                .filter(p -> userIds.contains(p.getUserId()))
+                .filter(p -> !p.getDate().isBefore(twoWeeksAgo))
+                .sorted(Comparator.comparing(Post::getDate).reversed())
+                .collect(Collectors.toList());
+    }
 }
