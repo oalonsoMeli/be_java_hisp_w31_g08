@@ -16,6 +16,7 @@ import com.mercadolibre.socialmeli.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 import java.util.Optional;
@@ -43,7 +44,7 @@ public class UserServiceImpl implements IUserService {
             user.getFollows().add(userIdToFollow);
         }
 
-    public FollowedDto searchFollowedSellers(Integer userId) {
+    public FollowedDto searchFollowedSellers(Integer userId, String order) {
         ObjectMapper mapper = new ObjectMapper();
         User user = this.userRepository.getUserById(userId).orElseThrow(
                 () -> new NotFoundException("Usuario no encontrado")
@@ -52,8 +53,16 @@ public class UserServiceImpl implements IUserService {
         List<User> userFollowed = userRepository.findUsersById(
                user.getFollows().stream().toList()
         );
+
+        // ordenar
+        if ("name_asc".equalsIgnoreCase(order)) {
+            userFollowed.sort(Comparator.comparing(User::getUserName));
+        } else if ("name_desc".equalsIgnoreCase(order)) {
+            userFollowed.sort(Comparator.comparing(User::getUserName).reversed());
+        }
+
         List<UserDto> userDtos = userFollowed.stream()
-                .map(u -> mapper.convertValue(u, UserDto.class))
+                .map(uf -> new UserDto(uf.getUserId(), uf.getUserName()))
                 .collect(Collectors.toList());
         return new FollowedDto(user.getUserId(), user.getUserName(), userDtos);
     }
@@ -86,12 +95,18 @@ public class UserServiceImpl implements IUserService {
 
 
     @Override
-    public FollowersDto getUserFollowers(Integer userId) {
+    public FollowersDto getUserFollowers(Integer userId, String order) {
         User user = userRepository.getUserById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         List<User> userFollowers = userRepository.findUsersById(
                 userRepository.findUserFollowers(userId)
         );
+        // ordenamiento por nombre
+        if ("name_asc".equalsIgnoreCase(order)) {
+            userFollowers.sort(Comparator.comparing(User::getUserName));
+        } else if ("name_desc".equalsIgnoreCase(order)) {
+            userFollowers.sort(Comparator.comparing(User::getUserName).reversed());
+        }
         List<UserDto> userDtos = userFollowers.stream()
                 .map(userFollower -> new UserDto(userFollower.getUserId(), userFollower.getUserName()))
                 .collect(Collectors.toList());

@@ -32,8 +32,9 @@ public class UserController {
 
     //Obtener  un listado de todos los vendedores a los cuales sigue un determinado usuario (¿A quién sigo?)
     @GetMapping ("/{userId}/followed/list")
-    public ResponseEntity<?> getSellers(@PathVariable Integer userId){
-        return new ResponseEntity<>(userService.searchFollowedSellers(userId), HttpStatus.OK);
+    public ResponseEntity<?> getSellers(@PathVariable Integer userId,
+                                        @RequestParam(value = "order", required = false) String order){
+        return new ResponseEntity<>(userService.searchFollowedSellers(userId,order), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/followers/count")
@@ -52,6 +53,6 @@ public class UserController {
     @GetMapping("/{userId}/followers/list")
     public ResponseEntity<FollowersDto> getFollowers(@PathVariable Integer userId,
                                                     @RequestParam(value = "order", required = false) String order){
-        return new ResponseEntity<>(userService.getUserFollowers(userId), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getUserFollowers(userId,order), HttpStatus.OK);
     }
 }
