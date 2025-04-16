@@ -3,6 +3,10 @@ package com.mercadolibre.socialmeli.controller;
 
 import com.mercadolibre.socialmeli.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,4 +21,8 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @GetMapping("/followed/{userId}/list")
+    public ResponseEntity<?> getListOfPublicationsByUser(@PathVariable Integer userId){
+    return new ResponseEntity<>(this.productService.getListOfPublicationsByUser(userId), HttpStatus.OK);
+    }
 }
