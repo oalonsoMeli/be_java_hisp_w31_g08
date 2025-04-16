@@ -1,8 +1,27 @@
 package com.mercadolibre.socialmeli.service;
 
+import com.mercadolibre.socialmeli.model.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercadolibre.socialmeli.dto.FollowedDto;
+import com.mercadolibre.socialmeli.dto.UserDto;
+import com.mercadolibre.socialmeli.exception.NotFoundException;
+import com.mercadolibre.socialmeli.model.User;
+import com.mercadolibre.socialmeli.dto.FollowersDto;
+import com.mercadolibre.socialmeli.dto.UserDto;
+import com.mercadolibre.socialmeli.exception.NotFoundException;
+import com.mercadolibre.socialmeli.model.User;
+import com.mercadolibre.socialmeli.dto.FollowerCountDto;
+
 import com.mercadolibre.socialmeli.repository.IUserRepository;
+import com.mercadolibre.socialmeli.repository.UserRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -11,6 +30,74 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     public UserServiceImpl(IUserRepository userRepository) {
+
         this.userRepository = userRepository;
+    }
+
+    @Override
+    public void followUser(Integer userId, Integer userIdToFollow) {
+        Optional<User> userOptional = this.userRepository.getUserById(userId);
+        Optional<User> userTofollow = this.userRepository.getUserById(userIdToFollow);
+        if(userOptional.isEmpty() || userTofollow.isEmpty()) {
+            throw new NotFoundException("Usuario no encontrado");
+        }
+        User user =  userOptional.get();
+        user.getFollows().add(userIdToFollow);
+
+    }
+
+    public FollowedDto searchFollowedSellers(Integer userId) {
+        ObjectMapper mapper = new ObjectMapper();
+        User user = this.userRepository.getUserById(userId).orElseThrow(
+                () -> new NotFoundException("Usuario no encontrado")
+        );
+
+        List<User> userFollowed = userRepository.findUsersById(
+               user.getFollows().stream().toList()
+        );
+        List<UserDto> userDtos = userFollowed.stream()
+                .map(u -> mapper.convertValue(u, UserDto.class))
+                .collect(Collectors.toList());
+        return new FollowedDto(user.getUserId(), user.getUserName(), userDtos);
+    }
+
+    public FollowerCountDto getFollowersCountByUserId(Integer userId) {
+        User user = this.userRepository.getUserById(userId).orElseThrow(
+                () -> new NotFoundException("Usuario no encontrado")
+        );
+        List<User> users = this.userRepository.getAll();
+        long count = users.stream().filter(v -> v.getFollows().contains(userId)).count();
+        return new FollowerCountDto(user.getUserId(), user.getUserName(), (int) count);
+     }
+
+
+    //dar un unfollow de un usuario a un vendedor
+    @Override
+    public void unfollowUser(Integer userId, Integer userIdToUnfollow) {
+        Optional<User> userOptional = this.userRepository.getUserById(userId);
+        Optional<User> userToUnfollow = this.userRepository.getUserById(userIdToUnfollow);
+        if(userOptional.isEmpty() || userToUnfollow.isEmpty()) {
+            throw new NotFoundException("Usuario no encontrado");
+        }
+        User user = userOptional.get();
+        if (!user.getFollows().contains(userToUnfollow.get().getUserId())) {
+            throw new NotFoundException("El usuario no sigue a este vendedor");
+        }
+        user.getFollows().remove(userToUnfollow.get().getUserId());
+    }
+
+
+
+    @Override
+    public FollowersDto getUserFollowers(Integer userId) {
+        User user = userRepository.getUserById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        List<User> userFollowers = userRepository.findUsersById(
+                userRepository.findUserFollowers(userId)
+        );
+        List<UserDto> userDtos = userFollowers.stream()
+                .map(userFollower -> new UserDto(userFollower.getUserId(), userFollower.getUserName()))
+                .collect(Collectors.toList());
+        return new FollowersDto(user.getUserId(), user.getUserName(), userDtos);
     }
 }

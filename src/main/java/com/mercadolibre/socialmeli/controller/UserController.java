@@ -1,9 +1,20 @@
 package com.mercadolibre.socialmeli.controller;
 
+import com.mercadolibre.socialmeli.exception.NotFoundException;
+
+import com.mercadolibre.socialmeli.dto.FollowersDto;
 import com.mercadolibre.socialmeli.service.IUserService;
+import com.mercadolibre.socialmeli.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -14,5 +25,36 @@ public class UserController {
     @Autowired
     public UserController(IUserService userService) {
         this.userService = userService;
+    }
+
+    @PostMapping("/{userId}/follow/{userIdToFollow}")
+    public ResponseEntity<?> followUser(@PathVariable Integer userId, @PathVariable Integer userIdToFollow) {
+        userService.followUser(userId, userIdToFollow);
+        return  ResponseEntity.ok().build();
+
+    }
+
+    //Obtener  un listado de todos los vendedores a los cuales sigue un determinado usuario (¿A quién sigo?)
+    @GetMapping ("/{userId}/followed/list")
+    public ResponseEntity<?> getSellers(@PathVariable Integer userId){
+        return new ResponseEntity<>(userService.searchFollowedSellers(userId), HttpStatus.OK);
+    }
+
+    @GetMapping("/{userId}/followers/count")
+    public ResponseEntity<?> getFollowersCountByUserId(@PathVariable Integer userId){
+        return new ResponseEntity<>(this.userService.getFollowersCountByUserId(userId), HttpStatus.OK);
+
+    }
+
+    @PostMapping("/{userId}/unfollow/{userIdToUnfollow}")
+    public ResponseEntity<Void> unfollowUser(@PathVariable Integer userId,
+                                             @PathVariable Integer userIdToUnfollow) {
+        userService.unfollowUser(userId, userIdToUnfollow);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{userId}/followers/list")
+    public ResponseEntity<FollowersDto> getFollowers(@PathVariable Integer userId) {
+        return new ResponseEntity<>(userService.getUserFollowers(userId), HttpStatus.OK);
     }
 }

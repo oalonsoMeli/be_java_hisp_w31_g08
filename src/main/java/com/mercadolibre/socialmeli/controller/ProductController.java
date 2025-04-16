@@ -1,6 +1,4 @@
 package com.mercadolibre.socialmeli.controller;
-
-
 import com.mercadolibre.socialmeli.dto.PostDto;
 import com.mercadolibre.socialmeli.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
