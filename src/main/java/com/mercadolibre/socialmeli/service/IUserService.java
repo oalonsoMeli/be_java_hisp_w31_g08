@@ -8,7 +8,7 @@ import com.mercadolibre.socialmeli.dto.FollowersDto;
 import java.util.List;
 
 public interface IUserService {
-    boolean followUser(Integer userId, Integer userIdToFollow);
+    void followUser(Integer userId, Integer userIdToFollow);
 
     FollowedDto searchFollowedSellers(Integer userId);
 
