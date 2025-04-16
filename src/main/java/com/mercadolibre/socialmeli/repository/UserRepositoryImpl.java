@@ -20,6 +20,34 @@ public class UserRepositoryImpl implements IUserRepository {
         loadDataBase();
     }
 
+    @Override
+    public boolean followUser(Integer userId, Integer userIdToFollow) {
+        User user = listOfUsers.stream()
+                .filter(u -> u.getUserId().equals(userId))
+                .findFirst()
+                .orElse(null);
+
+        User userToFollow = listOfUsers.stream()
+                .filter(u -> u.getUserId().equals(userIdToFollow))
+                .findFirst()
+                .orElse(null);
+
+        if (user == null || userToFollow == null) {
+            return false;
+        }
+
+        if (userId.equals(userIdToFollow)) {
+            return false;
+        }
+
+        if (user.getFollows().contains(userIdToFollow)) {
+            return false;
+        }
+
+        user.getFollows().add(userIdToFollow);
+        return true;
+    }
+
     public void loadDataBase() {
         File file;
         ObjectMapper objectMapper = new ObjectMapper();
