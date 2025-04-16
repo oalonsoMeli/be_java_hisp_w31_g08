@@ -1,5 +1,6 @@
 package com.mercadolibre.socialmeli.service;
 
+import com.mercadolibre.socialmeli.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.socialmeli.dto.FollowedDto;
 import com.mercadolibre.socialmeli.dto.UserDto;
@@ -32,6 +33,16 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+        public void followUser(Integer userId, Integer userIdToFollow) {
+            Optional<User> userOptional = this.userRepository.getUserById(userId);
+            Optional<User> userTofollow = this.userRepository.getUserById(userIdToFollow);
+            if(userOptional.isEmpty() || userTofollow.isEmpty()) {
+                throw new NotFoundException("Usuario no encontrado");
+            }
+            User user =  userOptional.get();
+            user.getFollows().add(userIdToFollow);
+        }
+
     public FollowedDto searchFollowedSellers(Integer userId) {
         ObjectMapper mapper = new ObjectMapper();
         User user = this.userRepository.getUserById(userId).orElseThrow(

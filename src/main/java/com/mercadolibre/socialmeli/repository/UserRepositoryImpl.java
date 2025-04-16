@@ -25,6 +25,8 @@ public class UserRepositoryImpl implements IUserRepository {
     }
 
 
+
+
     @Override
     public List<Integer> findUserFollowers(Integer userId) {
         return listOfUsers.stream()
@@ -36,6 +38,7 @@ public class UserRepositoryImpl implements IUserRepository {
     @Override
     public List<User> findUsersById(List<Integer> userFollowersId) {
         return listOfUsers.stream().filter(user -> userFollowersId.contains(user.getUserId())).collect(Collectors.toList());
+
     }
 
     public void loadDataBase() {
