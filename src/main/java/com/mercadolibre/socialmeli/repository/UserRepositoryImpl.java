@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @Repository
 public class UserRepositoryImpl implements IUserRepository {
@@ -20,6 +22,20 @@ public class UserRepositoryImpl implements IUserRepository {
 
     public UserRepositoryImpl() throws IOException {
         loadDataBase();
+    }
+
+
+    @Override
+    public List<Integer> findUserFollowers(Integer userId) {
+        return listOfUsers.stream()
+                .filter(user -> user.getFollows().contains(userId))
+                .map(User::getUserId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> findUsersById(List<Integer> userFollowersId) {
+        return listOfUsers.stream().filter(user -> userFollowersId.contains(user.getUserId())).collect(Collectors.toList());
     }
 
     public void loadDataBase() {
