@@ -14,7 +14,7 @@ public interface IUserRepository {
     void loadDataBase();
 
 
-    User getUserById(Integer userId);
+    Optional<User> getUserById(Integer userId);
 
     List<User> getAll();
 

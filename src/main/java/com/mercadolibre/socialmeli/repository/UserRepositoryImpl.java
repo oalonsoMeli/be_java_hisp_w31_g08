@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -51,8 +52,8 @@ public class UserRepositoryImpl implements IUserRepository {
     }
 
     @Override
-    public User getUserById(Integer userId) {
-        return this.listOfUsers.stream().filter(v -> v.getUserId().equals(userId)).findFirst().orElse(null);
+    public Optional<User> getUserById(Integer userId) {
+        return this.listOfUsers.stream().filter(v -> v.getUserId().equals(userId)).findFirst();
     }
 
     @Override

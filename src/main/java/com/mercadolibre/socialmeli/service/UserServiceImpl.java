@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,10 +25,9 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public FollowerCountDto getFollowersCountByUserId(Integer userId) {
-        User user = this.userRepository.getUserById(userId);
-        if(user == null){
-            throw new NotFoundException("No se encontró usuario con ese id");
-        }
+        User user = this.userRepository.getUserById(userId).orElseThrow(
+                () -> new NotFoundException("Usuario no encontrado")
+        );
         List<User> users = this.userRepository.getAll();
         long count = users.stream().filter(v -> v.getFollows().contains(userId)).count();
         return new FollowerCountDto(user.getUserId(), user.getUserName(), (int) count);
@@ -37,23 +37,24 @@ public class UserServiceImpl implements IUserService {
     //dar un unfollow de un usuario a un vendedor
     @Override
     public void unfollowUser(Integer userId, Integer userIdToUnfollow) {
-        User user = this.userRepository.getUserById(userId);
-        User userToUnfollow = this.userRepository.getUserById(userIdToUnfollow);
-
-        if (!user.getFollows().contains(userToUnfollow)) {
+        Optional<User> userOptional = this.userRepository.getUserById(userId);
+        Optional<User> userToUnfollow = this.userRepository.getUserById(userIdToUnfollow);
+        if(userOptional.isEmpty() || userToUnfollow.isEmpty()) {
+            throw new NotFoundException("Usuario no encontrado");
+        }
+        User user = userOptional.get();
+        if (!user.getFollows().contains(userToUnfollow.get().getUserId())) {
             throw new NotFoundException("El usuario no sigue a este vendedor");
         }
-        user.getFollows().remove(userToUnfollow);
+        user.getFollows().remove(userToUnfollow.get().getUserId());
     }
 
 
 
     @Override
     public FollowersDto getUserFollowers(Integer userId) {
-        User user = userRepository.getUserById(userId);
-        if(user == null){
-            throw new NotFoundException("Usuario no encontrado");
-        }
+        User user = userRepository.getUserById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
         List<User> userFollowers = userRepository.findUsersById(
                 userRepository.findUserFollowers(userId)
         );
