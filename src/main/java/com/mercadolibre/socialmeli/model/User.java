@@ -26,5 +26,5 @@ public class User {
     @JsonProperty("user_email")
     private String userEmail;
     @JsonIgnore // para evitar ciclos infinitos
-    private Set<User> follows = new HashSet<>();
+    private Set<Integer> follows = new HashSet<>();
 }
