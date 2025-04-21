@@ -8,4 +8,5 @@ public interface IProductRepository {
     void save(Post post);
     List<Post> getAll();
     List<Post> getPostsByUserId(Integer userId);
+    List<Post> getPromotionalProductsFromSellers(Integer userId);
 }
