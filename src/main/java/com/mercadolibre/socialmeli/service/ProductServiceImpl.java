@@ -9,7 +9,7 @@ import com.mercadolibre.socialmeli.repository.IProductRepository;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
 import com.mercadolibre.socialmeli.exception.IllegalArgumentException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mercadolibre.socialmeli.utilities.Constants;
+import com.mercadolibre.socialmeli.utilities.OrderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -86,7 +86,8 @@ public class ProductServiceImpl implements IProductService {
             throw new NotFoundException("Este usuario no existe.");
         }
 
-        if(!order.equals(Constants.ORDER_DATE_ASC) && !order.equals(Constants.ORDER_DATE_DESC)){
+        if(!order.equals(OrderType.ORDER_DATE_ASC.getValue()) &&
+                !order.equals(OrderType.ORDER_DATE_DESC.getValue())){
             throw new IllegalArgumentException("Párametro de ordenamiento no permitido.");
         }
 
