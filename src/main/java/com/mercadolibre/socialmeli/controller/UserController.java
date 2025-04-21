@@ -1,6 +1,9 @@
 package com.mercadolibre.socialmeli.controller;
 import com.mercadolibre.socialmeli.dto.FollowersDto;
 import com.mercadolibre.socialmeli.service.IUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +42,15 @@ public class UserController {
 
     }
 
-
+    @Operation(
+            summary = "Dejar de seguir a un vendedor",
+            description = "Permite que un usuario deje de seguir a un vendedor determinado."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Unfollow exitoso"),
+            @ApiResponse(responseCode = "404", description = "Usuario o vendedor no encontrado"),
+            @ApiResponse(responseCode = "400", description = "El usuario no seguía al vendedor")
+    })
     @PutMapping("/{userId}/unfollow/{userIdToUnfollow}")
     public ResponseEntity<Void> unfollowUser(@PathVariable Integer userId,
                                              @PathVariable Integer userIdToUnfollow) {
