@@ -6,14 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class PostsDto {
-    @JsonProperty("user_id")
-    private Integer userId;
-    private List<PostDto> posts;
+public class PromoPostDto extends PostDto {
+
+    @JsonProperty("has_promo")
+    private Boolean hasPromo;
+    @JsonProperty("discount")
+    private Double discount;
 }
