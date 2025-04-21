@@ -1,5 +1,4 @@
 package com.mercadolibre.socialmeli.controller;
-
 import com.mercadolibre.socialmeli.dto.FollowersDto;
 import com.mercadolibre.socialmeli.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;

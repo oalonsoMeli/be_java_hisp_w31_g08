@@ -15,6 +15,12 @@ public class ExceptionController {
     }
 
     @ExceptionHandler
+    public ResponseEntity<ExceptionDto> handle(IllegalArgumentException e) {
+        ExceptionDto exceptionDto = new ExceptionDto(e.getMessage());
+        return new ResponseEntity<>(exceptionDto, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
     public ResponseEntity<ExceptionDto> handle(BadRequestException e) {
         ExceptionDto exceptionDto = new ExceptionDto(e.getMessage());
         return new ResponseEntity<>(exceptionDto, HttpStatus.BAD_REQUEST);
