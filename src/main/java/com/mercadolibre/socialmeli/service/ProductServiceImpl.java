@@ -1,13 +1,16 @@
 package com.mercadolibre.socialmeli.service;
 import com.mercadolibre.socialmeli.dto.PostDto;
+import com.mercadolibre.socialmeli.dto.ProductDto;
+import com.mercadolibre.socialmeli.exception.BadRequestException;
+import com.mercadolibre.socialmeli.exception.NotFoundException;
+import com.mercadolibre.socialmeli.model.Post;
+import com.mercadolibre.socialmeli.model.Product;
+import com.mercadolibre.socialmeli.model.User;
+import com.mercadolibre.socialmeli.repository.IProductRepository;
+import com.mercadolibre.socialmeli.repository.IUserRepository;
 import com.mercadolibre.socialmeli.dto.PostsDto;
 import com.mercadolibre.socialmeli.exception.IllegalArgumentException;
-import com.mercadolibre.socialmeli.model.Post;
-import com.mercadolibre.socialmeli.repository.IProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mercadolibre.socialmeli.exception.NotFoundException;
-import com.mercadolibre.socialmeli.model.User;
-import com.mercadolibre.socialmeli.repository.IUserRepository;
 import com.mercadolibre.socialmeli.utilities.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,14 +21,43 @@ import java.util.Set;
 @Service
 public class ProductServiceImpl implements IProductService {
 
-    private  IUserRepository userRepository;
+    private IUserRepository userRepository;
     private IProductRepository productRepository;
 
     @Autowired
-    public ProductServiceImpl(IProductRepository productRepository, IUserRepository userRepository) {
-    this.productRepository = productRepository;
-    this.userRepository = userRepository;
-}
+    public ProductServiceImpl(IUserRepository userRepository, IProductRepository productRepository) {
+        this.userRepository = userRepository;
+        this.productRepository = productRepository;
+    }
+
+
+    @Override
+    public void createPost(PostDto postDto) {
+        userRepository.getUserById(postDto.getUserId())
+                .orElseThrow(() -> new BadRequestException("Usuario no encontrado"));
+
+        ProductDto productDto = postDto.getProduct();
+
+        Product product = new Product(
+                productDto.getProduct_id(),
+                productDto.getProduct_name(),
+                productDto.getType(),
+                productDto.getBrand(),
+                productDto.getColor(),
+                productDto.getNotes()
+        );
+
+        Post post = new Post(
+                postDto.getUserId(),
+                postDto.getDate(),
+                product,
+                postDto.getCategory(),
+                postDto.getPrice()
+        );
+
+        productRepository.save(post);
+    }
+
 
     @Override
     public PostsDto getListOfPublicationsByUser(Integer userId, String order) {

@@ -26,12 +26,13 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-        public void followUser(Integer userId, Integer userIdToFollow) {
-            Optional<User> userOptional = this.userRepository.getUserById(userId);
-            Optional<User> userTofollow = this.userRepository.getUserById(userIdToFollow);
-            if(userOptional.isEmpty() || userTofollow.isEmpty()) {
+
+    public void followUser(Integer userId, Integer userIdToFollow) {
+        Optional<User> userOptional = this.userRepository.getUserById(userId);
+        Optional<User> userTofollow = this.userRepository.getUserById(userIdToFollow);
+        if(userOptional.isEmpty() || userTofollow.isEmpty()) {
                 throw new NotFoundException("Usuario no encontrado");
-            }
+        }
             User user =  userOptional.get();
             user.getFollows().add(userIdToFollow);
         }

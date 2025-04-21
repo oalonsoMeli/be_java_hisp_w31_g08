@@ -5,4 +5,6 @@ import java.util.Set;
 
 public interface IProductRepository {
     List<Post> getPostsByUserIdsInLastTwoWeeks(Set<Integer> userIds, String order);
+    void save(Post post);
+    List<Post> getAll();
 }

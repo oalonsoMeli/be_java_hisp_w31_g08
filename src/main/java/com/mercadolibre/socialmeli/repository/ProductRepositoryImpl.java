@@ -11,7 +11,17 @@ import java.util.Set;
 @Repository
 public class ProductRepositoryImpl implements IProductRepository {
 
-    private List<Post> listOfProducts = new ArrayList<>();
+    private final List<Post> listOfPost = new ArrayList<>();
+
+    @Override
+    public void save(Post post) {
+            listOfPost.add(post);
+    }
+
+    @Override
+    public List<Post> getAll() {
+        return listOfPost;
+    }
 
     //Parametro Order: Indica que tipo de ordenamiento se realizará por fecha (ascendente o descendente).
     @Override
@@ -19,12 +29,12 @@ public class ProductRepositoryImpl implements IProductRepository {
         LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
 
         return (order.equals(Constants.ORDER_DATE_DESC)) ?
-                listOfProducts.stream()
+                listOfPost.stream()
                 .filter(p -> userIds.contains(p.getUserId()))
                 .filter(p -> !p.getDate().isBefore(twoWeeksAgo))
                 .sorted(Comparator.comparing(Post::getDate).reversed())
                 .toList() :
-                listOfProducts.stream()
+                listOfPost.stream()
                 .filter(p -> userIds.contains(p.getUserId()))
                 .filter(p -> !p.getDate().isBefore(twoWeeksAgo))
                 .sorted(Comparator.comparing(Post::getDate))
