@@ -77,4 +77,12 @@ public class ProductRepositoryImpl implements IProductRepository {
                 .sorted(Comparator.comparing(Post::getDate))
                 .toList();
     }
+
+    @Override
+    public List<Post> getPostsByUserId(Integer userId) {
+
+        return listOfPost.stream()
+                        .filter(p -> userId.equals(p.getUserId()))
+                        .toList();
+    }
 }
