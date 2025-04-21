@@ -17,7 +17,7 @@ public abstract class Mappers {
 
     public static Post postDtoToEntity(PostDto postDto){
         return new Post(
-                postDto.getUser_id(),
+                postDto.getUserId(),
                 postDto.getDate(),
                 postDto.getProduct(),
                 postDto.getCategory(),

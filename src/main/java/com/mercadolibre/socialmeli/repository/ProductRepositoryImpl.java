@@ -1,30 +1,33 @@
 package com.mercadolibre.socialmeli.repository;
-import com.mercadolibre.socialmeli.dto.PostDto;
-import com.mercadolibre.socialmeli.dto.PostsDto;
 import com.mercadolibre.socialmeli.model.Post;
-import com.mercadolibre.socialmeli.utilities.Constansts;
+import com.mercadolibre.socialmeli.utilities.Constants;
 import org.springframework.stereotype.Repository;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public class ProductRepositoryImpl implements IProductRepository {
 
     private List<Post> listOfProducts = new ArrayList<>();
 
+    //Parametro Order: Indica que tipo de ordenamiento se realizará por fecha (ascendente o descendente).
     @Override
-    public List<Post> orderByDateAscOrDesc(String order){
-        List<Post> postList = new ArrayList<>();
+    public List<Post> getPostsByUserIdsInLastTwoWeeks(Set<Integer> userIds, String order) {
+        LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
 
-        return switch (order) {
-            case Constansts.ORDER_DATE_ASC -> postList.stream().sorted(
-                    Comparator.comparing(Post::getDate)).toList();
-            case Constansts.ORDER_DATE_DESC -> postList.stream().sorted(
-                    Comparator.comparing(Post::getDate).reversed()).toList();
-            default -> postList;
-        };
+        return (order.equals(Constants.ORDER_DATE_DESC)) ?
+                listOfProducts.stream()
+                .filter(p -> userIds.contains(p.getUserId()))
+                .filter(p -> !p.getDate().isBefore(twoWeeksAgo))
+                .sorted(Comparator.comparing(Post::getDate).reversed())
+                .toList() :
+                listOfProducts.stream()
+                .filter(p -> userIds.contains(p.getUserId()))
+                .filter(p -> !p.getDate().isBefore(twoWeeksAgo))
+                .sorted(Comparator.comparing(Post::getDate))
+                .toList();
     }
-
-
 }

@@ -3,7 +3,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @AllArgsConstructor
@@ -11,6 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 public class PostsDto {
-    private Integer user_id;
+    @JsonProperty("user_id")
+    private Integer userId;
     private List<PostDto> posts;
 }
