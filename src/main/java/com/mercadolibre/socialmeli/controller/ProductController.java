@@ -1,23 +1,18 @@
 package com.mercadolibre.socialmeli.controller;
-
-
 import com.mercadolibre.socialmeli.dto.PostDto;
 import com.mercadolibre.socialmeli.dto.PromoPostDto;
 import com.mercadolibre.socialmeli.service.IProductService;
+import com.mercadolibre.socialmeli.utilities.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 @RequestMapping("/products")
@@ -37,8 +32,11 @@ public class ProductController {
     }
 
     @GetMapping("/followed/{userId}/list")
-    public ResponseEntity<?> getListOfPublicationsByUser(@PathVariable Integer userId){
-        return new ResponseEntity<>(this.productService.getListOfPublicationsByUser(userId), HttpStatus.OK);
+    public ResponseEntity<?> getListOfPublicationsByUser(@PathVariable Integer userId,
+                                                         @RequestParam(value="order",required = false,
+                                                         defaultValue = Constants.ORDER_DATE_ASC)
+                                                         String order){
+    return new ResponseEntity<>(this.productService.getListOfPublicationsByUser(userId,order), HttpStatus.OK);
     }
 
     @PostMapping("/promo-post")

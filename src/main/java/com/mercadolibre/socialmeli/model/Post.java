@@ -1,10 +1,11 @@
 package com.mercadolibre.socialmeli.model;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.mercadolibre.socialmeli.dto.ProductDto;
-import lombok.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import  lombok.ToString;
 import java.time.LocalDate;
 
 

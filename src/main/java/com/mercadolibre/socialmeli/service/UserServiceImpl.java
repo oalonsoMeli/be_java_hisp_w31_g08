@@ -1,25 +1,16 @@
 package com.mercadolibre.socialmeli.service;
-
-import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.socialmeli.dto.FollowedDto;
 import com.mercadolibre.socialmeli.dto.UserDto;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
-import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.dto.FollowersDto;
-import com.mercadolibre.socialmeli.dto.UserDto;
-import com.mercadolibre.socialmeli.exception.NotFoundException;
-import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.dto.FollowerCountDto;
-
 import com.mercadolibre.socialmeli.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.Comparator;
 import java.util.List;
-
 import java.util.Optional;
 import java.util.stream.Collectors;
 
