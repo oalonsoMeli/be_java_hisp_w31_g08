@@ -1,7 +1,5 @@
 package com.mercadolibre.socialmeli.service;
-import com.mercadolibre.socialmeli.dto.PostDto;
-import com.mercadolibre.socialmeli.dto.ProductDto;
-import com.mercadolibre.socialmeli.dto.PromoPostDto;
+import com.mercadolibre.socialmeli.dto.*;
 import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.model.Post;
@@ -9,7 +7,6 @@ import com.mercadolibre.socialmeli.model.Product;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.repository.IProductRepository;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
-import com.mercadolibre.socialmeli.dto.PostsDto;
 import com.mercadolibre.socialmeli.exception.IllegalArgumentException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.socialmeli.utilities.Constants;
@@ -35,7 +32,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public void createPost(PostDto postDto) {
         userRepository.getUserById(postDto.getUserId())
-                .orElseThrow(() -> new BadRequestException("Usuario no encontrado"));
+                .orElseThrow(() -> new BadRequestException("Usuario no encontrado."));
 
         ProductDto productDto = postDto.getProduct();
         Product product = new Product(
@@ -56,7 +53,7 @@ public class ProductServiceImpl implements IProductService {
         if (postDto instanceof PromoPostDto promoPostDto) {
             if (promoPostDto.getHasPromo() != null && promoPostDto.getHasPromo()) {
                 if (promoPostDto.getDiscount() == null || promoPostDto.getDiscount() <= 0 || promoPostDto.getDiscount() >= 1) {
-                    throw new BadRequestException("Descuento inválido");
+                    throw new BadRequestException("Descuento inválido.");
                 }
                 post.setDiscount(promoPostDto.getDiscount());
                 post.setHasPromo(true);
@@ -65,12 +62,28 @@ public class ProductServiceImpl implements IProductService {
         productRepository.save(post);
     }
 
+    @Override
+    public PromoProductsCountDto getQuantityOfProducts(Integer userId) {
+        Optional<User> optionalUser = userRepository.getUserById(userId);
+        if (optionalUser.isEmpty()){
+            throw new NotFoundException("Este usuario no existe.");
+        }
+
+        User user = optionalUser.get();
+        List<Post> posts = this.productRepository.getPostsByUserId(userId);
+        Integer count = (int)posts.stream()
+                .filter(Post::getHasPromo)
+                .count();
+
+        return new PromoProductsCountDto(userId, user.getUserName(), count);
+    }
+
 
     @Override
     public PostsDto getListOfPublicationsByUser(Integer userId, String order) {
         Optional<User> optionalUser = userRepository.getUserById(userId);
         if(optionalUser.isEmpty()){
-            throw new NotFoundException("Este usuario no existe");
+            throw new NotFoundException("Este usuario no existe.");
         }
 
         if(!order.equals(Constants.ORDER_DATE_ASC) && !order.equals(Constants.ORDER_DATE_DESC)){

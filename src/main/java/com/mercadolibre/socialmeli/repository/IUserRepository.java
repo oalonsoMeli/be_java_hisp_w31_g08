@@ -6,12 +6,9 @@ import java.util.Optional;
 public interface IUserRepository {
 
     void loadDataBase();
-
     Optional<User> getUserById(Integer userId);
     List<User> getAll();
-
     List<Integer> findUserFollowers(Integer userId);
-
     List<User> findUsersById(List<Integer> userFollowersId);
 
 }

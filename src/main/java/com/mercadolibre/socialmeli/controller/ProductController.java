@@ -45,6 +45,8 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-
+    @GetMapping("/promo-post/count")
+    public  ResponseEntity<?> getQuantityOfProducts(@RequestParam Integer user_id){
+        return new ResponseEntity<>(productService.getQuantityOfProducts(user_id), HttpStatus.OK);
+    }
 }

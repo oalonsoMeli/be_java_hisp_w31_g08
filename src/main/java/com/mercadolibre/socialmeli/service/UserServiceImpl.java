@@ -31,7 +31,7 @@ public class UserServiceImpl implements IUserService {
         Optional<User> userOptional = this.userRepository.getUserById(userId);
         Optional<User> userTofollow = this.userRepository.getUserById(userIdToFollow);
         if(userOptional.isEmpty() || userTofollow.isEmpty()) {
-                throw new NotFoundException("Usuario no encontrado");
+                throw new NotFoundException("Usuario no encontrado.");
         }
             User user =  userOptional.get();
             user.getFollows().add(userIdToFollow);
@@ -40,7 +40,7 @@ public class UserServiceImpl implements IUserService {
     public FollowedDto searchFollowedSellers(Integer userId, String order) {
         ObjectMapper mapper = new ObjectMapper();
         User user = this.userRepository.getUserById(userId).orElseThrow(
-                () -> new NotFoundException("Usuario no encontrado")
+                () -> new NotFoundException("Usuario no encontrado.")
         );
 
         List<User> userFollowed = userRepository.findUsersById(
@@ -62,7 +62,7 @@ public class UserServiceImpl implements IUserService {
 
     public FollowerCountDto getFollowersCountByUserId(Integer userId) {
         User user = this.userRepository.getUserById(userId).orElseThrow(
-                () -> new NotFoundException("Usuario no encontrado")
+                () -> new NotFoundException("Usuario no encontrado.")
         );
         List<User> users = this.userRepository.getAll();
         long count = users.stream().filter(v -> v.getFollows().contains(userId)).count();
@@ -76,11 +76,11 @@ public class UserServiceImpl implements IUserService {
         Optional<User> userOptional = this.userRepository.getUserById(userId);
         Optional<User> userToUnfollow = this.userRepository.getUserById(userIdToUnfollow);
         if(userOptional.isEmpty() || userToUnfollow.isEmpty()) {
-            throw new NotFoundException("Usuario no encontrado");
+            throw new NotFoundException("Usuario no encontrado.");
         }
         User user = userOptional.get();
         if (!user.getFollows().contains(userToUnfollow.get().getUserId())) {
-            throw new NotFoundException("El usuario no sigue a este vendedor");
+            throw new NotFoundException("El usuario no sigue a este vendedor.");
         }
         user.getFollows().remove(userToUnfollow.get().getUserId());
     }
