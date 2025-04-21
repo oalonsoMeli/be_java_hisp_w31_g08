@@ -1,4 +1,6 @@
 package com.mercadolibre.socialmeli.service;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mercadolibre.socialmeli.dto.*;
 import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
@@ -8,7 +10,6 @@ import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.repository.IProductRepository;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
 import com.mercadolibre.socialmeli.exception.IllegalArgumentException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.socialmeli.utilities.OrderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class ProductServiceImpl implements IProductService {
 
     private IUserRepository userRepository;
     private IProductRepository productRepository;
-
+    private Integer countId = 1;
     @Autowired
     public ProductServiceImpl(IUserRepository userRepository, IProductRepository productRepository) {
         this.userRepository = userRepository;
@@ -31,6 +32,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public void createPost(PostDto postDto) {
+
         userRepository.getUserById(postDto.getUserId())
                 .orElseThrow(() -> new BadRequestException("Usuario no encontrado."));
 
@@ -50,6 +52,9 @@ public class ProductServiceImpl implements IProductService {
                 postDto.getCategory(),
                 postDto.getPrice()
         );
+        post.setPostId(countId);
+        countId++;
+
         if (postDto instanceof PromoPostDto promoPostDto) {
             if (promoPostDto.getHasPromo() != null && promoPostDto.getHasPromo()) {
                 if (promoPostDto.getDiscount() == null || promoPostDto.getDiscount() <= 0 || promoPostDto.getDiscount() >= 1) {
@@ -99,6 +104,7 @@ public class ProductServiceImpl implements IProductService {
             throw new NotFoundException("No hay publicaciones de quienes sigues.");
         }
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         List<PostDto> postDtos = posts.stream()
                 .map(post -> mapper.convertValue(post, PostDto.class))
                 .toList();
