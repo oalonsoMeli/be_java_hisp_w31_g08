@@ -2,7 +2,6 @@ package com.mercadolibre.socialmeli.controller;
 import com.mercadolibre.socialmeli.dto.PostDto;
 import com.mercadolibre.socialmeli.dto.PromoPostDto;
 import com.mercadolibre.socialmeli.service.IProductService;
-import com.mercadolibre.socialmeli.utilities.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +33,7 @@ public class ProductController {
     @GetMapping("/followed/{userId}/list")
     public ResponseEntity<?> getListOfPublicationsByUser(@PathVariable Integer userId,
                                                          @RequestParam(value="order",required = false,
-                                                         defaultValue = Constants.ORDER_DATE_ASC)
+                                                         defaultValue = "date_asc")
                                                          String order){
     return new ResponseEntity<>(this.productService.getListOfPublicationsByUser(userId,order), HttpStatus.OK);
     }

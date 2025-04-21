@@ -3,8 +3,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.socialmeli.model.Post;
 import com.mercadolibre.socialmeli.model.Product;
-import com.mercadolibre.socialmeli.model.User;
-import com.mercadolibre.socialmeli.utilities.Constants;
+import com.mercadolibre.socialmeli.utilities.OrderType;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ResourceUtils;
 
@@ -66,7 +65,7 @@ public class ProductRepositoryImpl implements IProductRepository {
     public List<Post> getPostsByUserIdsInLastTwoWeeks(Set<Integer> userIds, String order) {
         LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
 
-        return (order.equals(Constants.ORDER_DATE_DESC)) ?
+        return (order.equals(OrderType.ORDER_DATE_DESC.getValue())) ?
                 listOfPost.stream()
                 .filter(p -> userIds.contains(p.getUserId()))
                 .filter(p -> !p.getDate().isBefore(twoWeeksAgo))
