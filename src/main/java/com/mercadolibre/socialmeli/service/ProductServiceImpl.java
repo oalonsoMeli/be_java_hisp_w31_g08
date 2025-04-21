@@ -14,7 +14,6 @@ import com.mercadolibre.socialmeli.utilities.OrderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -32,29 +31,8 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public void createPost(PostDto postDto) {
-
-        userRepository.getUserById(postDto.getUserId())
-                .orElseThrow(() -> new BadRequestException("Usuario no encontrado."));
-
-        ProductDto productDto = postDto.getProduct();
-        Product product = new Product(
-                productDto.getProduct_id(),
-                productDto.getProduct_name(),
-                productDto.getType(),
-                productDto.getBrand(),
-                productDto.getColor(),
-                productDto.getNotes()
-        );
-        Post post = new Post(
-                postDto.getUserId(),
-                postDto.getDate(),
-                product,
-                postDto.getCategory(),
-                postDto.getPrice()
-        );
-        post.setPostId(countId);
-        countId++;
-
+        validationUser(postDto.getUserId());
+        Post post = getPost(postDto);
         if (postDto instanceof PromoPostDto promoPostDto) {
             if (promoPostDto.getHasPromo() != null && promoPostDto.getHasPromo()) {
                 if (promoPostDto.getDiscount() == null || promoPostDto.getDiscount() <= 0 || promoPostDto.getDiscount() >= 1) {
@@ -67,38 +45,40 @@ public class ProductServiceImpl implements IProductService {
         productRepository.save(post);
     }
 
+    private User validationUser(Integer userId) {
+        return userRepository.getUserById(userId)
+                .orElseThrow(() -> new BadRequestException("Usuario no encontrado."));
+    }
+
+    private Post getPost(PostDto postDto) {
+        ProductDto productDto = postDto.getProduct();
+        Product product = new Product( productDto.getProduct_id(), productDto.getProduct_name(), productDto.getType(),
+                productDto.getBrand(), productDto.getColor(), productDto.getNotes());
+        Post post = new Post(postDto.getUserId(), postDto.getDate(), product,
+                postDto.getCategory(), postDto.getPrice());
+        post.setPostId(countId);
+        countId++;
+        return post;
+    }
+
     @Override
     public PromoProductsCountDto getQuantityOfProducts(Integer userId) {
-        Optional<User> optionalUser = userRepository.getUserById(userId);
-        if (optionalUser.isEmpty()){
-            throw new NotFoundException("Este usuario no existe.");
-        }
-
-        User user = optionalUser.get();
+        User user = validationUser(userId);
         List<Post> posts = this.productRepository.getPostsByUserId(userId);
         Integer count = (int)posts.stream()
                 .filter(Post::getHasPromo)
                 .count();
-
         return new PromoProductsCountDto(userId, user.getUserName(), count);
     }
 
-
     @Override
     public PostsDto getListOfPublicationsByUser(Integer userId, String order) {
-        Optional<User> optionalUser = userRepository.getUserById(userId);
-        if(optionalUser.isEmpty()){
-            throw new NotFoundException("Este usuario no existe.");
-        }
-
+        User user = validationUser(userId);
         if(!order.equals(OrderType.ORDER_DATE_ASC.getValue()) &&
                 !order.equals(OrderType.ORDER_DATE_DESC.getValue())){
             throw new IllegalArgumentException("Párametro de ordenamiento no permitido.");
         }
-
-        User user = optionalUser.get();
         Set<Integer> followedUserIds = user.getFollows();
-
         List<Post> posts = this.productRepository.getPostsByUserIdsInLastTwoWeeks(followedUserIds,order);
         if(posts.isEmpty()){
             throw new NotFoundException("No hay publicaciones de quienes sigues.");

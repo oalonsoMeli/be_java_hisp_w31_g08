@@ -1,4 +1,5 @@
 package com.mercadolibre.socialmeli.service;
+import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadolibre.socialmeli.dto.FollowedDto;
@@ -28,78 +29,66 @@ public class UserServiceImpl implements IUserService {
     @Override
 
     public void followUser(Integer userId, Integer userIdToFollow) {
+        Optional<User> userOptional = getUser(userId, userIdToFollow);
+        User user =  userOptional.get();
+            user.getFollows().add(userIdToFollow);
+        }
+
+    private Optional<User> getUser(Integer userId, Integer userIdToFollow) {
         Optional<User> userOptional = this.userRepository.getUserById(userId);
         Optional<User> userTofollow = this.userRepository.getUserById(userIdToFollow);
         if(userOptional.isEmpty() || userTofollow.isEmpty()) {
-                throw new NotFoundException("Usuario no encontrado.");
+                throw new BadRequestException("Usuario no encontrado.");
         }
-            User user =  userOptional.get();
-            user.getFollows().add(userIdToFollow);
-        }
+        return userOptional;
+    }
 
     public FollowedDto searchFollowedSellers(Integer userId, String order) {
         ObjectMapper mapper = new ObjectMapper();
         User user = this.userRepository.getUserById(userId).orElseThrow(
-                () -> new NotFoundException("Usuario no encontrado.")
-        );
-
+                () -> new NotFoundException("Usuario no encontrado."));
         List<User> userFollowed = userRepository.findUsersById(
-               user.getFollows().stream().toList()
-        );
-
-        // ordenar
-        if ("name_asc".equalsIgnoreCase(order)) {
-            userFollowed.sort(Comparator.comparing(User::getUserName));
-        } else if ("name_desc".equalsIgnoreCase(order)) {
-            userFollowed.sort(Comparator.comparing(User::getUserName).reversed());
-        }
-
+               user.getFollows().stream().toList());
+        orderByName(order, userFollowed);
         List<UserDto> userDtos = userFollowed.stream()
                 .map(uf -> new UserDto(uf.getUserId(), uf.getUserName()))
                 .collect(Collectors.toList());
         return new FollowedDto(user.getUserId(), user.getUserName(), userDtos);
     }
 
+    private static void orderByName(String order, List<User> userFollowed) {
+        if ("name_asc".equalsIgnoreCase(order)) {
+            userFollowed.sort(Comparator.comparing(User::getUserName));
+        } else if ("name_desc".equalsIgnoreCase(order)) {
+            userFollowed.sort(Comparator.comparing(User::getUserName).reversed());
+        }
+    }
+
     public FollowerCountDto getFollowersCountByUserId(Integer userId) {
         User user = this.userRepository.getUserById(userId).orElseThrow(
-                () -> new NotFoundException("Usuario no encontrado.")
-        );
+                () -> new NotFoundException("Usuario no encontrado."));
         List<User> users = this.userRepository.getAll();
         long count = users.stream().filter(v -> v.getFollows().contains(userId)).count();
         return new FollowerCountDto(user.getUserId(), user.getUserName(), (int) count);
      }
 
-
-    //dar un unfollow de un usuario a un vendedor
     @Override
     public void unfollowUser(Integer userId, Integer userIdToUnfollow) {
-        Optional<User> userOptional = this.userRepository.getUserById(userId);
-        Optional<User> userToUnfollow = this.userRepository.getUserById(userIdToUnfollow);
-        if(userOptional.isEmpty() || userToUnfollow.isEmpty()) {
-            throw new NotFoundException("Usuario no encontrado.");
-        }
-        User user = userOptional.get();
-        if (!user.getFollows().contains(userToUnfollow.get().getUserId())) {
+        Optional<User> userOptional = getUser(userId, userIdToUnfollow);
+        User user =  userOptional.get();
+        if (!user.getFollows().contains(userIdToUnfollow)) {
             throw new NotFoundException("El usuario no sigue a este vendedor.");
         }
-        user.getFollows().remove(userToUnfollow.get().getUserId());
+        user.getFollows().remove(userIdToUnfollow);
     }
-
-
 
     @Override
     public FollowersDto getUserFollowers(Integer userId, String order) {
         User user = userRepository.getUserById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         List<User> userFollowers = userRepository.findUsersById(
-                userRepository.findUserFollowers(userId)
-        );
-        // ordenamiento por nombre
-        if ("name_asc".equalsIgnoreCase(order)) {
-            userFollowers.sort(Comparator.comparing(User::getUserName));
-        } else if ("name_desc".equalsIgnoreCase(order)) {
-            userFollowers.sort(Comparator.comparing(User::getUserName).reversed());
-        }
+                userRepository.findUserFollowers(userId));
+        orderByName(order, userFollowers);
         List<UserDto> userDtos = userFollowers.stream()
                 .map(userFollower -> new UserDto(userFollower.getUserId(), userFollower.getUserName()))
                 .collect(Collectors.toList());
