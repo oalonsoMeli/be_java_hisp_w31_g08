@@ -1,8 +1,5 @@
 package com.mercadolibre.socialmeli.model;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +14,7 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @JsonPropertyOrder({"post_id", "user_id", "date", "product", "category", "price"})
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Post {
 
     // Constructor manual sin incluir los campos opcionales
@@ -41,9 +39,7 @@ public class Post {
     @JsonProperty("price")
     private Double price;
     @JsonProperty("has_promo")
-    @JsonIgnore
     private Boolean hasPromo = false; // Valor predeterminado de false
     @JsonProperty("discount")
-    @JsonIgnore
     private Double discount = 0.0; // Valor predeterminado de 0.0
 }
