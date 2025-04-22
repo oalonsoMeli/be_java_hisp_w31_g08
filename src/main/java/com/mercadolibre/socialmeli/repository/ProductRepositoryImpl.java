@@ -85,4 +85,10 @@ public class ProductRepositoryImpl implements IProductRepository {
                         .filter(p -> userId.equals(p.getUserId()))
                         .toList();
     }
+
+    @Override
+    public List<Post> getPromotionalProductsFromSellers(Integer userId){
+        return this.listOfPost.stream().filter(post -> post.getUserId().equals(userId)
+        && post.getHasPromo().equals(true)).toList();
+    }
 }

@@ -1,6 +1,7 @@
 package com.mercadolibre.socialmeli.controller;
 import com.mercadolibre.socialmeli.dto.PostDto;
 import com.mercadolibre.socialmeli.dto.PromoPostDto;
+import com.mercadolibre.socialmeli.dto.PromoProductsDto;
 import com.mercadolibre.socialmeli.service.IProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -76,7 +77,19 @@ public class ProductController {
             @ApiResponse(responseCode = "200", description = "Se obtuvo una respuesta exitosa."),
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado")})
     @GetMapping("/promo-post/count")
-    public  ResponseEntity<?> getQuantityOfProducts(@RequestParam Integer user_id){
+    public ResponseEntity<?> getQuantityOfProducts(@RequestParam Integer user_id){
         return new ResponseEntity<>(productService.getQuantityOfProducts(user_id), HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Lista de productos en promoción de un vendedor",
+            description = "Permite obtener la lista de productos en promoción de un determinado vendedor.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Se obtuvo una respuesta exitosa."),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado")})
+    @GetMapping("/promo-post/list")
+    public ResponseEntity<?> getPromotionalProductsFromSellers(@RequestParam(value="user_id") Integer userId){
+        return new ResponseEntity<>(this.productService.getPromotionalProductsFromSellers(userId),
+                HttpStatus.OK);
     }
 }

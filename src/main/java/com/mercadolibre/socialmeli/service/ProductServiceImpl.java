@@ -14,6 +14,7 @@ import com.mercadolibre.socialmeli.utilities.OrderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -89,5 +90,16 @@ public class ProductServiceImpl implements IProductService {
                 .map(post -> mapper.convertValue(post, PostDto.class))
                 .toList();
          return new PostsDto(userId, postDtos);
+    }
+
+    @Override
+    public PromoProductsDto getPromotionalProductsFromSellers(Integer userId){
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        User user = validationUser(userId);
+        List<PromoPostDto> promoPostDtoList = this.productRepository.getPromotionalProductsFromSellers(userId)
+                .stream().map(post -> mapper.convertValue(post, PromoPostDto.class)
+                ).toList();
+        return new PromoProductsDto(user.getUserId(),user.getUserName(),promoPostDtoList);
     }
 }
