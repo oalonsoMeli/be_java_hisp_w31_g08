@@ -194,7 +194,7 @@
 				{
 					"name": "Dejar de seguir a un vendedor",
 					"request": {
-						"method": "POST",
+						"method": "PUT",
 						"header": [],
 						"url": {
 							"raw": "http://localhost:8080/users/{userId}/unfollow/{userIdToUnfollow}",
