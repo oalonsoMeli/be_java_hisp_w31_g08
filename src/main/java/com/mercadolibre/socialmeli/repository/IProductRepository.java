@@ -1,6 +1,8 @@
 package com.mercadolibre.socialmeli.repository;
+import com.mercadolibre.socialmeli.dto.ValorationDTO;
 import com.mercadolibre.socialmeli.model.Post;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface IProductRepository {
@@ -9,4 +11,7 @@ public interface IProductRepository {
     List<Post> getAll();
     List<Post> getPostsByUserId(Integer userId);
     List<Post> getPromotionalProductsFromSellers(Integer userId);
+    Optional<Post> getPostsByPostId(Integer postId);
+    void saveValoration(Integer postId, Integer userId, Integer valoration);
+
 }

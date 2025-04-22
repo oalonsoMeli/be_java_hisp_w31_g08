@@ -13,9 +13,9 @@ import com.mercadolibre.socialmeli.exception.IllegalArgumentException;
 import com.mercadolibre.socialmeli.utilities.OrderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements IProductService {
@@ -102,4 +102,57 @@ public class ProductServiceImpl implements IProductService {
                 ).toList();
         return new PromoProductsDto(user.getUserId(),user.getUserName(),promoPostDtoList);
     }
+
+    @Override
+    public void valorateAPost(ValorationDTO valorationDTO) {
+        Post post = getPostById(valorationDTO.getPost_id());
+        User user = validationUser(valorationDTO.getUser_id());
+        if(valorationDTO.getValoration() < 1 || valorationDTO.getValoration() > 5){
+            throw new BadRequestException("Se permiten solo valoraciones del 1 al 5.");
+        }
+        this.productRepository.saveValoration(valorationDTO.getPost_id(), valorationDTO.getUser_id(), valorationDTO.getValoration());
+    }
+
+    private Post getPostById(Integer postId) {
+        return productRepository.getPostsByPostId(postId)
+                .orElseThrow(() -> new BadRequestException("No se encontró el post a valorar."));
+    }
+
+    @Override
+    public List<ValorationDTO> getValorationsByPost(Integer postId, Integer valorationNumber) {
+        Post post = getPostById(postId);
+        // crea el map con las valoraciones del post
+        Map<Integer, Integer> valorations = post.getValorations();
+
+
+        /* genera una lista de valoration dto, filtrado:.
+        - si no tiene especificación, trae todas las valoraciones.
+        - si tiene especificación, trae solamente valoraciones de ese número*/
+        return valorations.entrySet().stream()
+                .filter(entry -> valorationNumber == null || entry.getValue().equals(valorationNumber))
+                .map(entry -> new ValorationDTO(entry.getKey(), postId, entry.getValue()))
+                .collect(Collectors.toList());
+
+    }
+
+    @Override
+    public List<ValorationDTO> getAllValorationsByUser(Integer userId) {
+        User user = validationUser(userId);
+        return this.productRepository.getAll().stream()
+                .filter(p -> p.getValorations().containsKey(userId))
+                .map(p -> new ValorationDTO(
+                        userId,
+                        p.getPostId(),
+                        p.getValorations().get(userId)))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ValorationAverageDto getValorationsAverageByPost(Integer postId) {
+        Post post = getPostById(postId);
+        Map<Integer, Integer> valorations = post.getValorations();
+        Double average = valorations.values().stream().mapToDouble(v -> v).average().orElse(0.0);
+        return new ValorationAverageDto(average);
+    }
+
 }

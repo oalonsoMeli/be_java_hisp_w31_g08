@@ -1,6 +1,7 @@
 package com.mercadolibre.socialmeli.repository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercadolibre.socialmeli.dto.ValorationDTO;
 import com.mercadolibre.socialmeli.model.Post;
 import com.mercadolibre.socialmeli.model.Product;
 import com.mercadolibre.socialmeli.utilities.OrderType;
@@ -9,10 +10,7 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public class ProductRepositoryImpl implements IProductRepository {
@@ -91,4 +89,21 @@ public class ProductRepositoryImpl implements IProductRepository {
         return this.listOfPost.stream().filter(post -> post.getUserId().equals(userId)
         && post.getHasPromo().equals(true)).toList();
     }
+
+    @Override
+    public Optional<Post> getPostsByPostId(Integer postId) {
+        return listOfPost.stream()
+                .filter(p -> postId.equals(p.getPostId()))
+                .findFirst();
+    }
+
+    @Override
+    public void saveValoration(Integer postId, Integer userId, Integer valoration) {
+        Optional<Post> post = this.getPostsByPostId(postId);
+        Post postFinded = post.get();
+        this.listOfPost.stream().filter(p -> postFinded.getPostId().equals(postId)).findFirst();
+        postFinded.getValorations().put(userId, valoration);
+    }
+
+
 }
