@@ -1,0 +1,162 @@
+[
+  {
+    "user_id": 106,
+    "date": "2023-07-14",
+    "product": {
+      "product_id": 1006,
+      "product_name": "Wireless Mouse",
+      "type": "Electronics",
+      "brand": "TechBrand",
+      "color": "Red",
+      "notes": "Ergonomic design with long battery life"
+    },
+    "category": 1,
+    "price": 29.99,
+    "has_promo": true,
+    "discount": 5.0
+  },
+  {
+    "user_id": 107,
+    "date": "2023-06-26",
+    "product": {
+      "product_id": 1007,
+      "product_name": "Bluetooth Speaker",
+      "type": "Audio",
+      "brand": "SoundWave",
+      "color": "Black",
+      "notes": "Portable speaker with deep bass"
+    },
+    "category": 2,
+    "price": 49.99,
+    "has_promo": false,
+    "discount": 0.0
+  },
+  {
+    "user_id": 108,
+    "date": "2023-05-19",
+    "product": {
+      "product_id": 1008,
+      "product_name": "Digital Camera",
+      "type": "Photography",
+      "brand": "PicturePerfect",
+      "color": "Silver",
+      "notes": "Compact camera with zoom lens"
+    },
+    "category": 3,
+    "price": 299.99,
+    "has_promo": false,
+    "discount": 0.0
+  },
+  {
+    "user_id": 109,
+    "date": "2023-03-11",
+    "product": {
+      "product_id": 1009,
+      "product_name": "Smart Thermostat",
+      "type": "Home Automation",
+      "brand": "HomeEase",
+      "color": "White",
+      "notes": "Energy-saving remote control"
+    },
+    "category": 4,
+    "price": 99.99,
+    "has_promo": true,
+    "discount": 15.0
+  },
+  {
+    "user_id": 110,
+    "date": "2023-04-21",
+    "product": {
+      "product_id": 1010,
+      "product_name": "E-Reader",
+      "type": "Electronics",
+      "brand": "BookLive",
+      "color": "Black",
+      "notes": "High-resolution display, glare free"
+    },
+    "category": 5,
+    "price": 129.99,
+    "has_promo": false,
+    "discount": 0.0
+  },
+  {
+    "user_id": 111,
+    "date": "2023-05-30",
+    "product": {
+      "product_id": 1011,
+      "product_name": "Portable Charger",
+      "type": "Accessories",
+      "brand": "PowerPlus",
+      "color": "Blue",
+      "notes": "High capacity with fast charging"
+    },
+    "category": 1,
+    "price": 39.99,
+    "has_promo": false,
+    "discount": 0.0
+  },
+  {
+    "user_id": 112,
+    "date": "2023-08-03",
+    "product": {
+      "product_id": 1012,
+      "product_name": "Noise Cancelling Headphones",
+      "type": "Audio",
+      "brand": "QuietSound",
+      "color": "Gray",
+      "notes": "Best in class noise cancellation"
+    },
+    "category": 2,
+    "price": 199.99,
+    "has_promo": true,
+    "discount": 20.0
+  },
+  {
+    "user_id": 113,
+    "date": "2023-09-12",
+    "product": {
+      "product_id": 1013,
+      "product_name": "Home Security Camera",
+      "type": "Home Security",
+      "brand": "SafeHome",
+      "color": "White",
+      "notes": "1080p wireless security solution"
+    },
+    "category": 4,
+    "price": 89.99,
+    "has_promo": false,
+    "discount": 0.0
+  },
+  {
+    "user_id": 114,
+    "date": "2023-07-09",
+    "product": {
+      "product_id": 1014,
+      "product_name": "Smart Light Bulb",
+      "type": "Home Automation",
+      "brand": "BrightSmart",
+      "color": "Multi",
+      "notes": "Color changing with app control"
+    },
+    "category": 5,
+    "price": 19.99,
+    "has_promo": true,
+    "discount": 10.0
+  },
+  {
+    "user_id": 115,
+    "date": "2023-06-17",
+    "product": {
+      "product_id": 1015,
+      "product_name": "Fitness Tracker",
+      "type": "Wearable",
+      "brand": "HealthFirst",
+      "color": "Black",
+      "notes": "Monitors heart rate and activity"
+    },
+    "category": 6,
+    "price": 79.99,
+    "has_promo": false,
+    "discount": 0.0
+  }
+]

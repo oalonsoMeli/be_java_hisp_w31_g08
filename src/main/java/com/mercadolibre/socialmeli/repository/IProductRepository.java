@@ -1,11 +1,12 @@
 package com.mercadolibre.socialmeli.repository;
 import com.mercadolibre.socialmeli.model.Post;
-import com.mercadolibre.socialmeli.model.Post;
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 public interface IProductRepository {
+    List<Post> getPostsByUserIdsInLastTwoWeeks(Set<Integer> userIds, String order);
     void save(Post post);
     List<Post> getAll();
-    List<Post> getPostsByUserIdsInLastTwoWeeks(Set<Integer> userIds);
+    List<Post> getPostsByUserId(Integer userId);
+    List<Post> getPromotionalProductsFromSellers(Integer userId);
 }
