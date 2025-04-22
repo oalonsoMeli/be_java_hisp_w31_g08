@@ -8,7 +8,7 @@
 	},
 	"item": [
 		{
-			"name": "US 0001 - SEGUIR VENDEDOR",
+			"name": "US 0001 - Seguir vendedor",
 			"item": [
 				{
 					"name": "Seguir Vendedor",
@@ -396,6 +396,160 @@
 									"key": "user_id",
 									"value": "1"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor",
+			"item": [
+				{
+					"name": "Obtener un listado de todos los productos en promoción de un determinado vendedor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/promo-post/list?user_id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"promo-post",
+								"list"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "US 0013 - Usuario valora post",
+			"item": [
+				{
+					"name": "Usuario valora post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": 3,\n    \"post_id\": 1,\n    \"valoration\": 4\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/products/valoration",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"valoration"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "US 0014 - Obtener valoraciones de un post",
+			"item": [
+				{
+					"name": "Obtener valoraciones por post",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/{post_id}/valorations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"{post_id}",
+								"valorations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener valoraciones por post específico",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "US 0015 - Obtener lista de las valoraciones de los usuarios",
+			"item": [
+				{
+					"name": "Obtener valoraciones de un usuario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/{user_id}/user/valorations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"{user_id}",
+								"user",
+								"valorations"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "US 0016 - Obtener promedio de valoraciones de un producto",
+			"item": [
+				{
+					"name": "Obtener promedio de valoraciones de un producto",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/{product_id}/valorations/average",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"{product_id}",
+								"valorations",
+								"average"
 							]
 						}
 					},

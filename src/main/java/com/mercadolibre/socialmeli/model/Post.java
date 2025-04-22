@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import  lombok.ToString;
 import java.time.LocalDate;
+import java.util.HashMap;
 
 
 @AllArgsConstructor
@@ -42,4 +43,6 @@ public class Post {
     private Boolean hasPromo = false; // Valor predeterminado de false
     @JsonProperty("discount")
     private Double discount = 0.0; // Valor predeterminado de 0.0
+    @JsonProperty("valoration")
+    private HashMap<Integer, Integer> valorations = new HashMap<>();
 }

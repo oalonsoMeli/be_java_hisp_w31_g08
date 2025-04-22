@@ -2,6 +2,7 @@ package com.mercadolibre.socialmeli.controller;
 import com.mercadolibre.socialmeli.dto.PostDto;
 import com.mercadolibre.socialmeli.dto.PromoPostDto;
 import com.mercadolibre.socialmeli.dto.PromoProductsDto;
+import com.mercadolibre.socialmeli.dto.ValorationDTO;
 import com.mercadolibre.socialmeli.service.IProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -92,4 +93,55 @@ public class ProductController {
         return new ResponseEntity<>(this.productService.getPromotionalProductsFromSellers(userId),
                 HttpStatus.OK);
     }
+    @Operation(
+            summary = "Usuario valora posteo",
+            description = "Permite a un usuario valorar un posteo del 1 al 5.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Se pudo valorar el posteo."),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado."),
+            @ApiResponse(responseCode = "404", description = "Posteo no encontrado."),
+            @ApiResponse(responseCode = "400", description = "Se permiten solo valoraciones del 1 al 5.")})
+    @PostMapping("/valoration")
+    public ResponseEntity<?> valorateAPost(@RequestBody ValorationDTO valorationDTO){
+        this.productService.valorateAPost(valorationDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @Operation(
+            summary = "Obtener valoraciones de un post",
+            description = "Obtiene las valoraciones de un posteo, permite filtrar por RequestParam según número")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Se obtuvo valoraciones."),
+            @ApiResponse(responseCode = "404", description = "Posteo no encontrado")})
+
+    @GetMapping("/{post_id}/valorations")
+    public ResponseEntity<?> getValorationsByPost(@PathVariable Integer post_id,
+                                                  @RequestParam(value = "valoration_number", required = false)
+                                                  Integer valorationNumber){
+        return new ResponseEntity<>(this.productService.getValorationsByPost(post_id, valorationNumber),
+                HttpStatus.OK);
+    }
+    @Operation(
+            summary = "Obtener valoraciones de un usuario",
+            description = "Obtiene la lista de todas las valoraciones hechas por un usuario.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Se obtuvo la lista de valoraciones del usuario."),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado")})
+    @GetMapping("/{user_id}/user/valorations")
+    public ResponseEntity<?> getAllValorationsByUser(@PathVariable Integer user_id){
+          return new ResponseEntity<>(this.productService.getAllValorationsByUser(user_id),
+    HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Obtener el porcentaje de valoraciones de un posteo",
+            description = "Obtiene el porcentaje de las valoraciones que se han hecho en un posteo.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Se obtuvo el porcentaje del posteo."),
+            @ApiResponse(responseCode = "404", description = "No se encontró el post a valorar.")})
+    @GetMapping("/{post_id}/valorations/average")
+    public ResponseEntity<?> getValorationsByPost(@PathVariable Integer post_id){
+        return new ResponseEntity<>(this.productService.getValorationsAverageByPost(post_id),
+                HttpStatus.OK);
+    }
+
 }
