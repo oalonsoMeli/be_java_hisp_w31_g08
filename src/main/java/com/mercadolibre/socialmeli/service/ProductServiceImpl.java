@@ -34,16 +34,26 @@ public class ProductServiceImpl implements IProductService {
     public void createPost(PostDto postDto) {
         validationUser(postDto.getUserId());
         Post post = getPost(postDto);
-        if (postDto instanceof PromoPostDto promoPostDto) {
-            if (promoPostDto.getHasPromo() != null && promoPostDto.getHasPromo()) {
-                if (promoPostDto.getDiscount() == null || promoPostDto.getDiscount() <= 0 || promoPostDto.getDiscount() >= 1) {
-                    throw new BadRequestException("Descuento inválido.");
-                }
-                post.setDiscount(promoPostDto.getDiscount());
-                post.setHasPromo(true);
-            }
+        if (isPromoActive(postDto)) {
+            applyPromotion((PromoPostDto) postDto, post);
         }
         productRepository.save(post);
+    }
+
+    private boolean isPromoActive(PostDto postDto) {
+        if (postDto instanceof PromoPostDto promo) {
+            return Boolean.TRUE.equals(promo.getHasPromo());
+        }
+        return false;
+    }
+
+    private void applyPromotion(PromoPostDto promoPostDto, Post post) {
+        Double discount = promoPostDto.getDiscount();
+        if (discount == null || discount <= 0 || discount >= 1) {
+            throw new BadRequestException("Descuento inválido.");
+        }
+        post.setDiscount(discount);
+        post.setHasPromo(true);
     }
 
     private User validationUser(Integer userId) {
