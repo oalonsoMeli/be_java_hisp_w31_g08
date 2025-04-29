@@ -7,6 +7,7 @@ import com.mercadolibre.socialmeli.service.IProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class ProductController {
             @ApiResponse(responseCode = "200", description = "Publicación creada exitosamente."),
             @ApiResponse(responseCode = "400", description = "Usuario no encontrado")})
     @PostMapping("/post")
-    public ResponseEntity<Void> createPost(@RequestBody PostDto postDto) {
+    public ResponseEntity<String> createPost(@RequestBody @Valid PostDto postDto) {
         productService.createPost(postDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -65,7 +66,7 @@ public class ProductController {
             @ApiResponse(responseCode = "200", description = "Se creo el descuento correctamente"),
             @ApiResponse(responseCode = "400", description = "Descuento inválido.")})
     @PostMapping("/promo-post")
-    public ResponseEntity<String> createPromoPost(@RequestBody PromoPostDto promoPostDto) {
+    public ResponseEntity<String> createPromoPost(@RequestBody @Valid PromoPostDto promoPostDto) {
         productService.createPost(promoPostDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
