@@ -229,7 +229,6 @@ class UserServiceImplTest {
         });
     }
 
-<<<<<<< HEAD
     // T-0007 - US0002: Verificar que la cantidad de seguidores de un determinado usuario sea correcta.
     @Test
     void  getFollowersCountByUserId_shouldReturnCountFollowers(){
@@ -254,7 +253,7 @@ class UserServiceImplTest {
 
     // T-0007 - US0002: Verifica que no tenga ningún seguidor.
     @Test
-    void  getFollowersCountByUserId_shouldReturnNonFollowers(){
+    void  getFollowersCountByUserId_shouldReturnNonFollowers() {
         // Arrange
         User followedUser = TestFactory.createUser(1);
 
@@ -270,7 +269,7 @@ class UserServiceImplTest {
         assertNotNull(result);
         assertEquals(1, result.getUser_id());
         assertEquals(0, result.getFollowers_count());
-=======
+    }
 
     @Test
     // T-0001 - US0001 : Verifica que el usuario a seguir exista y se pueda seguir correctamente
@@ -371,7 +370,6 @@ class UserServiceImplTest {
 
         // Assert
         assertTrue(follower.getFollows().contains(2), "El ID del usuario seguido debe estar en la lista");
->>>>>>> develop
     }
 }
 
