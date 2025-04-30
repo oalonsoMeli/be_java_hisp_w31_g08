@@ -1,5 +1,9 @@
 package com.mercadolibre.socialmeli.service;
 import com.mercadolibre.socialmeli.dto.PostsDto;
+import com.mercadolibre.socialmeli.dto.ValorationAverageDto;
+
+import com.mercadolibre.socialmeli.dto.ValorationDTO;
+
 import com.mercadolibre.socialmeli.dto.PromoProductsDto;
 import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.exception.IllegalArgumentException;
@@ -19,7 +23,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.LocalDate;
+import java.util.*;
+
 import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -39,11 +48,7 @@ class ProductServiceImplTest {
 
     @InjectMocks
     ProductServiceImpl productService;
-
-
-    @Test
-    void getListOfPublicationsByUser() {
-    }
+    
 
 
     @DisplayName("Verificar que el tipo de ordenamiento por fecha exista (US-0009) de forma ascendente")
@@ -142,6 +147,34 @@ class ProductServiceImplTest {
         assertEquals(2, result.getPosts().size());
         assertTrue(result.getPosts().get(0).getDate().isBefore(result.getPosts().get(1).getDate())
                 || result.getPosts().get(0).getDate().isEqual(result.getPosts().get(1).getDate()));
+    }
+
+
+    // T-00016 - US0016: Verifica que calcule el promedio de las valoraciones de un post.
+    @Test
+    void getValorationsAverageByPost_shouldCalculateTheAverage(){
+        // Arrange
+        Integer postId = 1;
+        Post post = TestFactory.createPost(postId, 1, LocalDate.now().minusWeeks(1));
+        HashMap<Integer, Integer> valorations = new HashMap<>();
+        valorations.put(1, 5);
+        valorations.put(2, 3);
+        post.setValorations(valorations);
+        when(productRepository.getPostsByPostId(1)).thenReturn(Optional.of(post));
+        Double averageExpected = 4.0;
+
+        // Act
+        ValorationAverageDto averageObtained = productService.getValorationsAverageByPost(1);
+
+        // Assert
+        assertEquals(averageExpected, averageObtained.getAverage());
+    }
+
+    // T-00016 - US0016: Verifica que largue una excepción si el id del post buscado no existe.
+    @Test
+    void getValorationsAverageByPost_withIdInexistent_shouldReturnException(){
+        when(productRepository.getPostsByPostId(9999)).thenReturn(Optional.empty());
+        assertThrows(BadRequestException.class, () ->  productService.getValorationsAverageByPost(9999));
     }
 
     @Test
