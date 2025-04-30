@@ -1,17 +1,12 @@
 package com.mercadolibre.socialmeli.factory;
 
-import com.mercadolibre.socialmeli.dto.PostDto;
-import com.mercadolibre.socialmeli.dto.ProductDto;
-import com.mercadolibre.socialmeli.dto.PromoPostDto;
-import com.mercadolibre.socialmeli.dto.ValorationDTO;
+import com.mercadolibre.socialmeli.dto.*;
 import com.mercadolibre.socialmeli.model.Post;
 import com.mercadolibre.socialmeli.model.Product;
 import com.mercadolibre.socialmeli.model.User;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -26,11 +21,27 @@ public class TestFactory {
         return user;
     }
 
+    public static UserDto createUserDTO(Integer id) {
+        UserDto user = new UserDto();
+        user.setUser_id(id);
+        user.setUser_name("User" + id);
+        return user;
+    }
+
     public static User createUserWithFollow(Integer id, Integer followedId) {
         User user = createUser(id);
         user.getFollows().add(followedId);
         return user;
     }
+
+    public static User createUserFollowing(Integer userId, Integer... followedIds) {
+        User user = TestFactory.createUser(userId);
+        for (Integer followedId : followedIds) {
+            user.getFollows().add(followedId);
+        }
+        return user;
+    }
+
 
     //****************Product
     public static Product createProduct(Integer id) {
@@ -63,6 +74,16 @@ public class TestFactory {
                 createProduct(postId),
                 100,
                 1500.0
+        );
+    }
+
+    public static Post createPost(Integer postId, Integer userId, LocalDate createdAt) {
+        return new Post( postId,
+                userId,
+                createdAt,
+                createProduct(postId),
+                100,
+                1500.0, false, 0.0, new HashMap<>()
         );
     }
 
@@ -106,9 +127,33 @@ public class TestFactory {
         return dto;
     }
 
+
+    public static List<Post> createPostsForFollowedUsers(Integer... userIds) {
+        List<Post> posts = new ArrayList<>();
+        int postId = 1;
+        for (Integer userId : userIds) {
+            posts.add(TestFactory.createPost(postId++, userId));
+        }
+        return posts;
+    }
+
     //****************Valoracion
     public static ValorationDTO createValorationDTO(Integer userId, Integer postId, Integer valoration) {
         return new ValorationDTO(userId, postId, valoration);
     }
+
+    public static Post createPostWithValoration(Integer postId, Integer userId, Integer valoration) {
+        Post post = createPost(postId, userId);
+
+        Map<Integer, Integer> valorations = new HashMap<>();
+        valorations.put(userId, valoration); // el usuario valora el post
+
+        // Asignar el mapa al post
+        post.setValorations((HashMap<Integer, Integer>) valorations);
+        post.setPostId(postId); // aseguro que tenga el ID seteado
+
+        return post;
+    }
+
 
 }

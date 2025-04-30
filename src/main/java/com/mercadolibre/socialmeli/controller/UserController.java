@@ -22,12 +22,15 @@ public class UserController implements IUserController {
         this.userService = userService;
     }
 
+    // Permite que un usuario siga a otro. Recibe los IDs de ambos usuarios.
     @Override
     public ResponseEntity<Void> followUser(@PathVariable Integer userId, @PathVariable Integer userIdToFollow) {
         userService.followUser(userId, userIdToFollow);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // este metodo deberia retornarme un followedDTO con un followedDTO que contiene el id del vendedor,
+    // el nombre del vendedor, y una lista de sus seguidores.
     @Override
     public ResponseEntity<FollowedDto> getFollowed(@PathVariable Integer userId,
                                                    @RequestParam(value = "order", required = false) String order){
