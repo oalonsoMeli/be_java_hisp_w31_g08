@@ -1,4 +1,6 @@
 package com.mercadolibre.socialmeli.controller;
+import com.mercadolibre.socialmeli.dto.FollowedDto;
+import com.mercadolibre.socialmeli.dto.FollowerCountDto;
 import com.mercadolibre.socialmeli.dto.FollowersDto;
 import com.mercadolibre.socialmeli.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserController implements IUserController {
 
     private IUserService userService;
 
@@ -20,68 +22,34 @@ public class UserController {
         this.userService = userService;
     }
 
-    @Operation(
-            summary = "Seguir a un vendedor",
-            description = "Permite que un usuario siga a un vendedor determinado.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Follow exitoso"),
-            @ApiResponse(responseCode = "400", description = "Usuario no encontrado")})
-    @PostMapping("/{userId}/follow/{userIdToFollow}")
-    public ResponseEntity<?> followUser(@PathVariable Integer userId, @PathVariable Integer userIdToFollow) {
+    // Permite que un usuario siga a otro. Recibe los IDs de ambos usuarios.
+    @Override
+    public ResponseEntity<Void> followUser(@PathVariable Integer userId, @PathVariable Integer userIdToFollow) {
         userService.followUser(userId, userIdToFollow);
-        return  ResponseEntity.ok().build();
-
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(
-            summary = "Listado de todos los vendedores que sigue un usuario",
-            description = "Permite obtener  un listado de todos los vendedores a los cuales sigue un determinado usuario (¿A quién sigo?)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Se obtuvo la lista exitosamente"),
-            @ApiResponse(responseCode = "404", description = "Usuario no encontrado")})
-    @GetMapping ("/{userId}/followed/list")
-    public ResponseEntity<?> getFollowed(@PathVariable Integer userId,
-                                         @RequestParam(value = "order", required = false) String order){
+    // este metodo deberia retornarme un followedDTO con un followedDTO que contiene el id del vendedor,
+    // el nombre del vendedor, y una lista de sus seguidores.
+    @Override
+    public ResponseEntity<FollowedDto> getFollowed(@PathVariable Integer userId,
+                                                   @RequestParam(value = "order", required = false) String order){
         return new ResponseEntity<>(userService.searchFollowedSellers(userId,order), HttpStatus.OK);
     }
 
-    @Operation(
-            summary = "Cantidad de usuarios que siguen a un vendedor",
-            description = "Permite obtener el resultado de la cantidad de usuarios que siguen a un determinado vendedor"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Respuesta exitosa"),
-            @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
-    })
-    @GetMapping("/{userId}/followers/count")
-    public ResponseEntity<?> getFollowersCountByUserId(@PathVariable Integer userId){
+    @Override
+    public ResponseEntity<FollowerCountDto> getFollowersCountByUserId(@PathVariable Integer userId){
         return new ResponseEntity<>(this.userService.getFollowersCountByUserId(userId), HttpStatus.OK);
-
     }
 
-    @Operation(
-            summary = "Dejar de seguir a un vendedor",
-            description = "Permite que un usuario deje de seguir a un vendedor determinado."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Unfollow exitoso"),
-            @ApiResponse(responseCode = "404", description = "Usuario o vendedor no encontrado"),
-            @ApiResponse(responseCode = "400", description = "El usuario no seguía al vendedor")
-    })
-    @PutMapping("/{userId}/unfollow/{userIdToUnfollow}")
+    @Override
     public ResponseEntity<Void> unfollowUser(@PathVariable Integer userId,
                                              @PathVariable Integer userIdToUnfollow) {
         userService.unfollowUser(userId, userIdToUnfollow);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(
-            summary = "Listado de todos los usuarios que siguen a un vendedor",
-            description = "Obtener un listado de todos los usuarios que siguen a un determinado vendedor (¿Quién me sigue?)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Se obtuvo la lista exitosamente"),
-            @ApiResponse(responseCode = "404", description = "Usuario no encontrado")})
-    @GetMapping("/{userId}/followers/list")
+    @Override
     public ResponseEntity<FollowersDto> getFollowers(@PathVariable Integer userId,
                                                     @RequestParam(value = "order", required = false) String order){
         return new ResponseEntity<>(userService.getUserFollowers(userId,order), HttpStatus.OK);

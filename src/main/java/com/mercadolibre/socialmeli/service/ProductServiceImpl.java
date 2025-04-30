@@ -11,6 +11,7 @@ import com.mercadolibre.socialmeli.repository.IProductRepository;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
 import com.mercadolibre.socialmeli.exception.IllegalArgumentException;
 import com.mercadolibre.socialmeli.utilities.OrderType;
+import com.mercadolibre.socialmeli.utilities.PostMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,33 +34,32 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public void createPost(PostDto postDto) {
         validationUser(postDto.getUserId());
-        Post post = getPost(postDto);
-        if (postDto instanceof PromoPostDto promoPostDto) {
-            if (promoPostDto.getHasPromo() != null && promoPostDto.getHasPromo()) {
-                if (promoPostDto.getDiscount() == null || promoPostDto.getDiscount() <= 0 || promoPostDto.getDiscount() >= 1) {
-                    throw new BadRequestException("Descuento inválido.");
-                }
-                post.setDiscount(promoPostDto.getDiscount());
-                post.setHasPromo(true);
-            }
+        Post post = PostMapper.toPost(postDto);
+        if (isPromoActive(postDto)) {
+            applyPromotion((PromoPostDto) postDto, post);
         }
         productRepository.save(post);
+    }
+
+    private boolean isPromoActive(PostDto postDto) {
+        if (postDto instanceof PromoPostDto promo) {
+            return Boolean.TRUE.equals(promo.getHasPromo());
+        }
+        return false;
+    }
+
+    private void applyPromotion(PromoPostDto promoPostDto, Post post) {
+        Double discount = promoPostDto.getDiscount();
+        if (discount == null || discount <= 0 || discount >= 1) {
+            throw new BadRequestException("Descuento inválido.");
+        }
+        post.setDiscount(discount);
+        post.setHasPromo(true);
     }
 
     private User validationUser(Integer userId) {
         return userRepository.getUserById(userId)
                 .orElseThrow(() -> new BadRequestException("Usuario no encontrado."));
-    }
-
-    private Post getPost(PostDto postDto) {
-        ProductDto productDto = postDto.getProduct();
-        Product product = new Product( productDto.getProduct_id(), productDto.getProduct_name(), productDto.getType(),
-                productDto.getBrand(), productDto.getColor(), productDto.getNotes());
-        Post post = new Post(postDto.getUserId(), postDto.getDate(), product,
-                postDto.getCategory(), postDto.getPrice());
-        post.setPostId(countId);
-        countId++;
-        return post;
     }
 
     @Override
