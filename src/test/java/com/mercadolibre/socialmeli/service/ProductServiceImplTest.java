@@ -17,6 +17,7 @@ import com.mercadolibre.socialmeli.repository.IUserRepository;
 import com.mercadolibre.socialmeli.utilities.OrderType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,8 +27,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.util.*;
-
-import java.util.ArrayList;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,14 +40,18 @@ import static org.mockito.Mockito.when;
 class ProductServiceImplTest {
 
     @Mock
-    IUserRepository userRepository;
+    private IUserRepository userRepository;
 
     @Mock
-    IProductRepository productRepository;
+    private IProductRepository productRepository;
 
     @InjectMocks
-    ProductServiceImpl productService;
-    
+    private ProductServiceImpl productService;
+
+    private static final Integer DEFAULT_USER_ID = 1;
+
+    private User defaultUser;
+    private List<Post> defaultPostsFollowedUsers;
 
 
     @DisplayName("Verificar que el tipo de ordenamiento por fecha exista (US-0009) de forma ascendente")
@@ -111,18 +114,28 @@ class ProductServiceImplTest {
                 OrderType.ORDER_DATE_DESC.getValue()));
     }
 
+
+    @BeforeEach
+    void setUp() {
+        defaultUser = TestFactory.createUserFollowing(DEFAULT_USER_ID, 2, 3);
+        defaultPostsFollowedUsers = TestFactory.createPostsForFollowedUsers(2, 3);
+    }
+
+    private void mockUserAndPosts(String orderType) {
+        when(userRepository.getUserById(DEFAULT_USER_ID)).thenReturn(Optional.of(defaultUser));
+        when(productRepository.getPostsByUserIdsInLastTwoWeeks(anySet(), eq(orderType)))
+                .thenReturn(defaultPostsFollowedUsers);
+    }
+
     @Test
-    // US006 - Ordenamiento por fecha Desc Order
+        // US006 - Ordenamiento por fecha Desc Order
     void getListOfPublicationsByUser_shouldSortDescOrder() {
         // Arrange
-        Integer userId = 1;
-        User user = TestFactory.createUserFollowing(userId, 2, 3);
-        when(userRepository.getUserById(userId)).thenReturn(Optional.of(user));
-        List<Post> postsFollowedUsers = TestFactory.createPostsForFollowedUsers(2, 3);
-        when(productRepository.getPostsByUserIdsInLastTwoWeeks(anySet(), eq(OrderType.ORDER_DATE_DESC.getValue())))
-                .thenReturn(postsFollowedUsers);
+        mockUserAndPosts(OrderType.ORDER_DATE_DESC.getValue());
+
         // Act
-        PostsDto result = productService.getListOfPublicationsByUser(userId, OrderType.ORDER_DATE_DESC.getValue());
+        PostsDto result = productService.getListOfPublicationsByUser(DEFAULT_USER_ID, OrderType.ORDER_DATE_DESC.getValue());
+
         // Assert
         assertNotNull(result);
         assertEquals(2, result.getPosts().size());
@@ -131,17 +144,14 @@ class ProductServiceImplTest {
     }
 
     @Test
-    // US006 - Ordenamiento por fecha  Asc Order
+        // US006 - Ordenamiento por fecha Asc Order
     void getListOfPublicationsByUser_shouldSortAscOrder() {
         // Arrange
-        Integer userId = 1;
-        User user = TestFactory.createUserFollowing(userId, 2, 3);
-        when(userRepository.getUserById(userId)).thenReturn(Optional.of(user));
-        List<Post> postsFollowedUsers = TestFactory.createPostsForFollowedUsers(2, 3);
-        when(productRepository.getPostsByUserIdsInLastTwoWeeks(anySet(), eq(OrderType.ORDER_DATE_ASC.getValue())))
-                .thenReturn(postsFollowedUsers);
+        mockUserAndPosts(OrderType.ORDER_DATE_ASC.getValue());
+
         // Act
-        PostsDto result = productService.getListOfPublicationsByUser(userId, OrderType.ORDER_DATE_ASC.getValue());
+        PostsDto result = productService.getListOfPublicationsByUser(DEFAULT_USER_ID, OrderType.ORDER_DATE_ASC.getValue());
+
         // Assert
         assertNotNull(result);
         assertEquals(2, result.getPosts().size());
@@ -178,37 +188,35 @@ class ProductServiceImplTest {
     }
 
     @Test
-    // US008 - Excepción no hay publicaciones de quienes siguen
+        // US008 - Excepción no hay publicaciones de quienes siguen
     void getListOfPublicationsByUser_shouldThrowNotFoundWhenNoPosts() {
         // Arrange
-        Integer userId = 1;
-        User user = TestFactory.createUserFollowing(userId, 2, 3);
-        when(userRepository.getUserById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.getUserById(DEFAULT_USER_ID)).thenReturn(Optional.of(defaultUser));
         when(productRepository.getPostsByUserIdsInLastTwoWeeks(anySet(), anyString()))
                 .thenReturn(Collections.emptyList());
+
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> {
-            productService.getListOfPublicationsByUser(userId, OrderType.ORDER_DATE_DESC.getValue());
-        });
+        assertThrows(NotFoundException.class, () ->
+                productService.getListOfPublicationsByUser(DEFAULT_USER_ID, OrderType.ORDER_DATE_DESC.getValue())
+        );
     }
 
     @Test
-    // US008 - Lanza la exepción si el usuario no existe
+        // US008 - Lanza excepción si el usuario no existe
     void getListOfPublicationsByUser_shouldThrowExceptionWhenUserNotFound() {
         // Arrange
-        Integer userId = 1;
-        when(userRepository.getUserById(userId)).thenReturn(Optional.empty());
+        when(userRepository.getUserById(DEFAULT_USER_ID)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(BadRequestException.class, () -> {
-            productService.getListOfPublicationsByUser(userId, OrderType.ORDER_DATE_DESC.getValue());
-        });
+        assertThrows(BadRequestException.class, () ->
+                productService.getListOfPublicationsByUser(DEFAULT_USER_ID, OrderType.ORDER_DATE_DESC.getValue())
+        );
     }
 
     @Test
-    // US0014.2 - Devuelve solo las valoraciones que coinciden con el numero filtrado
+        // US0014.2 - Devuelve solo las valoraciones que coinciden con el número filtrado
     void getValorationsByPost_shouldReturnOnlyMatchingValorations() {
-        // Arrange - Post con valoraciones 5, 3, 5
+        // Arrange
         Post post = TestFactory.createPostWithValoration(10, 1, 5);
         post.getValorations().put(2, 3);
         post.getValorations().put(3, 5);
@@ -224,11 +232,10 @@ class ProductServiceImplTest {
     }
 
     @Test
-    // US0014.2 - Si ninguna valoracion coincide con el filtro, devuelve una lista vacia
+        // US0014.2 - Si ninguna valoración coincide con el filtro, devuelve lista vacía
     void getValorationsByPost_shouldReturnEmptyWhenNoMatchForValorationNumber() {
         // Arrange
         Post post = TestFactory.createPostWithValoration(30, 1, 3);
-
         when(productRepository.getPostsByPostId(30)).thenReturn(Optional.of(post));
 
         // Act
@@ -237,7 +244,6 @@ class ProductServiceImplTest {
         // Assert
         assertTrue(result.isEmpty());
     }
-
     @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor")
     @Test
     void getPromotionalProductsFromSellers(){
@@ -289,3 +295,4 @@ class ProductServiceImplTest {
     }
 
 }
+
