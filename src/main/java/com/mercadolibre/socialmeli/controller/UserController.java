@@ -28,6 +28,8 @@ public class UserController implements IUserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // este metodo deberia retornarme un followedDTO con un followedDTO que contiene el id del vendedor,
+    // el nombre del vendedor, y una lista de sus seguidores.
     @Override
     public ResponseEntity<FollowedDto> getFollowed(@PathVariable Integer userId,
                                                    @RequestParam(value = "order", required = false) String order){

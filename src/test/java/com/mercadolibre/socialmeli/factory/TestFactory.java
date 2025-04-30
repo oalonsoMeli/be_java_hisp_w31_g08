@@ -1,9 +1,6 @@
 package com.mercadolibre.socialmeli.factory;
 
-import com.mercadolibre.socialmeli.dto.PostDto;
-import com.mercadolibre.socialmeli.dto.ProductDto;
-import com.mercadolibre.socialmeli.dto.PromoPostDto;
-import com.mercadolibre.socialmeli.dto.ValorationDTO;
+import com.mercadolibre.socialmeli.dto.*;
 import com.mercadolibre.socialmeli.model.Post;
 import com.mercadolibre.socialmeli.model.Product;
 import com.mercadolibre.socialmeli.model.User;
@@ -27,11 +24,27 @@ public class TestFactory {
         return user;
     }
 
+    public static UserDto createUserDTO(Integer id) {
+        UserDto user = new UserDto();
+        user.setUser_id(id);
+        user.setUser_name("User" + id);
+        return user;
+    }
+
     public static User createUserWithFollow(Integer id, Integer followedId) {
         User user = createUser(id);
         user.getFollows().add(followedId);
         return user;
     }
+
+    public static User createUserFollowing(Integer userId, Integer... followedIds) {
+        User user = TestFactory.createUser(userId);
+        for (Integer followedId : followedIds) {
+            user.getFollows().add(followedId);
+        }
+        return user;
+    }
+
 
     //****************Product
     public static Product createProduct(Integer id) {
@@ -117,13 +130,6 @@ public class TestFactory {
         return dto;
     }
 
-    public static User createUserFollowing(Integer userId, Integer... followedIds) {
-        User user = TestFactory.createUser(userId);
-        for (Integer followedId : followedIds) {
-            user.getFollows().add(followedId);
-        }
-        return user;
-    }
 
     public static List<Post> createPostsForFollowedUsers(Integer... userIds) {
         List<Post> posts = new ArrayList<>();
