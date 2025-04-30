@@ -69,11 +69,27 @@ class UserRepositoryImplTest {
         assertTrue(result.isEmpty(), "Debe devolver vacio si el usuario no existe");
     }
 
+<<<<<<< HEAD
     // Devuelve el cálculo correcto del total de la cantidad de seguidores que posee un usuario.
     @Test
     void getAll_souldReturnAllUsers(){
         //Act
         List<User> result = repository.getAll();
+=======
+    // buscar por id de usuario debería devolverme el usuario si existe
+    @Test
+    void getUserById_shouldReturnUserIfExists() {
+        // Arrange
+        Integer userId = 1;
+
+        // Act
+        Optional<User> result = repository.getUserById(userId);
+
+        // Assert
+        assertTrue(result.isPresent(), "El usuario debería existir");
+        assertEquals("John Doe", result.get().getUserName());
+    }
+>>>>>>> develop
 
         //Assert
         assertNotNull(result);

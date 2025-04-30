@@ -22,6 +22,7 @@ public class UserController implements IUserController {
         this.userService = userService;
     }
 
+    // Permite que un usuario siga a otro. Recibe los IDs de ambos usuarios.
     @Override
     public ResponseEntity<Void> followUser(@PathVariable Integer userId, @PathVariable Integer userIdToFollow) {
         userService.followUser(userId, userIdToFollow);

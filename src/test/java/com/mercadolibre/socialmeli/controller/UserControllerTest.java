@@ -7,10 +7,7 @@ import com.mercadolibre.socialmeli.dto.UserDto;
 import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.factory.TestFactory;
-import com.mercadolibre.socialmeli.model.User;
-import com.mercadolibre.socialmeli.repository.IUserRepository;
 import com.mercadolibre.socialmeli.service.IUserService;
-import com.mercadolibre.socialmeli.service.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,21 +15,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
+
+
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -222,5 +214,33 @@ class UserControllerTest {
         assertThrows(NotFoundException.class, () -> {
             controller.getFollowersCountByUserId(userId);
         });
+    }
+
+    // T-0001 - Test de Controller: seguir usuario con éxito
+    @Test
+    void followUser_shouldReturnOkWhenFollowSuccess() throws Exception {
+
+        // Act
+        ResponseEntity<Void> response = controller.followUser(1, 2);
+
+        // Assert
+        Mockito.verify(service).followUser(1, 2);
+        Assertions.assertEquals(200, response.getStatusCodeValue());
+    }
+
+
+    // T-0001 - Test de Controller: el usuario a seguir no existe
+    @Test
+    void followUser_shouldReturnBadRequestWhenUserToFollowDoesNotExist() throws Exception {
+        // Arrange
+        Mockito.doThrow(new BadRequestException("Usuario no encontrado"))
+                .when(service).followUser(1, 2);
+
+        // Act & Assert
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            controller.followUser(1, 2);
+        });
+
+        Mockito.verify(service).followUser(1, 2);
     }
 }

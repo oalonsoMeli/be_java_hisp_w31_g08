@@ -229,6 +229,7 @@ class UserServiceImplTest {
         });
     }
 
+<<<<<<< HEAD
     // T-0007 - US0002: Verificar que la cantidad de seguidores de un determinado usuario sea correcta.
     @Test
     void  getFollowersCountByUserId_shouldReturnCountFollowers(){
@@ -269,5 +270,115 @@ class UserServiceImplTest {
         assertNotNull(result);
         assertEquals(1, result.getUser_id());
         assertEquals(0, result.getFollowers_count());
+=======
+
+    @Test
+    // T-0001 - US0001 : Verifica que el usuario a seguir exista y se pueda seguir correctamente
+    void followUser_shouldAddFollowingSuccessfully_whenUserToFollowExists() {
+        // Arrange
+        User follower = TestFactory.createUser(1);
+        User toFollow = TestFactory.createUser(2);
+
+        when(repository.getUserById(1)).thenReturn(Optional.of(follower));
+        when(repository.getUserById(2)).thenReturn(Optional.of(toFollow));
+
+        // Act
+        service.followUser(1, 2);
+
+        // Assert
+        assertTrue(follower.getFollows().contains(2), "El ID del usuario seguido debe estar en la lista");
+    }
+
+
+    @Test
+    // T-0001 - US0001 Verifica que se lance excepción cuando el usuario a seguir no existe
+    void followUser_shouldThrowException_whenUserToFollowDoesNotExist() {
+        // Arrange
+        User follower = TestFactory.createUser(1);
+
+        when(repository.getUserById(1)).thenReturn(Optional.of(follower));
+        when(repository.getUserById(2)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> {
+            service.followUser(1, 2);
+        });
+    }
+
+
+
+    @Test
+    // T-0001 - US0001 Caso borde: Verifica que se lance una excepción cuando el userId sea nulo
+    void followUser_shouldThrowException_whenUserIdIsNull() {
+        assertThrows(BadRequestException.class, () -> {
+            service.followUser(null, 2);
+        });
+    }
+
+    @Test
+    // T-0001 - US0001 Caso borde: Verifica que se lance una excepción cuando el userIdToFollow sea nulo
+    void followUser_shouldThrowException_whenUserToFollowIdIsNull() {
+
+        assertThrows(BadRequestException.class, () -> {
+            service.followUser(1, null);
+        });
+    }
+
+
+
+    @Test
+    // T-0001 - US0001 Caso borde: Verifica que no se permita seguir a un usuario que ya está en la lista de seguidos
+    void followUser_shouldNotAddDuplicateFollow() {
+        // Arrange
+        User follower = TestFactory.createUser(1);
+        User toFollow = TestFactory.createUser(2);
+        follower.getFollows().add(2);
+
+        when(repository.getUserById(1)).thenReturn(Optional.of(follower));
+        when(repository.getUserById(2)).thenReturn(Optional.of(toFollow));
+
+        // Act
+        service.followUser(1, 2);
+
+        // Assert
+        assertEquals(1, follower.getFollows().size(), "El usuario no debe ser seguido más de una vez.");
+    }
+
+    @Test
+    // T-0001 - US0001  Caso borde: Verifica que se lance una excepción cuando no se encuentra al usuario a seguir
+    void followUser_shouldThrowException_whenUserNotFound() {
+        // Arrange
+        when(repository.getUserById(1)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> {
+            service.followUser(1, 2);
+        });
+    }
+
+    @Test
+    // T-0001 - US0001  Caso borde: Verifica que el usuario puede seguir correctamente a otro usuario cuando todo está bien
+    void followUser_shouldAddFollowingSuccessfully_whenEverythingIsValid() {
+        // Arrange
+        User follower = TestFactory.createUser(1);
+        User toFollow = TestFactory.createUser(2);
+
+        when(repository.getUserById(1)).thenReturn(Optional.of(follower));
+        when(repository.getUserById(2)).thenReturn(Optional.of(toFollow));
+
+        // Act
+        service.followUser(1, 2);
+
+        // Assert
+        assertTrue(follower.getFollows().contains(2), "El ID del usuario seguido debe estar en la lista");
+>>>>>>> develop
     }
 }
+
+
+
+
+
+
+
+

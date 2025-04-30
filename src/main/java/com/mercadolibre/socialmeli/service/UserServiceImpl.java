@@ -30,11 +30,15 @@ public class UserServiceImpl implements IUserService {
 
     @Override
 
+    // Sigue a otro usuario
+
     public void followUser(Integer userId, Integer userIdToFollow) {
         Optional<User> userOptional = getUser(userId, userIdToFollow);
         User user =  userOptional.get();
             user.getFollows().add(userIdToFollow);
         }
+
+    // Obtiene los usuarios a partir de sus IDs
 
     private Optional<User> getUser(Integer userId, Integer userIdToFollow) {
         Optional<User> userOptional = this.userRepository.getUserById(userId);
