@@ -1,17 +1,20 @@
 package com.mercadolibre.socialmeli.service;
 
 import com.mercadolibre.socialmeli.dto.FollowedDto;
+import com.mercadolibre.socialmeli.dto.FollowerCountDto;
 import com.mercadolibre.socialmeli.dto.FollowersDto;
 import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
+import com.mercadolibre.socialmeli.repository.UserRepositoryImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
@@ -29,6 +32,10 @@ class UserServiceImplTest {
 
     @InjectMocks
     UserServiceImpl service;
+    @Autowired
+    private UserRepositoryImpl userRepositoryImpl;
+    @Autowired
+    private UserServiceImpl userServiceImpl;
 
 
     // T-0003 - US0008: Verifica que exista la lista al obtener los seguidores de un vendedor de manera ASC.
@@ -128,7 +135,7 @@ class UserServiceImplTest {
         });
     }
 
-    // T-0003 - US0008: Verifica que se lance una excepcion si se busca vendedores con id inexistentes
+    // T-0003 - US0008: Verifica que se lance una excepcion si se busca vendedores con id inexistentes.
     @Test
     void searchFollowedSellers_withFollowedUsersIdInexistent_shouldReturnAnException() {
         // Arrange
@@ -155,7 +162,7 @@ class UserServiceImplTest {
         });
     }
 
-    // T-0003 - US0008: Verifica que se lance una excepcion si se busca usuarios con id inexistentes
+    // T-0003 - US0008: Verifica que se lance una excepcion si se busca usuarios con id inexistentes.
     @Test
     void searchFollowersUsers_withFollowedUsersIdInexistent_shouldReturnAnException() {
         // Arrange
@@ -171,7 +178,7 @@ class UserServiceImplTest {
 
 
     @Test
-    // T-0002 - US0007: Verifica que se lance una excepcion cuando el usuario a dejar de seguir no existe
+    // T-0002 - US0007: Verifica que se lance una excepcion cuando el usuario a dejar de seguir no existe.
     void unfollowUser_shouldThrowExceptionWhenUserToUnfollowDoesNotExist() {
         // Arrange
         User user = com.mercadolibre.socialmeli.factory.TestFactory.createUserWithFollow(1, 2);
@@ -186,7 +193,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    // T-0002 - US0007: Verifica que se elimine el usuario a dejar de seguir cuando existe y esta en la lista
+    // T-0002 - US0007: Verifica que se elimine el usuario a dejar de seguir cuando existe y esta en la lista.
     void unfollowUser_shouldRemoveUserSuccessfully() {
         // Arrange
         User user = com.mercadolibre.socialmeli.factory.TestFactory.createUserWithFollow(1, 2);
@@ -200,8 +207,8 @@ class UserServiceImplTest {
     }
 
     @Test
-    // T002 - US0007: Caso borde - el usuario existe pero no sigue a nadie
-    // Al intentar dejar de seguir, deberia lanzar excepcion por no encontrar la relacion
+    // T002 - US0007: Caso borde - el usuario existe pero no sigue a nadie.
+    // Al intentar dejar de seguir, debería lanzar excepcion por no encontrar la relación.
     void unfollowUser_shouldThrowWhenUserHasNoFollowings() {
         User user = TestFactory.createUser(1);
         User target = TestFactory.createUser(2);
@@ -215,11 +222,52 @@ class UserServiceImplTest {
     }
 
     @Test
-    // T002 - US0007: Caso borde - IDs invalidos que deberían provocar una excepcion
+    // T002 - US0007: Caso borde - IDs invalidos que deberían provocar una excepcion.
     void unfollowUser_shouldThrowWhenUserIdIsNull() {
         assertThrows(BadRequestException.class, () -> {
             service.unfollowUser(null, 2);
         });
     }
 
+    // T-0007 - US0002: Verificar que la cantidad de seguidores de un determinado usuario sea correcta.
+    @Test
+    void  getFollowersCountByUserId_shouldReturnCountFollowers(){
+        // Arrange
+        User followedUser = TestFactory.createUser(1);
+        User follower1 = TestFactory.createUserFollowing(2, 1);
+        User follower2 = TestFactory.createUserFollowing(3, 1);
+
+        List<User> allUsers = List.of(followedUser, follower1, follower2);
+
+        when(repository.getUserById(1)).thenReturn(Optional.of(followedUser));
+        when(repository.getAll()).thenReturn(allUsers);
+
+        //Act
+        FollowerCountDto result = service.getFollowersCountByUserId(1);
+
+        //Assert
+        assertNotNull(result);
+        assertEquals(1, result.getUser_id());
+        assertEquals(2, result.getFollowers_count());
+    }
+
+    // T-0007 - US0002: Verifica que no tenga ningún seguidor.
+    @Test
+    void  getFollowersCountByUserId_shouldReturnNonFollowers(){
+        // Arrange
+        User followedUser = TestFactory.createUser(1);
+
+        List<User> allUsers = List.of(followedUser);
+
+        when(repository.getUserById(1)).thenReturn(Optional.of(followedUser));
+        when(repository.getAll()).thenReturn(allUsers);
+
+        //Act
+        FollowerCountDto result = service.getFollowersCountByUserId(1);
+
+        //Assert
+        assertNotNull(result);
+        assertEquals(1, result.getUser_id());
+        assertEquals(0, result.getFollowers_count());
+    }
 }

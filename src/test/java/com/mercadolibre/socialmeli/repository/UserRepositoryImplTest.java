@@ -18,12 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class UserRepositoryImplTest {
 
-    // crear los usuarios para que se reutilicen en los test
+    // Crear los usuarios para que se reutilicen en los test.
     private IUserRepository repository;
     private User userExpected1;
     private User userExpected2;
 
-    // beforeEach para que cada test sea independiente del otro
+    // beforeEach para que cada test sea independiente del otro.
     @BeforeEach
     public void init () throws IOException {
         repository = new UserRepositoryImpl();
@@ -32,7 +32,7 @@ class UserRepositoryImplTest {
         userExpected2 = repository.getUserById(2).orElseThrow();
     }
 
-    // al pasarle los ids de usuarios, debería devolverme aquellos usuarios con ese id
+    // Al pasarle los ids de usuarios, debería devolverme aquellos usuarios con ese id.
     @Test
     void findUsersById_shouldReturnListOfUsers() {
         // Arrange
@@ -47,7 +47,7 @@ class UserRepositoryImplTest {
     }
 
 
-    // Buscar por id de usuario debería retornarme el usuario que busco y no estar vacío
+    // Buscar por id de usuario debería retornarme el usuario que busco y no estar vacío.
     @Test
     void getUserById_shoulReturnUser() {
         // Arrange
@@ -60,7 +60,7 @@ class UserRepositoryImplTest {
         assertEquals(nameExpected, user.getUserName());
     }
 
-    // Verifica el comportamiento esperado cuando se consulta un usuario que NO existe
+    // Verifica el comportamiento esperado cuando se consulta un usuario que NO existe.
     @Test
     void getUserById_shouldReturnEmptyWhenUserDoesNotExist() {
         // Act
@@ -69,6 +69,17 @@ class UserRepositoryImplTest {
         assertTrue(result.isEmpty(), "Debe devolver vacio si el usuario no existe");
     }
 
+    // Devuelve el cálculo correcto del total de la cantidad de seguidores que posee un usuario.
+    @Test
+    void getAll_souldReturnAllUsers(){
+        //Act
+        List<User> result = repository.getAll();
 
+        //Assert
+        assertNotNull(result);
+        assertTrue(result.contains(userExpected1));
+        assertTrue(result.contains(userExpected2));
+        assertEquals(100, result.size());
+    }
 
 }

@@ -72,6 +72,7 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
+    // Cuenta la cantidad de seguidores que tiene derteminado usuario.
     public FollowerCountDto getFollowersCountByUserId(Integer userId) {
         User user = this.userRepository.getUserById(userId).orElseThrow(
                 () -> new NotFoundException("Usuario no encontrado."));
