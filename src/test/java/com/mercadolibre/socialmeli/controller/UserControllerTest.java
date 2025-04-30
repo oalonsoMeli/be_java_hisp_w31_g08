@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
@@ -20,6 +21,30 @@ public class UserControllerTest {
 
     @MockBean
     private IUserService userService;
+
+
+    // T-0001 - Test de Controller: seguir usuario con éxito
+    @Test
+    void followUser_shouldReturnOkWhenFollowSuccess() throws Exception {
+
+        mockMvc.perform(post("/users/1/follow/2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+
+    // T-0001 - Test de Controller: el usuario a seguir no existe
+    @Test
+    void followUser_shouldReturnBadRequestWhenUserToFollowDoesNotExist() throws Exception {
+        doThrow(new BadRequestException("Usuario a seguir no encontrado"))
+                .when(userService).followUser(1, 2);
+
+        mockMvc.perform(post("/users/1/follow/2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+
 
     @Test
     // T-0002 - Test de Controller: el usuario a dejar de seguir no existe
