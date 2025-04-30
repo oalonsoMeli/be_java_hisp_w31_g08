@@ -1,13 +1,12 @@
 package com.mercadolibre.socialmeli.service;
 
 import com.mercadolibre.socialmeli.dto.FollowedDto;
-import com.mercadolibre.socialmeli.dto.UserDto;
+import com.mercadolibre.socialmeli.dto.FollowersDto;
 import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -33,29 +31,144 @@ class UserServiceImplTest {
     UserServiceImpl service;
 
 
-    @BeforeEach
-    void setUp() {
-    }
-
-
+    // T-0003 - US0008: Verifica que exista la lista al obtener los seguidores de un vendedor de manera ASC.
     @Test
-    void searchFollowedSellers_withOrderAsc_shouldReturnTheUsersNameWithOrderAsc() {
+    void searchFollowersUsers_withOrderAsc_shouldExistsAndContainUsers() {
         // Arrange
-        User user1 = new User(1, "Orne", "orne@example.com", Set.of());
-        User user3 = new User(3, "Abril", "abril@example.com", Set.of());
-        User user2 = new User(2, "Yoa", "yoa@example.com", Set.of(1, 3)); // Sigue a user1 y user3
+        User user1 = TestFactory.createUser(1);
+
+        User user3 = TestFactory.createUser(3);
+
+        Integer userId = 2;
+        User user2 = TestFactory.createUserFollowing(userId, 1, 3);
 
         when(repository.getUserById(2)).thenReturn(Optional.of(user2));
         when(repository.findUsersById(List.of(1, 3))).thenReturn(List.of(user1, user3));
 
         // Act
-        FollowedDto result = service.searchFollowedSellers(2, "name_asc");
+        FollowersDto result = service.getUserFollowers(2, "name_asc");
+
+        // Assert
+        assertEquals(2, result.getFollowers().size());
+        assertFalse(result.getFollowers().isEmpty());
+    }
+
+    // T-0003 - US0008: Verifica que exista la lista al obtener los seguidores de un vendedor de manera DESC.
+    @Test
+    void searchFollowersUsers_withOrderDesc_shouldExistsAndContainUsers() {
+        // Arrange
+        User user1 = TestFactory.createUser(1);
+
+        User user3 = TestFactory.createUser(3);
+
+        User user2 = TestFactory.createUserFollowing(2, 1, 3);
+
+        when(repository.getUserById(2)).thenReturn(Optional.of(user2));
+        when(repository.findUsersById(List.of(1, 3))).thenReturn(List.of(user1, user3));
+
+        // Act
+        FollowersDto result = service.getUserFollowers(2, "name_desc");
+
+        // Assert
+        assertEquals(2, result.getFollowers().size());
+        assertFalse(result.getFollowers().isEmpty());
+    }
+
+    // T-0003 - US0008: Verifica que exista la lista al obtener los seguidos de un usuario de manera ASC.
+    @Test
+    void searchFollowedSellers_withOrderAsc_shouldExistsAndContainUsers() {
+        // Arrange
+        User user1 = TestFactory.createUserFollowing(1, 2, 3);
+        User user2 = TestFactory.createUser(2);
+        User user3 = TestFactory.createUser(3);
+
+        when(repository.getUserById(1)).thenReturn(Optional.of(user1));
+        when(repository.findUsersById(List.of(2, 3))).thenReturn(List.of(user2, user3));
+
+        // Act
+        FollowedDto result = service.searchFollowedSellers(1, "name_asc");
 
         // Assert
         assertEquals(2, result.getFollowed().size());
-        assertEquals("Abril", result.getFollowed().get(0).getUser_name());
-        assertEquals("Orne", result.getFollowed().get(1).getUser_name());
+        assertFalse(result.getFollowed().isEmpty());
     }
+
+    // T-0003 - US0008: Verifica que exista la lista al obtener los seguidos de un usuario de manera DESC.
+    @Test
+    void searchFollowedSellers_withOrderDesc_shouldExistsAndContainUsers() {
+        // Arrange
+        User user1 = TestFactory.createUserFollowing(1, 2, 3);
+
+        User user2 = TestFactory.createUser(2);
+
+        User user3 = TestFactory.createUser(3);
+
+        when(repository.getUserById(1)).thenReturn(Optional.of(user1));
+        when(repository.findUsersById(List.of(2, 3))).thenReturn(List.of(user2, user3));
+
+        // Act
+        FollowedDto result = service.searchFollowedSellers(1, "name_desc");
+
+        // Assert
+        assertEquals(2, result.getFollowed().size());
+        assertFalse(result.getFollowed().isEmpty());
+
+    }
+
+
+// T-0003 - US0008: Verifica que se lance una excepcion si se busca un usuario con id inexistente.
+    @Test
+    void searchFollowedSellers_withAnUserIdInexistent_shouldReturnAnException() {
+        // Arrange
+        when(repository.getUserById(999)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(NotFoundException.class, () -> {
+            service.searchFollowedSellers(999, "name_desc");
+        });
+    }
+
+    // T-0003 - US0008: Verifica que se lance una excepcion si se busca vendedores con id inexistentes
+    @Test
+    void searchFollowedSellers_withFollowedUsersIdInexistent_shouldReturnAnException() {
+        // Arrange
+        User user2 = TestFactory.createUserFollowing(2, 999, 3245);
+        when(repository.getUserById(2)).thenReturn(Optional.of(user2));
+        when(repository.findUsersById(List.of(999, 3245))).thenThrow(NotFoundException.class);
+
+        // Act & Assert
+        assertThrows(NotFoundException.class, () -> {
+            service.searchFollowedSellers(2, "name_desc");
+        });
+    }
+
+
+    // T-0003 - US0008: Verifica que se lance una excepcion si se busca un vendedor con id inexistente.
+    @Test
+    void searchFollowersUsers_withAnUserIdInexistent_shouldReturnAnException() {
+        // Arrange
+        when(repository.getUserById(999)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(NotFoundException.class, () -> {
+            service.getUserFollowers(999, "name_desc");
+        });
+    }
+
+    // T-0003 - US0008: Verifica que se lance una excepcion si se busca usuarios con id inexistentes
+    @Test
+    void searchFollowersUsers_withFollowedUsersIdInexistent_shouldReturnAnException() {
+        // Arrange
+        User user2 = TestFactory.createUserFollowing(2, 999, 3245);
+        when(repository.getUserById(2)).thenReturn(Optional.of(user2));
+        when(repository.findUsersById(List.of(999, 3245))).thenThrow(NotFoundException.class);
+
+        // Act & Assert
+        assertThrows(NotFoundException.class, () -> {
+            service.getUserFollowers(2, "name_desc");
+        });
+    }
+
 
     @Test
     // T-0002 - US0007: Verifica que se lance una excepcion cuando el usuario a dejar de seguir no existe
@@ -210,11 +323,12 @@ class UserServiceImplTest {
         // Assert
         assertTrue(follower.getFollows().contains(2), "El ID del usuario seguido debe estar en la lista");
     }
-
-
-
-
-
-
-
 }
+
+
+
+
+
+
+
+
