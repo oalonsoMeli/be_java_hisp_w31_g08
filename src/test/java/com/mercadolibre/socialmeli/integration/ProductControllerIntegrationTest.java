@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -44,7 +45,7 @@ public class ProductControllerIntegrationTest {
     private Integer userId;
     private User user;
     private List<Post> postsFollowedUsers;
-    private Post post1, post2, post3;
+    private Post post1, post2, post3, post4;
 
     @BeforeEach
     void setUp() {
@@ -71,10 +72,18 @@ public class ProductControllerIntegrationTest {
         post1 = TestFactory.createPost(1, 2, LocalDate.now().minusWeeks(1));
         post2 = TestFactory.createPost(2, 2, LocalDate.now().minusDays(5));
         post3 = TestFactory.createPost(3, 3, LocalDate.now().minusDays(3));
+        post4 = TestFactory.createPost(4, 1, LocalDate.now().minusWeeks(1));
         productRepository.save(post1);
         productRepository.save(post2);
         productRepository.save(post3);
         postsFollowedUsers = List.of(post1, post2, post3);
+        //
+        productRepository.save(post4);
+        post4.getProduct().setProductName("Lavadora");
+        HashMap<Integer, Integer> valorations = new HashMap<>();
+        valorations.put(1, 5);
+        valorations.put(2, 3);
+        post4.setValorations(valorations);
     }
 
     private PostsDto performGetPosts(Integer userId, String order) throws Exception {
@@ -152,6 +161,31 @@ public class ProductControllerIntegrationTest {
         assertTrue(postsDto.getPosts().stream()
                         .anyMatch(post -> post.getDate().isEqual(LocalDate.now().minusWeeks(2))),
                 "The post created exactly two weeks ago should be included.");
+    }
+
+    /*
+     * Test de integración del endpoint /products/{post_id}/valorations/average
+     * T-0016 (US-0016) Verifica que devuelva el average esperado
+     */
+    @Test
+    void getValorationsByPost_shouldReturnTheAverageExpected() throws Exception {
+        mockMvc.perform(get("/products/{post_id}/valorations/average", 4)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.average").value(4.0));
+    }
+
+    /*
+     * Test de integración del endpoint /products/{post_id}/valorations/average
+     * T-0016 (US-0016) Verifica que devuelva excepción si el id no existe
+     */
+    @Test
+    void getValorationsByPost_withIdInexistent_shoulReturnNotFound() throws Exception {
+        mockMvc.perform(get("/products/{post_id}/valorations/average", 32141)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
 
