@@ -1,18 +1,26 @@
 package com.mercadolibre.socialmeli.repository;
 
+import com.mercadolibre.socialmeli.dto.PostsDto;
 import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.Post;
+import com.mercadolibre.socialmeli.model.User;
+import com.mercadolibre.socialmeli.utilities.OrderType;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.mercadolibre.socialmeli.utilities.OrderType.ORDER_DATE_ASC;
 import static com.mercadolibre.socialmeli.utilities.OrderType.ORDER_DATE_DESC;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class ProductRepositoryImplTest {
@@ -66,6 +74,65 @@ class ProductRepositoryImplTest {
             assertTrue(current.isBefore(next) || current.isEqual(next),
                     "Posts are not sorted in descending order: " + current + " vs " + next);
         }
+    }
+
+    @DisplayName("Verificar que el tipo de ordenamiento por fecha exista (US-0009) de forma ascendente")
+    @Test
+    void getListOfPublicationsByUser_verifyDateSortTypeExistsAsc() {
+        //Arrange
+        User user = TestFactory.createUser(5);
+        Post post1 = TestFactory.createPost(10,5);
+        Post post2 = TestFactory.createPost(11,5);
+        this.productRepository.save(post1);
+        this.productRepository.save(post2);
+
+        Set<Integer> listIds = Set.of(user.getUserId());
+
+        //Act
+        List<Post> posts = this.productRepository.getPostsByUserIdsInLastTwoWeeks(
+                listIds, OrderType.ORDER_DATE_ASC.getValue());
+
+        //Assert
+        Assertions.assertEquals(2,posts.size());
+    }
+
+    @DisplayName("Verificar que el tipo de ordenamiento por fecha exista (US-0009) de forma descendente")
+    @Test
+    void getListOfPublicationsByUser_verifyDateSortTypeExistsDesc() {
+        //Arrange
+        User user = TestFactory.createUser(5);
+        Post post1 = TestFactory.createPost(10,5);
+        Post post2 = TestFactory.createPost(11,5);
+        this.productRepository.save(post1);
+        this.productRepository.save(post2);
+
+        Set<Integer> listIds = Set.of(user.getUserId());
+
+        //Act
+        List<Post> posts = this.productRepository.getPostsByUserIdsInLastTwoWeeks(
+                listIds, OrderType.ORDER_DATE_DESC.getValue());
+
+        //Assert
+        Assertions.assertEquals(2,posts.size());
+    }
+
+    @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor")
+    @Test
+    void getPromotionalProductsFromSellers() {
+        //Arrange
+        User user = TestFactory.createUser(5);
+        Post post1 = TestFactory.createPostWithPromo(10,5,5D);
+        Post post2 = TestFactory.createPostWithPromo(11,5,5D);
+
+        this.productRepository.save(post1);
+        this.productRepository.save(post2);
+
+        //Act
+        List<Post> postList = this.productRepository.
+                getPromotionalProductsFromSellers(user.getUserId());
+
+        //Assert
+        Assertions.assertEquals(2,postList.size());
     }
 
 }

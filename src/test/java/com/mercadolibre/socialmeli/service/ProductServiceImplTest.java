@@ -1,5 +1,7 @@
 package com.mercadolibre.socialmeli.service;
 import com.mercadolibre.socialmeli.dto.PostsDto;
+import com.mercadolibre.socialmeli.dto.PromoProductsDto;
+import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.exception.IllegalArgumentException;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.dto.ValorationDTO;
@@ -17,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.Assert;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -172,6 +176,56 @@ class ProductServiceImplTest {
 
         // Assert
         assertTrue(result.isEmpty());
+    }
+
+    @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor")
+    @Test
+    void getPromotionalProductsFromSellers(){
+        //Arrange
+        User user = TestFactory.createUser(1);
+        List<Post> postList = TestFactory.createPostList(5,1);
+        when(this.userRepository.getUserById(anyInt())).thenReturn(Optional.of(user));
+        when(this.productRepository.getPromotionalProductsFromSellers(anyInt())).
+                thenReturn(postList);
+
+        //Act
+        PromoProductsDto promoProductsDto = this.productService.
+                getPromotionalProductsFromSellers(user.getUserId());
+
+        //Assert
+        assertEquals(5,promoProductsDto.getPromoPostDtoList().size());
+    }
+
+    @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor" +
+            "Usuario no encontrado")
+    @Test
+    void getPromotionalProductsFromSellersUserNotFound(){
+        //Arrange
+        User user = TestFactory.createUser(1);
+        when(this.userRepository.getUserById(anyInt())).thenThrow(BadRequestException.class);
+
+        //Act y Assert
+        assertThrows(BadRequestException.class,()->this.productService.
+                getPromotionalProductsFromSellers(user.getUserId()));
+    }
+
+    @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor. - No tiene promo")
+    @Test
+    void getPromotionalProductsFromSellersNotPromo() {
+        //Arrange
+        User user = TestFactory.createUser(5);
+        Post post1 = TestFactory.createPost(10,5);
+        Post post2 = TestFactory.createPost(11,5);
+
+        this.productRepository.save(post1);
+        this.productRepository.save(post2);
+
+        //Act
+        List<Post> postList = this.productRepository.
+                getPromotionalProductsFromSellers(user.getUserId());
+
+        //Assert
+        Assertions.assertEquals(0,postList.size());
     }
 
 }
