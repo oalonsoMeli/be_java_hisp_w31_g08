@@ -47,7 +47,11 @@ class ProductServiceImplTest {
 
     @InjectMocks
     private ProductServiceImpl productService;
-    
+
+    private static final Integer DEFAULT_USER_ID = 1;
+
+    private User defaultUser;
+    private List<Post> defaultPostsFollowedUsers;
 
 
     @DisplayName("Verificar que el tipo de ordenamiento por fecha exista (US-0009) de forma ascendente")
@@ -109,10 +113,7 @@ class ProductServiceImplTest {
         Assertions.assertThrows(NotFoundException.class, ()-> this.productService.getListOfPublicationsByUser(user.getUserId(),
                 OrderType.ORDER_DATE_DESC.getValue()));
     }
-    private static final Integer DEFAULT_USER_ID = 1;
 
-    private User defaultUser;
-    private List<Post> defaultPostsFollowedUsers;
 
     @BeforeEach
     void setUp() {
