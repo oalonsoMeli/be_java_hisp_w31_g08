@@ -10,6 +10,8 @@ import com.mercadolibre.socialmeli.dto.FollowerCountDto;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -47,8 +49,9 @@ public class UserServiceImpl implements IUserService {
         ObjectMapper mapper = new ObjectMapper();
         User user = this.userRepository.getUserById(userId).orElseThrow(
                 () -> new NotFoundException("Usuario no encontrado."));
-        List<User> userFollowed = userRepository.findUsersById(
-               user.getFollows().stream().toList());
+        List<User> userFollowed = new ArrayList<>(userRepository.findUsersById(
+                new ArrayList<>(user.getFollows())));
+
         orderByName(order, userFollowed);
         List<UserDto> userDtos = userFollowed.stream()
                 .map(uf -> new UserDto(uf.getUserId(), uf.getUserName()))
