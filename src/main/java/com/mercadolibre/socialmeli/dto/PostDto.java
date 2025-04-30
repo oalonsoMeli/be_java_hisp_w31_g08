@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -45,4 +44,7 @@ public class PostDto {
     @Min(value = 0, message = "El producto no puede tener un precio negativo")
     @Max(value = 10000000, message = "El precio máximo por producto es de 10.000.000")
     private Double price;
+
+    public PostDto(Integer userId, LocalDate now, ProductDto productDto, int i, double v) {
+    }
 }
