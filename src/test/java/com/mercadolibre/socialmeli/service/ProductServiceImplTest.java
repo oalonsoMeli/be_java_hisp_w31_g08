@@ -2,6 +2,9 @@ package com.mercadolibre.socialmeli.service;
 
 import com.mercadolibre.socialmeli.dto.PostsDto;
 import com.mercadolibre.socialmeli.dto.ValorationAverageDto;
+
+import com.mercadolibre.socialmeli.dto.ValorationDTO;
+
 import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.factory.TestFactory;
@@ -19,10 +22,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -40,6 +45,7 @@ class ProductServiceImplTest {
 
 
     @Test
+    // US006 - Ordenamiento por fecha Desc Order
     void getListOfPublicationsByUser_shouldSortDescOrder() {
         // Arrange
         Integer userId = 1;
@@ -58,6 +64,7 @@ class ProductServiceImplTest {
     }
 
     @Test
+    // US006 - Ordenamiento por fecha  Asc Order
     void getListOfPublicationsByUser_shouldSortAscOrder() {
         // Arrange
         Integer userId = 1;
@@ -74,6 +81,7 @@ class ProductServiceImplTest {
         assertTrue(result.getPosts().get(0).getDate().isBefore(result.getPosts().get(1).getDate())
                 || result.getPosts().get(0).getDate().isEqual(result.getPosts().get(1).getDate()));
     }
+
 
     // T-00016 - US0016: Verifica que calcule el promedio de las valoraciones de un post.
     @Test
@@ -101,4 +109,66 @@ class ProductServiceImplTest {
         when(productRepository.getPostsByPostId(9999)).thenReturn(Optional.empty());
         assertThrows(BadRequestException.class, () ->  productService.getValorationsAverageByPost(9999));
     }
+
+    @Test
+    // US008 - Excepción no hay publicaciones de quienes siguen
+    void getListOfPublicationsByUser_shouldThrowNotFoundWhenNoPosts() {
+        // Arrange
+        Integer userId = 1;
+        User user = TestFactory.createUserFollowing(userId, 2, 3);
+        when(userRepository.getUserById(userId)).thenReturn(Optional.of(user));
+        when(productRepository.getPostsByUserIdsInLastTwoWeeks(anySet(), anyString()))
+                .thenReturn(Collections.emptyList());
+        // Act & Assert
+        assertThrows(NotFoundException.class, () -> {
+            productService.getListOfPublicationsByUser(userId, OrderType.ORDER_DATE_DESC.getValue());
+        });
+    }
+
+    @Test
+    // US008 - Lanza la exepción si el usuario no existe
+    void getListOfPublicationsByUser_shouldThrowExceptionWhenUserNotFound() {
+        // Arrange
+        Integer userId = 1;
+        when(userRepository.getUserById(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> {
+            productService.getListOfPublicationsByUser(userId, OrderType.ORDER_DATE_DESC.getValue());
+        });
+    }
+
+    @Test
+    // US0014.2 - Devuelve solo las valoraciones que coinciden con el numero filtrado
+    void getValorationsByPost_shouldReturnOnlyMatchingValorations() {
+        // Arrange - Post con valoraciones 5, 3, 5
+        Post post = TestFactory.createPostWithValoration(10, 1, 5);
+        post.getValorations().put(2, 3);
+        post.getValorations().put(3, 5);
+
+        when(productRepository.getPostsByPostId(10)).thenReturn(Optional.of(post));
+
+        // Act
+        List<ValorationDTO> result = productService.getValorationsByPost(10, 5);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.stream().allMatch(v -> v.getValoration() == 5));
+    }
+
+    @Test
+    // US0014.2 - Si ninguna valoracion coincide con el filtro, devuelve una lista vacia
+    void getValorationsByPost_shouldReturnEmptyWhenNoMatchForValorationNumber() {
+        // Arrange
+        Post post = TestFactory.createPostWithValoration(30, 1, 3);
+
+        when(productRepository.getPostsByPostId(30)).thenReturn(Optional.of(post));
+
+        // Act
+        List<ValorationDTO> result = productService.getValorationsByPost(30, 5);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
 }

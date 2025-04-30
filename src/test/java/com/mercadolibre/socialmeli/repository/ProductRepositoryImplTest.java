@@ -37,6 +37,7 @@ class ProductRepositoryImplTest {
     }
 
     @Test
+    // US006 - Ordenamiento en orden descendente es correcto
     void getPostsByUserIdsInLastTwoWeeks_DescOrder(){
         // Arrange
         Set<Integer> users = Set.of(1, 2, 3);
@@ -54,6 +55,7 @@ class ProductRepositoryImplTest {
     }
 
     @Test
+    // US006 - Ordenamiento en orden ascendente es correcto
     void getPostsByUserIdsInLastTwoWeeks_AscOrder(){
         // Arrange
         Set<Integer> users = Set.of(1, 2, 3);
@@ -70,15 +72,49 @@ class ProductRepositoryImplTest {
         }
     }
 
+
     // Este test se fija si al buscar post por el id, me devuelva el nombre del producto que contiene ese post
     @Test
-    void getPostsById_shouldReturnTheNameOfTheProduct(){
+    void getPostsById_shouldReturnTheNameOfTheProduct() {
         // Arrange
         String productNameExpected = "Lavadora";
         // Act
         Optional<Post> postObtained = productRepository.getPostsByPostId(1);
         // Assert
         assertEquals(postObtained.get().getProduct().getProductName(), productNameExpected);
+    }
+    @Test
+    // US008 - Filtrado Post de las ultimas dos semanas es correcto
+    void getPostsByUserIdsInLastTwoWeeks_shouldReturnOnlyPostsInLastTwoWeeks() {
+        // Arrange
+        Set<Integer> users = Set.of(1, 2, 3);
+        Post oldPost = TestFactory.createPost(4, 1, LocalDate.now().minusWeeks(3));
+        productRepository.save(oldPost);
+        // Act
+        List<Post> posts = productRepository.getPostsByUserIdsInLastTwoWeeks(users, ORDER_DATE_DESC.getValue());
+        // Assert
+        assertNotNull(posts);
+        assertFalse(posts.isEmpty(), "The posts list should not be empty");
+        LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
+        for (Post post : posts) {
+            assertTrue(post.getDate().isAfter(twoWeeksAgo) || post.getDate().isEqual(twoWeeksAgo),
+                    "Found a post older than two weeks: " + post.getDate());
+        }
+    }
+
+    @Test
+    // US008 - Filtrado Post de las ultimas dos semanas exactamente es correcto
+    void getPostsByUserIdsInLastTwoWeeks_shouldIncludePostExactlyTwoWeeksAgo() {
+        // Arrange
+        Set<Integer> users = Set.of(1, 2, 3);
+        Post exactTwoWeeksPost = TestFactory.createPost(5, 1, LocalDate.now().minusWeeks(2));
+        productRepository.save(exactTwoWeeksPost);
+        // Act
+        List<Post> posts = productRepository.getPostsByUserIdsInLastTwoWeeks(users, ORDER_DATE_DESC.getValue());
+        // Assert
+        assertNotNull(posts);
+        assertTrue(posts.stream().anyMatch(post -> post.getDate().isEqual(LocalDate.now().minusWeeks(2))),
+                "The post created exactly two weeks ago should be included.");
     }
 
 }
