@@ -41,6 +41,7 @@ class ProductServiceImplTest {
 
 
     @Test
+    // US006 - Ordenamiento por fecha Desc Order
     void getListOfPublicationsByUser_shouldSortDescOrder() {
         // Arrange
         Integer userId = 1;
@@ -59,6 +60,7 @@ class ProductServiceImplTest {
     }
 
     @Test
+    // US006 - Ordenamiento por fecha  Asc Order
     void getListOfPublicationsByUser_shouldSortAscOrder() {
         // Arrange
         Integer userId = 1;
@@ -77,6 +79,7 @@ class ProductServiceImplTest {
     }
 
     @Test
+    // US008 - Excepción no hay publicaciones de quienes siguen
     void getListOfPublicationsByUser_shouldThrowNotFoundWhenNoPosts() {
         // Arrange
         Integer userId = 1;
@@ -91,6 +94,7 @@ class ProductServiceImplTest {
     }
 
     @Test
+    // US008 - Lanza la exepción si el usuario no existe
     void getListOfPublicationsByUser_shouldThrowExceptionWhenUserNotFound() {
         // Arrange
         Integer userId = 1;

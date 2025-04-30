@@ -31,6 +31,7 @@ class ProductControllerTest {
     private ProductController productController;
 
     @Test
+    // US 008 - Controller devuelve OK PostDto
     void getListOfPublicationsByUser_shouldReturnPostsDtoAndStatusOk() {
         // Arrange
         Integer userId = 1;
@@ -72,6 +73,7 @@ class ProductControllerTest {
 
 
     @Test
+        // US 008 - El controller toma el ordenamiento por defecto
     void getListOfPublicationsByUser_shouldUseDefaultOrderWhenOrderParamIsMissing() {
         // Arrange
         Integer userId = 1;
@@ -93,6 +95,7 @@ class ProductControllerTest {
     }
 
     @Test
+    // US 008 - El controller recibe la excepción lanzada desde el service
     void getListOfPublicationsByUser_shouldPropagateExceptionWhenServiceFails() {
         // Arrange
         Integer userId = 1;
