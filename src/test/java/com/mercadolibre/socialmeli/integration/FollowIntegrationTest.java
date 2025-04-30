@@ -3,7 +3,6 @@ package com.mercadolibre.socialmeli.integration;
 import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
-import com.mercadolibre.socialmeli.repository.UserRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,20 +11,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Test de integracion del endpoint /users/{userId}/unfollow/{userIdToUnfollow}
- * T-0002 (US-0007) - Verifica que el flujo real de unfollow funcione correctamente
+ * Test de integracion del endpoint /users/{userId}/follow/{userIdToFollow}
+ * T-0001 (US-0001) - Verifica que el flujo real de que el usuario a seguir exista.
  **/
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class UnfollowIntegrationTest {
+public class FollowIntegrationTest {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -42,18 +39,19 @@ public class UnfollowIntegrationTest {
         userRepository.getAll().add(user2);
     }
 
+    // Caso de éxito: El usuario 1 sigue al usuario 2
     @Test
-    void unfollowUser_shouldReturn200() throws Exception {
-        mockMvc.perform(put("/users/1/unfollow/2")
+    void followUser_shouldReturn200() throws Exception {
+        mockMvc.perform(post("/users/1/follow/2")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
+    // Caso de error: Intentar seguir a un usuario que no existe
     @Test
-    void unfollowUser_shouldReturn400WhenUserToUnfollowDoesNotExist() throws Exception {
-        mockMvc.perform(put("/users/1/unfollow/9999")
+    void followUser_shouldReturn400WhenUserToFollowDoesNotExist() throws Exception {
+        mockMvc.perform(post("/users/1/follow/9999")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
-
 }

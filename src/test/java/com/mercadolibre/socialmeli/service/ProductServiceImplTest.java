@@ -1,6 +1,7 @@
 package com.mercadolibre.socialmeli.service;
 
 import com.mercadolibre.socialmeli.dto.PostsDto;
+import com.mercadolibre.socialmeli.dto.ValorationDTO;
 import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.factory.TestFactory;
@@ -99,6 +100,39 @@ class ProductServiceImplTest {
         assertThrows(BadRequestException.class, () -> {
             productService.getListOfPublicationsByUser(userId, OrderType.ORDER_DATE_DESC.getValue());
         });
+    }
+
+    @Test
+    // US0014.2 - Devuelve solo las valoraciones que coinciden con el numero filtrado
+    void getValorationsByPost_shouldReturnOnlyMatchingValorations() {
+        // Arrange - Post con valoraciones 5, 3, 5
+        Post post = TestFactory.createPostWithValoration(10, 1, 5);
+        post.getValorations().put(2, 3);
+        post.getValorations().put(3, 5);
+
+        when(productRepository.getPostsByPostId(10)).thenReturn(Optional.of(post));
+
+        // Act
+        List<ValorationDTO> result = productService.getValorationsByPost(10, 5);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.stream().allMatch(v -> v.getValoration() == 5));
+    }
+
+    @Test
+    // US0014.2 - Si ninguna valoracion coincide con el filtro, devuelve una lista vacia
+    void getValorationsByPost_shouldReturnEmptyWhenNoMatchForValorationNumber() {
+        // Arrange
+        Post post = TestFactory.createPostWithValoration(30, 1, 3);
+
+        when(productRepository.getPostsByPostId(30)).thenReturn(Optional.of(post));
+
+        // Act
+        List<ValorationDTO> result = productService.getValorationsByPost(30, 5);
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
 }
