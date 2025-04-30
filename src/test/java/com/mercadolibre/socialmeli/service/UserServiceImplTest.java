@@ -224,7 +224,7 @@ class UserServiceImplTest {
 
 
     @Test
-    // T-0001 - US0001 Caso borde: Verifica que el usuario a seguir exista y se pueda seguir correctamente
+    // T-0001 - US0001 : Verifica que el usuario a seguir exista y se pueda seguir correctamente
     void followUser_shouldAddFollowingSuccessfully_whenUserToFollowExists() {
         // Arrange
         User follower = TestFactory.createUser(1);
@@ -242,7 +242,7 @@ class UserServiceImplTest {
 
 
     @Test
-    // T-0001 - US0001 Caso borde: Verifica que se lance excepción cuando el usuario a seguir no existe
+    // T-0001 - US0001 Verifica que se lance excepción cuando el usuario a seguir no existe
     void followUser_shouldThrowException_whenUserToFollowDoesNotExist() {
         // Arrange
         User follower = TestFactory.createUser(1);
