@@ -1,6 +1,4 @@
 package com.mercadolibre.socialmeli.repository;
-
-import com.mercadolibre.socialmeli.dto.PostsDto;
 import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.Post;
 import com.mercadolibre.socialmeli.model.User;
@@ -10,17 +8,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-
 import static com.mercadolibre.socialmeli.utilities.OrderType.ORDER_DATE_ASC;
 import static com.mercadolibre.socialmeli.utilities.OrderType.ORDER_DATE_DESC;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class ProductRepositoryImplTest {
@@ -43,6 +36,7 @@ class ProductRepositoryImplTest {
     }
 
     @Test
+    // US006 - Ordenamiento en orden descendente es correcto
     void getPostsByUserIdsInLastTwoWeeks_DescOrder(){
         // Arrange
         Set<Integer> users = Set.of(1, 2, 3);
@@ -60,6 +54,7 @@ class ProductRepositoryImplTest {
     }
 
     @Test
+    // US006 - Ordenamiento en orden ascendente es correcto
     void getPostsByUserIdsInLastTwoWeeks_AscOrder(){
         // Arrange
         Set<Integer> users = Set.of(1, 2, 3);
@@ -121,8 +116,8 @@ class ProductRepositoryImplTest {
     void getPromotionalProductsFromSellers() {
         //Arrange
         User user = TestFactory.createUser(5);
-        Post post1 = TestFactory.createPostWithPromo(10,5,5D);
-        Post post2 = TestFactory.createPostWithPromo(11,5,5D);
+        Post post1 = TestFactory.createPostWithPromo(10, 5, 5D);
+        Post post2 = TestFactory.createPostWithPromo(11, 5, 5D);
 
         this.productRepository.save(post1);
         this.productRepository.save(post2);
@@ -132,7 +127,42 @@ class ProductRepositoryImplTest {
                 getPromotionalProductsFromSellers(user.getUserId());
 
         //Assert
-        Assertions.assertEquals(2,postList.size());
+        Assertions.assertEquals(2, postList.size());
+    }
+
+    @Test
+    // US008 - Filtrado Post de las ultimas dos semanas es correcto
+    void getPostsByUserIdsInLastTwoWeeks_shouldReturnOnlyPostsInLastTwoWeeks() {
+        // Arrange
+        Set<Integer> users = Set.of(1, 2, 3);
+        Post oldPost = TestFactory.createPost(4, 1, LocalDate.now().minusWeeks(3));
+        productRepository.save(oldPost);
+        // Act
+        List<Post> posts = productRepository.getPostsByUserIdsInLastTwoWeeks(users, ORDER_DATE_DESC.getValue());
+        // Assert
+        assertNotNull(posts);
+        assertFalse(posts.isEmpty(), "The posts list should not be empty");
+        LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
+        for (Post post : posts) {
+            assertTrue(post.getDate().isAfter(twoWeeksAgo) || post.getDate().isEqual(twoWeeksAgo),
+                    "Found a post older than two weeks: " + post.getDate());
+        }
+    }
+
+    @Test
+    // US008 - Filtrado Post de las ultimas dos semanas exactamente es correcto
+    void getPostsByUserIdsInLastTwoWeeks_shouldIncludePostExactlyTwoWeeksAgo() {
+        // Arrange
+        Set<Integer> users = Set.of(1, 2, 3);
+        Post exactTwoWeeksPost = TestFactory.createPost(5, 1, LocalDate.now().minusWeeks(2));
+        productRepository.save(exactTwoWeeksPost);
+        // Act
+        List<Post> posts = productRepository.getPostsByUserIdsInLastTwoWeeks(users, ORDER_DATE_DESC.getValue());
+        // Assert
+        assertNotNull(posts);
+        assertTrue(posts.stream().anyMatch(post -> post.getDate().isEqual(LocalDate.now().minusWeeks(2))),
+                "The post created exactly two weeks ago should be included.");
+
     }
 
 }

@@ -1,6 +1,9 @@
 package com.mercadolibre.socialmeli.controller;
-
 import com.mercadolibre.socialmeli.dto.*;
+import com.mercadolibre.socialmeli.dto.PostDto;
+import com.mercadolibre.socialmeli.dto.PostsDto;
+import com.mercadolibre.socialmeli.exception.NotFoundException;
+import com.mercadolibre.socialmeli.dto.ValorationDTO;
 import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.service.IProductService;
@@ -29,6 +32,7 @@ class ProductControllerTest {
     private ProductController productController;
 
     @Test
+    // US 008 - Controller devuelve OK PostDto
     void getListOfPublicationsByUser_shouldReturnPostsDtoAndStatusOk() {
         // Arrange
         Integer userId = 1;
@@ -68,13 +72,14 @@ class ProductControllerTest {
         assertEquals(5, response.getBody().get(0).getValoration());
     }
 
+
     @Test
     void getPromotionalProductsFromSellers_shouldReturnPostsDtoAndStatusOk() {
         // Arrange
         User user = TestFactory.createUser(5);
-        PromoPostDto promoPostDto = TestFactory.createPromoPostDto(5,5);
+        PromoPostDto promoPostDto = TestFactory.createPromoPostDto(5, 5);
         PromoProductsDto promoProductsDto = new PromoProductsDto(
-                user.getUserId(),user.getUserName(),List.of(promoPostDto)
+                user.getUserId(), user.getUserName(), List.of(promoPostDto)
         );
 
         when(productService.getPromotionalProductsFromSellers(user.getUserId())).thenReturn(promoProductsDto);
@@ -86,5 +91,44 @@ class ProductControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(productService, times(1)).
                 getPromotionalProductsFromSellers(user.getUserId());
+    }
+
+    @Test
+        // US 008 - El controller toma el ordenamiento por defecto
+    void getListOfPublicationsByUser_shouldUseDefaultOrderWhenOrderParamIsMissing() {
+        // Arrange
+        Integer userId = 1;
+        String defaultOrder = "date_asc";
+        List<PostDto> postDtos = List.of(
+                TestFactory.createPostDto(2),
+                TestFactory.createPostDto(3)
+        );
+        PostsDto expectedPostsDto = new PostsDto(userId, postDtos);
+        when(productService.getListOfPublicationsByUser(userId, defaultOrder)).thenReturn(expectedPostsDto);
+
+        // Act
+        ResponseEntity<PostsDto> response = productController.getListOfPublicationsByUser(userId, null);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(productService, times(1)).getListOfPublicationsByUser(userId, null);
+    }
+
+    @Test
+    // US 008 - El controller recibe la excepción lanzada desde el service
+    void getListOfPublicationsByUser_shouldPropagateExceptionWhenServiceFails() {
+        // Arrange
+        Integer userId = 1;
+        String order = "date_desc";
+        when(productService.getListOfPublicationsByUser(userId, order))
+                .thenThrow(new NotFoundException("No hay publicaciones de quienes sigues."));
+
+        // Act & Assert
+        assertThrows(NotFoundException.class, () -> {
+            productController.getListOfPublicationsByUser(userId, order);
+        });
+
+        verify(productService, times(1)).getListOfPublicationsByUser(userId, order);
     }
 }
