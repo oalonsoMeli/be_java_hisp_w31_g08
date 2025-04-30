@@ -57,6 +57,7 @@ public class ProductServiceImpl implements IProductService {
         post.setHasPromo(true);
     }
 
+    // Valida que el usuario exista
     private User validationUser(Integer userId) {
         return userRepository.getUserById(userId)
                 .orElseThrow(() -> new BadRequestException("Usuario no encontrado."));
@@ -72,6 +73,7 @@ public class ProductServiceImpl implements IProductService {
         return new PromoProductsCountDto(userId, user.getUserName(), count);
     }
 
+    // Obtiene la lista de Post de los vendedores que un usuario sigue.
     @Override
     public PostsDto getListOfPublicationsByUser(Integer userId, String order) {
         User user = validationUser(userId);
