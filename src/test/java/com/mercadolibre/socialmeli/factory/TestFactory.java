@@ -6,10 +6,7 @@ import com.mercadolibre.socialmeli.model.Product;
 import com.mercadolibre.socialmeli.model.User;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -145,6 +142,18 @@ public class TestFactory {
         return new ValorationDTO(userId, postId, valoration);
     }
 
+    public static Post createPostWithValoration(Integer postId, Integer userId, Integer valoration) {
+        Post post = createPost(postId, userId);
+
+        Map<Integer, Integer> valorations = new HashMap<>();
+        valorations.put(userId, valoration); // el usuario valora el post
+
+        // Asignar el mapa al post
+        post.setValorations((HashMap<Integer, Integer>) valorations);
+        post.setPostId(postId); // aseguro que tenga el ID seteado
+
+        return post;
+    }
 
 
 }
