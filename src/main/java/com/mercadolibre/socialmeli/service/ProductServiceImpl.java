@@ -11,6 +11,7 @@ import com.mercadolibre.socialmeli.repository.IProductRepository;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
 import com.mercadolibre.socialmeli.exception.IllegalArgumentException;
 import com.mercadolibre.socialmeli.utilities.OrderType;
+import com.mercadolibre.socialmeli.utilities.PostMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public void createPost(PostDto postDto) {
         validationUser(postDto.getUserId());
-        Post post = getPost(postDto);
+        Post post = PostMapper.toPost(postDto);
         if (isPromoActive(postDto)) {
             applyPromotion((PromoPostDto) postDto, post);
         }
@@ -59,17 +60,6 @@ public class ProductServiceImpl implements IProductService {
     private User validationUser(Integer userId) {
         return userRepository.getUserById(userId)
                 .orElseThrow(() -> new BadRequestException("Usuario no encontrado."));
-    }
-
-    private Post getPost(PostDto postDto) {
-        ProductDto productDto = postDto.getProduct();
-        Product product = new Product( productDto.getProduct_id(), productDto.getProduct_name(), productDto.getType(),
-                productDto.getBrand(), productDto.getColor(), productDto.getNotes());
-        Post post = new Post(postDto.getUserId(), postDto.getDate(), product,
-                postDto.getCategory(), postDto.getPrice());
-        post.setPostId(countId);
-        countId++;
-        return post;
     }
 
     @Override
