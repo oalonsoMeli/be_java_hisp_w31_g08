@@ -10,10 +10,12 @@ import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
 import com.mercadolibre.socialmeli.service.IUserService;
 import com.mercadolibre.socialmeli.service.UserServiceImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,8 +45,7 @@ class UserControllerTest {
 
 
 
-    // al probar el llamado de la lista del orden ascendente, el body no debería estar nulo, la lista debería contener
-    // los seguidos de un usuario y además, no estar vacía
+    // T-0003 - Test de Controller: la lista de seguidos con orden ascendente debería existir y no estar vacía
     @Test
     void getFollowed_withOrderAsc_shouldExists() {
         // Arrange
@@ -68,8 +69,7 @@ class UserControllerTest {
         assertFalse(body.getFollowed().isEmpty());
     }
 
-    // al probar el llamado de la lista del orden descendente, el body no debería estar nulo, la lista debería contener
-    // los seguidos de un usuario y además, no estar vacía
+    // T-0003 - Test de Controller: la lista de seguidos con orden descendente debería existir y no estar vacía
     @Test
     void getFollowed_withOrderDesc_shouldExists() {
         // Arrange
@@ -92,8 +92,8 @@ class UserControllerTest {
         assertEquals(2, body.getFollowed().size());
         assertFalse(body.getFollowed().isEmpty());
     }
-    // al probar el llamado de la lista del orden ascendente, el body no debería estar nulo, la lista debería contener
-    // los seguidores de un vendedor y además, no estar vacía
+
+    // T-0003 - Test de Controller: la lista de seguidores con orden ascendente debería existir y no estar vacía
     @Test
     void getFollowers_withOrderAsc_shouldExists() {
         // Arrange
@@ -117,8 +117,7 @@ class UserControllerTest {
         assertFalse(body.getFollowers().isEmpty());
     }
 
-    // al probar el llamado de la lista del orden ascendente, el body no debería estar nulo, la lista debería contener
-    // los seguidores de un vendedor y además, no estar vacía
+    // T-0003 - Test de Controller: la lista de seguidores con orden descendente debería existir y no estar vacía
     @Test
     void getFollowers_withOrderDesc_shouldExists() {
         // Arrange
@@ -142,6 +141,7 @@ class UserControllerTest {
         assertFalse(body.getFollowers().isEmpty());
     }
 
+    // T-0003 - Test de Controller: el ID del usuario seguido no existe
     @Test
     void getFollowed_withInexistentId_shouldReturnException() {
         // Arrange
@@ -153,7 +153,7 @@ class UserControllerTest {
         });
     }
 
-
+    // T-0003 - Test de Controller: el ID del usuario seguidor no existe
     @Test
     void getFollowers_withInexistentId_shouldReturnException() {
         // Arrange
@@ -166,35 +166,28 @@ class UserControllerTest {
     }
 
     @Test
-    // T-0002 - Test de Controller: el usuario a dejar de seguir no existe
-    void unfollowUser_shouldReturnBadRequestWhenUserToUnfollowDoesNotExist() {
-        // Arrange
-        UserDto user1 = TestFactory.createUserDTO(1);
-        UserDto user3 = TestFactory.createUserDTO(3);
-        doThrow(new BadRequestException("Usuario no encontrado")) //tira una excepción
-                .when(service).unfollowUser(1, 3);
+    // T-0002 - Test de Controller: operacion correcta
+    public void unfollowUser_shouldReturnOkWhenUnfollowSuccess() {
+        // Act
+        ResponseEntity<Void> response = controller.unfollowUser(1, 2);
 
-        // Act and Assert
-       assertThrows(BadRequestException.class, () -> { //comprueba excepción
-            controller.unfollowUser(1, 3);
-        });
+        // Assert
+        Mockito.verify(service).unfollowUser(1, 2);
+        Assertions.assertEquals(200, response.getStatusCodeValue());
     }
 
     @Test
-  // T-0002 - Test de Controller: operacion correcta
-    void unfollowUser_shouldReturnOkWhenUnfollowSuccess() {
+    // T-0002 - Test de Controller: el usuario a dejar de seguir no existe
+    public void unfollowUser_shouldThrowBadRequest() {
         // Arrange
-        Integer userId = 1;
-        Integer userToUnfollowId = 2;
+        Mockito.doThrow(new BadRequestException("Usuario no encontrado"))
+                .when(service).unfollowUser(1, 2);
 
-        // simulamos que el servicio realiza la operación correctamente
-        doNothing().when(service).unfollowUser(userId, userToUnfollowId);
+        // Act & Assert
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            controller.unfollowUser(1, 2);
+        });
 
-        // Act
-        ResponseEntity<Void> response = controller.unfollowUser(userId, userToUnfollowId);
-
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode()); //comprueba status ok
-        verify(service).unfollowUser(userId, userToUnfollowId);
+        Mockito.verify(service).unfollowUser(1, 2);
     }
 }

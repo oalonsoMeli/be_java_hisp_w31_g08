@@ -31,8 +31,7 @@ class UserServiceImplTest {
     UserServiceImpl service;
 
 
-    // pruebo que al pedir la lista de seguidores de un vendedor de forma ascendente,
-    // debería la lista contener usuarios y no estar vacía
+    // T-0003 - US0008: Verifica que exista la lista al obtener los seguidores de un vendedor de manera ASC.
     @Test
     void searchFollowersUsers_withOrderAsc_shouldExistsAndContainUsers() {
         // Arrange
@@ -54,8 +53,7 @@ class UserServiceImplTest {
         assertFalse(result.getFollowers().isEmpty());
     }
 
-    // pruebo que al pedir la lista de los seguidores de un vendedor de forma descendente,
-    // debería la lista no estar vacía y tener usuarios
+    // T-0003 - US0008: Verifica que exista la lista al obtener los seguidores de un vendedor de manera DESC.
     @Test
     void searchFollowersUsers_withOrderDesc_shouldExistsAndContainUsers() {
         // Arrange
@@ -76,17 +74,13 @@ class UserServiceImplTest {
         assertFalse(result.getFollowers().isEmpty());
     }
 
-    // pruebo que al pedir la lista de seguidos de un usuario de forma ascendente,
-    // debería la lista contener usuarios y no estar vacía
+    // T-0003 - US0008: Verifica que exista la lista al obtener los seguidos de un usuario de manera ASC.
     @Test
     void searchFollowedSellers_withOrderAsc_shouldExistsAndContainUsers() {
         // Arrange
         User user1 = TestFactory.createUserFollowing(1, 2, 3);
-
         User user2 = TestFactory.createUser(2);
-
         User user3 = TestFactory.createUser(3);
-
 
         when(repository.getUserById(1)).thenReturn(Optional.of(user1));
         when(repository.findUsersById(List.of(2, 3))).thenReturn(List.of(user2, user3));
@@ -99,8 +93,7 @@ class UserServiceImplTest {
         assertFalse(result.getFollowed().isEmpty());
     }
 
-    // pruebo que al pedir la lista de los seguidores de forma descendente,
-    // debería la lista no estar vacía y tener usuarios
+    // T-0003 - US0008: Verifica que exista la lista al obtener los seguidos de un usuario de manera DESC.
     @Test
     void searchFollowedSellers_withOrderDesc_shouldExistsAndContainUsers() {
         // Arrange
@@ -123,7 +116,7 @@ class UserServiceImplTest {
     }
 
 
-    // pruebo que al pedir la lista de los seguidos con un id inexistente, debería devolverme 404
+// T-0003 - US0008: Verifica que se lance una excepcion si se busca un usuario con id inexistente.
     @Test
     void searchFollowedSellers_withAnUserIdInexistent_shouldReturnAnException() {
         // Arrange
@@ -135,8 +128,7 @@ class UserServiceImplTest {
         });
     }
 
-    // pruebo que al pedir la lista de los seguidos con vendedores cuyos id son inexistentes,
-    // debería devolverme 404
+    // T-0003 - US0008: Verifica que se lance una excepcion si se busca vendedores con id inexistentes
     @Test
     void searchFollowedSellers_withFollowedUsersIdInexistent_shouldReturnAnException() {
         // Arrange
@@ -151,7 +143,7 @@ class UserServiceImplTest {
     }
 
 
-    // pruebo que al pedir la lista de los seguidos con un id inexistente, debería devolverme 404
+    // T-0003 - US0008: Verifica que se lance una excepcion si se busca un vendedor con id inexistente.
     @Test
     void searchFollowersUsers_withAnUserIdInexistent_shouldReturnAnException() {
         // Arrange
@@ -163,8 +155,7 @@ class UserServiceImplTest {
         });
     }
 
-    // pruebo que al pedir la lista de los seguidos con usuarios cuyos id son inexistentes,
-    // debería devolverme 404
+    // T-0003 - US0008: Verifica que se lance una excepcion si se busca usuarios con id inexistentes
     @Test
     void searchFollowersUsers_withFollowedUsersIdInexistent_shouldReturnAnException() {
         // Arrange
