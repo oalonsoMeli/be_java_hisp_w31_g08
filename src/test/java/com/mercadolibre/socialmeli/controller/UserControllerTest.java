@@ -1,6 +1,7 @@
 package com.mercadolibre.socialmeli.controller;
 
 import com.mercadolibre.socialmeli.dto.FollowedDto;
+import com.mercadolibre.socialmeli.dto.FollowerCountDto;
 import com.mercadolibre.socialmeli.dto.FollowersDto;
 import com.mercadolibre.socialmeli.dto.UserDto;
 import com.mercadolibre.socialmeli.exception.BadRequestException;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 
@@ -182,6 +184,38 @@ class UserControllerTest {
         Mockito.verify(service).unfollowUser(1, 2);
     }
 
+    // T-0007 - US0002: Verifica que se cumpla el happypath
+    @Test
+    public void getFollowersCountByUserId_shouldReturnOk(){
+        // Arrange
+        Integer userId = 1;
+        FollowerCountDto dto = new FollowerCountDto(userId, "Ana", 3);
+        when(service.getFollowersCountByUserId(userId)).thenReturn(dto);
+
+        // Act
+        ResponseEntity<FollowerCountDto> response = controller.getFollowersCountByUserId(userId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(userId, response.getBody().getUser_id());
+        assertEquals("Ana", response.getBody().getUser_name());
+        assertEquals(3, response.getBody().getFollowers_count());
+    }
+
+    // T-0007 - US0002: Verifica que se cumpla el sadpath.
+    @Test
+    public void getFollowersCountByUserId_shouldReturnErrorNotFound(){
+        // Arrange
+        Integer userId = 999;
+        when(service.getFollowersCountByUserId(userId)).thenThrow(new NotFoundException("Usuario no encontrado."));
+
+        // Act & Assert
+        assertThrows(NotFoundException.class, () -> {
+            controller.getFollowersCountByUserId(userId);
+        });
+    }
+
     // T-0001 - Test de Controller: seguir usuario con éxito
     @Test
     void followUser_shouldReturnOkWhenFollowSuccess() throws Exception {
@@ -209,5 +243,4 @@ class UserControllerTest {
 
         Mockito.verify(service).followUser(1, 2);
     }
-
 }

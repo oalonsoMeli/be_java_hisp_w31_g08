@@ -87,6 +87,16 @@ public class TestFactory {
         );
     }
 
+    public static Post createPostWithPromo(Integer postId, Integer userId, Double discount) {
+        return new Post( postId,
+                userId,
+                LocalDate.now().minusDays(1),
+                createProduct(postId),
+                100,
+                1500.0, true, discount, new HashMap<>()
+        );
+    }
+
     public static PostDto createPostDto(Integer userId) {
         return new PostDto(
                 userId,
@@ -126,7 +136,6 @@ public class TestFactory {
         dto.setDiscount(discount);
         return dto;
     }
-
 
     public static List<Post> createPostsForFollowedUsers(Integer... userIds) {
         List<Post> posts = new ArrayList<>();
