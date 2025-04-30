@@ -1,5 +1,7 @@
 package com.mercadolibre.socialmeli.controller;
 
+import com.mercadolibre.socialmeli.dto.FollowedDto;
+import com.mercadolibre.socialmeli.dto.FollowerCountDto;
 import com.mercadolibre.socialmeli.dto.FollowersDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,17 +18,18 @@ public interface IUserController {
             @ApiResponse(responseCode = "200", description = "Follow exitoso"),
             @ApiResponse(responseCode = "400", description = "Usuario no encontrado")})
     @PostMapping("/{userId}/follow/{userIdToFollow}")
-     ResponseEntity<?> followUser(@PathVariable Integer userId, @PathVariable Integer userIdToFollow);
+     ResponseEntity<Void> followUser(@PathVariable Integer userId, @PathVariable Integer userIdToFollow);
 
     @Operation(
             summary = "Listado de todos los vendedores que sigue un usuario",
-            description = "Permite obtener  un listado de todos los vendedores a los cuales sigue un determinado usuario (¿A quién sigo?)")
+            description = "Permite obtener  un listado de todos los vendedores a los cuales sigue un determinado usuario " +
+                          "(¿A quién sigo?)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Se obtuvo la lista exitosamente"),
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado")})
     @GetMapping("/{userId}/followed/list")
-     ResponseEntity<?> getFollowed(@PathVariable Integer userId,
-                                         @RequestParam(value = "order", required = false) String order);
+     ResponseEntity<FollowedDto> getFollowed(@PathVariable Integer userId,
+                                             @RequestParam(value = "order", required = false) String order);
 
     @Operation(
             summary = "Cantidad de usuarios que siguen a un vendedor",
@@ -37,7 +40,7 @@ public interface IUserController {
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     })
     @GetMapping("/{userId}/followers/count")
-     ResponseEntity<?> getFollowersCountByUserId(@PathVariable Integer userId);
+     ResponseEntity<FollowerCountDto> getFollowersCountByUserId(@PathVariable Integer userId);
 
     @Operation(
             summary = "Dejar de seguir a un vendedor",
@@ -50,15 +53,16 @@ public interface IUserController {
     })
     @PutMapping("/{userId}/unfollow/{userIdToUnfollow}")
      ResponseEntity<Void> unfollowUser(@PathVariable Integer userId,
-                                             @PathVariable Integer userIdToUnfollow) ;
+                                       @PathVariable Integer userIdToUnfollow) ;
 
     @Operation(
             summary = "Listado de todos los usuarios que siguen a un vendedor",
-            description = "Obtener un listado de todos los usuarios que siguen a un determinado vendedor (¿Quién me sigue?)")
+            description = "Obtener un listado de todos los usuarios que siguen a un determinado vendedor " +
+                          "(¿Quién me sigue?)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Se obtuvo la lista exitosamente"),
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado")})
     @GetMapping("/{userId}/followers/list")
      ResponseEntity<FollowersDto> getFollowers(@PathVariable Integer userId,
-                                                     @RequestParam(value = "order", required = false) String order);
+                                               @RequestParam(value = "order", required = false) String order);
 }

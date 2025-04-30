@@ -1,4 +1,6 @@
 package com.mercadolibre.socialmeli.controller;
+import com.mercadolibre.socialmeli.dto.FollowedDto;
+import com.mercadolibre.socialmeli.dto.FollowerCountDto;
 import com.mercadolibre.socialmeli.dto.FollowersDto;
 import com.mercadolibre.socialmeli.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,29 +23,27 @@ public class UserController implements IUserController {
     }
 
     @Override
-    public ResponseEntity<?> followUser(@PathVariable Integer userId, @PathVariable Integer userIdToFollow) {
+    public ResponseEntity<Void> followUser(@PathVariable Integer userId, @PathVariable Integer userIdToFollow) {
         userService.followUser(userId, userIdToFollow);
-        return  ResponseEntity.ok().build();
-
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<?> getFollowed(@PathVariable Integer userId,
-                                         @RequestParam(value = "order", required = false) String order){
+    public ResponseEntity<FollowedDto> getFollowed(@PathVariable Integer userId,
+                                                   @RequestParam(value = "order", required = false) String order){
         return new ResponseEntity<>(userService.searchFollowedSellers(userId,order), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<?> getFollowersCountByUserId(@PathVariable Integer userId){
+    public ResponseEntity<FollowerCountDto> getFollowersCountByUserId(@PathVariable Integer userId){
         return new ResponseEntity<>(this.userService.getFollowersCountByUserId(userId), HttpStatus.OK);
-
     }
 
     @Override
     public ResponseEntity<Void> unfollowUser(@PathVariable Integer userId,
                                              @PathVariable Integer userIdToUnfollow) {
         userService.unfollowUser(userId, userIdToUnfollow);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
