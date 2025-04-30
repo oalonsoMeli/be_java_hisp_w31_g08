@@ -1,5 +1,5 @@
 package com.mercadolibre.socialmeli.controller;
-
+import com.mercadolibre.socialmeli.dto.*;
 import com.mercadolibre.socialmeli.dto.PostDto;
 import com.mercadolibre.socialmeli.dto.PostsDto;
 import com.mercadolibre.socialmeli.dto.ValorationAverageDto;
@@ -7,6 +7,7 @@ import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.dto.ValorationDTO;
 import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.Post;
+import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.service.IProductService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -95,6 +96,26 @@ class ProductControllerTest {
         assertEquals(5, response.getBody().get(0).getValoration());
     }
 
+
+    @Test
+    void getPromotionalProductsFromSellers_shouldReturnPostsDtoAndStatusOk() {
+        // Arrange
+        User user = TestFactory.createUser(5);
+        PromoPostDto promoPostDto = TestFactory.createPromoPostDto(5, 5);
+        PromoProductsDto promoProductsDto = new PromoProductsDto(
+                user.getUserId(), user.getUserName(), List.of(promoPostDto)
+        );
+
+        when(productService.getPromotionalProductsFromSellers(user.getUserId())).thenReturn(promoProductsDto);
+        // Act
+        ResponseEntity<PromoProductsDto> response = productController.
+                getPromotionalProductsFromSellers(user.getUserId());
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(productService, times(1)).
+                getPromotionalProductsFromSellers(user.getUserId());
+    }
 
     @Test
         // US 008 - El controller toma el ordenamiento por defecto
