@@ -2,6 +2,9 @@ package com.mercadolibre.socialmeli.service;
 
 import com.mercadolibre.socialmeli.dto.FollowedDto;
 import com.mercadolibre.socialmeli.dto.UserDto;
+import com.mercadolibre.socialmeli.exception.BadRequestException;
+import com.mercadolibre.socialmeli.exception.NotFoundException;
+import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,4 +56,57 @@ class UserServiceImplTest {
         assertEquals("Abril", result.getFollowed().get(0).getUser_name());
         assertEquals("Orne", result.getFollowed().get(1).getUser_name());
     }
+
+    @Test
+    // T-0002 - US0007: Verifica que se lance una excepcion cuando el usuario a dejar de seguir no existe
+    void unfollowUser_shouldThrowExceptionWhenUserToUnfollowDoesNotExist() {
+        // Arrange
+        User user = com.mercadolibre.socialmeli.factory.TestFactory.createUserWithFollow(1, 2);
+
+        when(repository.getUserById(1)).thenReturn(Optional.of(user));
+        when(repository.getUserById(2)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(com.mercadolibre.socialmeli.exception.BadRequestException.class, () -> {
+            service.unfollowUser(1, 2);
+        });
+    }
+
+    @Test
+    // T-0002 - US0007: Verifica que se elimine el usuario a dejar de seguir cuando existe y esta en la lista
+    void unfollowUser_shouldRemoveUserSuccessfully() {
+        // Arrange
+        User user = com.mercadolibre.socialmeli.factory.TestFactory.createUserWithFollow(1, 2);
+        User toUnfollow = com.mercadolibre.socialmeli.factory.TestFactory.createUser(2);
+        when(repository.getUserById(1)).thenReturn(Optional.of(user));
+        when(repository.getUserById(2)).thenReturn(Optional.of(toUnfollow));
+        // Act
+        service.unfollowUser(1, 2);
+        // Assert
+        assertFalse(user.getFollows().contains(2));
+    }
+
+    @Test
+    // T002 - US0007: Caso borde - el usuario existe pero no sigue a nadie
+    // Al intentar dejar de seguir, deberia lanzar excepcion por no encontrar la relacion
+    void unfollowUser_shouldThrowWhenUserHasNoFollowings() {
+        User user = TestFactory.createUser(1);
+        User target = TestFactory.createUser(2);
+
+        when(repository.getUserById(1)).thenReturn(Optional.of(user));
+        when(repository.getUserById(2)).thenReturn(Optional.of(target));
+
+        assertThrows(NotFoundException.class, () -> {
+            service.unfollowUser(1, 2);
+        });
+    }
+
+    @Test
+    // T002 - US0007: Caso borde - IDs invalidos que deberían provocar una excepcion
+    void unfollowUser_shouldThrowWhenUserIdIsNull() {
+        assertThrows(BadRequestException.class, () -> {
+            service.unfollowUser(null, 2);
+        });
+    }
+
 }
