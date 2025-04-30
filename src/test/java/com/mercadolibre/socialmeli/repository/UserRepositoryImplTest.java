@@ -47,18 +47,28 @@ class UserRepositoryImplTest {
     }
 
 
-    // buscar por id de usuario debería retornarme el usuario que busco y no estar vacío
+    // Buscar por id de usuario debería retornarme el usuario que busco y no estar vacío
     @Test
     void getUserById_shoulReturnUser() {
         // Arrange
         String nameExpected = "John Doe";
-
         // Act
         Optional<User> userObtained = repository.getUserById(1);
         User user = userObtained.get();
-
         // Assert
         assertFalse(userObtained.isEmpty());
         assertEquals(nameExpected, user.getUserName());
     }
+
+    // Verifica el comportamiento esperado cuando se consulta un usuario que NO existe
+    @Test
+    void getUserById_shouldReturnEmptyWhenUserDoesNotExist() {
+        // Act
+        Optional<User> result = repository.getUserById(9999);
+        // Assert
+        assertTrue(result.isEmpty(), "Debe devolver vacio si el usuario no existe");
+    }
+
+
+
 }

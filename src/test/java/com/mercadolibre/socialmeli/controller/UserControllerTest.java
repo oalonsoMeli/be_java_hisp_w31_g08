@@ -3,6 +3,7 @@ package com.mercadolibre.socialmeli.controller;
 import com.mercadolibre.socialmeli.dto.FollowedDto;
 import com.mercadolibre.socialmeli.dto.FollowersDto;
 import com.mercadolibre.socialmeli.dto.UserDto;
+import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.User;
@@ -14,23 +15,33 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
+
     @Mock
     IUserService service;
 
     @InjectMocks
     UserController controller;
+
+
 
     // al probar el llamado de la lista del orden ascendente, el body no debería estar nulo, la lista debería contener
     // los seguidos de un usuario y además, no estar vacía
@@ -154,4 +165,36 @@ class UserControllerTest {
         });
     }
 
+    @Test
+    // T-0002 - Test de Controller: el usuario a dejar de seguir no existe
+    void unfollowUser_shouldReturnBadRequestWhenUserToUnfollowDoesNotExist() {
+        // Arrange
+        UserDto user1 = TestFactory.createUserDTO(1);
+        UserDto user3 = TestFactory.createUserDTO(3);
+        doThrow(new BadRequestException("Usuario no encontrado")) //tira una excepción
+                .when(service).unfollowUser(1, 3);
+
+        // Act and Assert
+       assertThrows(BadRequestException.class, () -> { //comprueba excepción
+            controller.unfollowUser(1, 3);
+        });
+    }
+
+    @Test
+  // T-0002 - Test de Controller: operacion correcta
+    void unfollowUser_shouldReturnOkWhenUnfollowSuccess() {
+        // Arrange
+        Integer userId = 1;
+        Integer userToUnfollowId = 2;
+
+        // simulamos que el servicio realiza la operación correctamente
+        doNothing().when(service).unfollowUser(userId, userToUnfollowId);
+
+        // Act
+        ResponseEntity<Void> response = controller.unfollowUser(userId, userToUnfollowId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode()); //comprueba status ok
+        verify(service).unfollowUser(userId, userToUnfollowId);
+    }
 }

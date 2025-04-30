@@ -6,6 +6,7 @@ import com.mercadolibre.socialmeli.model.Product;
 import com.mercadolibre.socialmeli.model.User;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -79,6 +80,16 @@ public class TestFactory {
         );
     }
 
+    public static Post createPost(Integer postId, Integer userId, LocalDate createdAt) {
+        return new Post( postId,
+                userId,
+                createdAt,
+                createProduct(postId),
+                100,
+                1500.0, false, 0.0, new HashMap<>()
+        );
+    }
+
     public static PostDto createPostDto(Integer userId) {
         return new PostDto(
                 userId,
@@ -119,9 +130,21 @@ public class TestFactory {
         return dto;
     }
 
+
+    public static List<Post> createPostsForFollowedUsers(Integer... userIds) {
+        List<Post> posts = new ArrayList<>();
+        int postId = 1;
+        for (Integer userId : userIds) {
+            posts.add(TestFactory.createPost(postId++, userId));
+        }
+        return posts;
+    }
+
     //****************Valoracion
     public static ValorationDTO createValorationDTO(Integer userId, Integer postId, Integer valoration) {
         return new ValorationDTO(userId, postId, valoration);
     }
+
+
 
 }
