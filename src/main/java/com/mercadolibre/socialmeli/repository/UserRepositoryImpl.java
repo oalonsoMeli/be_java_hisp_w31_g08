@@ -30,7 +30,6 @@ public class UserRepositoryImpl implements IUserRepository {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     public List<User> findUsersById(List<Integer> userFollowersId) {
         return listOfUsers.stream().filter(user -> userFollowersId.contains(user.getUserId())).collect(Collectors.toList());
