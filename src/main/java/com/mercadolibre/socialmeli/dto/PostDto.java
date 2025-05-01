@@ -45,6 +45,11 @@ public class PostDto {
     @Max(value = 10000000, message = "El precio máximo por producto es de 10.000.000")
     private Double price;
 
-    public PostDto(Integer userId, java.time.LocalDate now, ProductDto productDto, int i, double v) {
+    public PostDto(Integer userId, LocalDate date, ProductDto product, Integer category, Double price) {
+        this.userId = userId;
+        this.date = date;
+        this.product = product;
+        this.category = category;
+        this.price = price;
     }
 }
