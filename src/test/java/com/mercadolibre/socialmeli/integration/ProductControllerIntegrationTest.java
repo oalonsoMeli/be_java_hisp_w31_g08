@@ -114,22 +114,32 @@ public class ProductControllerIntegrationTest {
         }
     }
 
-
+    /*
+     * Test de integración del endpoint /products/followed/{userId}/list
+     * T-006 (US-0012) Verifica que las publicaciones se ordenen de forma descendente por fecha
+     */
     @Test
     void getListOfPublicationsByUser_shouldSortDescOrder() throws Exception {
         PostsDto postsDto = performGetPosts(userId, "date_desc");
         assertPostsSorted(postsDto, false); // false = descendente
     }
 
+    /*
+     * Test de integración del endpoint /products/followed/{userId}/list
+     * T-006 (US-0012) Verifica que las publicaciones se ordenen de forma ascendente por fecha
+     */
     @Test
     void getListOfPublicationsByUser_shouldSortAscOrder() throws Exception {
         PostsDto postsDto = performGetPosts(userId, "date_asc");
         assertPostsSorted(postsDto, true); // true = ascendente
     }
 
+    /*
+     * Test de integración del endpoint /products/followed/{userId}/list
+     * T-008 (US-0012) Verifica que retorne 404 cuando no hay publicaciones
+     */
     @Test
     void getListOfPublicationsByUser_shouldReturn404WhenNoPosts() throws Exception {
-        // No se guardan posts a propósito (para simular que no hay publicaciones)
         productRepository.getAll().clear();
         mockMvc.perform(get("/products/followed/{userId}/list", userId)
                         .param("order", "date_desc"))
@@ -138,6 +148,10 @@ public class ProductControllerIntegrationTest {
                 .andExpect(jsonPath("$.message").value("No hay publicaciones de quienes sigues."));
     }
 
+    /*
+     * Test de integración del endpoint /products/followed/{userId}/list
+     * T-008 (US-0012) Verifica que retorne 400 cuando el usuario no existe
+     */
     @Test
     void getListOfPublicationsByUser_shouldReturn400WhenUserNotFound() throws Exception {
         Integer userId = Integer.MAX_VALUE;
@@ -146,17 +160,17 @@ public class ProductControllerIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Usuario no encontrado."));
-
     }
 
+    /*
+     * Test de integración del endpoint /products/followed/{userId}/list
+     * T-008 (US-0012) Verifica que incluya publicaciones creadas exactamente hace dos semanas
+     */
     @Test
     void getListOfPublicationsByUser_shouldIncludePostExactlyTwoWeeksAgo() throws Exception {
-        // Arrange
         Post exactTwoWeeksPost = TestFactory.createPost(5, 2, LocalDate.now().minusWeeks(2));
-        productRepository.save(exactTwoWeeksPost); // Agregamos solo el post especial
-        // Act
+        productRepository.save(exactTwoWeeksPost);
         PostsDto postsDto = performGetPosts(userId, "date_desc");
-        // Assert
         assertNotNull(postsDto);
         assertTrue(postsDto.getPosts().stream()
                         .anyMatch(post -> post.getDate().isEqual(LocalDate.now().minusWeeks(2))),
@@ -165,7 +179,7 @@ public class ProductControllerIntegrationTest {
 
     /*
      * Test de integración del endpoint /products/{post_id}/valorations/average
-     * T-0016 (US-0016) Verifica que devuelva el average esperado
+     * T-0016 (US-0016) Verifica que devuelva el promedio esperado
      */
     @Test
     void getValorationsByPost_shouldReturnTheAverageExpected() throws Exception {
@@ -187,7 +201,4 @@ public class ProductControllerIntegrationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
-
-
-
 }
