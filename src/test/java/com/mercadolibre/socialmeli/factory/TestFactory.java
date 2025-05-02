@@ -77,6 +77,7 @@ public class TestFactory {
         );
     }
 
+
     public static Post createPost(Integer postId, Integer userId, LocalDate createdAt) {
         return new Post( postId,
                 userId,
@@ -164,5 +165,20 @@ public class TestFactory {
         return post;
     }
 
+    public static List<Post> createPostListWithValorations() {
+        Post post1 = createPost(1, 1, LocalDate.now());
+        Post post2 = createPost(2, 1, LocalDate.now());
+        Post post3 = createPost(3, 1, LocalDate.now());
+        Post post4 = createPost(4, 2, LocalDate.now());
+        Post post5 = createPost(5, 2, LocalDate.now());
+        Post post6 = createPost(6, 3, LocalDate.now());
+        // User con id 1 valora 3 post (1,2,5)
+        post1.getValorations().put(1, 3);
+        post2.getValorations().put(1, 4);
+        post5.getValorations().put(1, 5);
+        post3.getValorations().put(3, 5);
+        post1.getValorations().put(2, 2);
+        return new ArrayList<>(Arrays.asList(post1, post2, post3, post4, post5, post6));
+    }
 
 }

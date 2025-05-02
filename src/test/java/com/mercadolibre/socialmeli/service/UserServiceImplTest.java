@@ -123,7 +123,7 @@ class UserServiceImplTest {
     }
 
 
-// T-0003 - US0008: Verifica que se lance una excepcion si se busca un usuario con id inexistente.
+    // T-0003 - US0008: Verifica que se lance una excepcion si se busca un usuario con id inexistente.
     @Test
     void searchFollowedSellers_withAnUserIdInexistent_shouldReturnAnException() {
         // Arrange

@@ -1,14 +1,12 @@
 package com.mercadolibre.socialmeli.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class ValorationDTO {
     private Integer user_id;
     private Integer post_id;
