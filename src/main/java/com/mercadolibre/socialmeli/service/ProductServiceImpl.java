@@ -94,6 +94,7 @@ public class ProductServiceImpl implements IProductService {
          return new PostsDto(userId, postDtos);
     }
 
+    //Obtiene el listado de los productos que un vendedor tiene en promoción
     @Override
     public PromoProductsDto getPromotionalProductsFromSellers(Integer userId){
         ObjectMapper mapper = new ObjectMapper();

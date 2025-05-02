@@ -7,6 +7,7 @@ import com.mercadolibre.socialmeli.dto.ValorationDTO;
 import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.service.IProductService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -73,6 +74,7 @@ class ProductControllerTest {
     }
 
 
+    @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor")
     @Test
     void getPromotionalProductsFromSellers_shouldReturnPostsDtoAndStatusOk() {
         // Arrange
