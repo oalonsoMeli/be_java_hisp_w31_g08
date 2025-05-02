@@ -32,10 +32,10 @@ public class ProductDto {
 
     @NotBlank(message = "El campo no puede estar vacío.")
     @Size(min = 0, max = 15, message = "La longitud no puede superar los 15 caracteres.")
-    @Pattern(regexp = "^[a-zA-Z0-9ñáéíóúÁÉÍÓÚ ]*$", message = "El campo no puede poseer caracteres especiales")
+    @Pattern(regexp = "^[a-zA-Z0-9ñáéíóúÁÉÍÓÚ .,]*$", message = "El campo no puede poseer caracteres especiales")
     private String color;
 
     @Size(min = 0, max = 80, message = "La longitud no puede superar los 80 caracteres.")
-    @Pattern(regexp = "^[a-zA-Z0-9ñáéíóúÁÉÍÓÚ ]*$", message = "El campo no puede poseer caracteres especiales")
+    @Pattern(regexp = "^[a-zA-Z0-9ñáéíóúÁÉÍÓÚ .,]*$", message = "El campo no puede poseer caracteres especiales")
     private String notes;
 }

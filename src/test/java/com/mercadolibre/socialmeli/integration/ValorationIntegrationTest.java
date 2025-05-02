@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -60,4 +62,26 @@ public class ValorationIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
+
+
+
+    @Test
+    void postValoration_withValidData_shouldReturnStatusOk() throws Exception {
+        mockMvc.perform(post("/products/valoration")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"user_id\":1, \"post_id\":100, \"valoration\":4}"))
+                .andExpect(status().isOk());
+    }
+
+
+
+    @Test
+    void postValoration_withInvalidValoration_shouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post("/products/valoration")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"post_id\":100, \"user_id\":4, \"valoration\":6}"))
+                .andExpect(status().isBadRequest());
+    }
+
+
 }

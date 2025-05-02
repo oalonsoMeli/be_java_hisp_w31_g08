@@ -153,4 +153,28 @@ public class UserControllerIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
+    /*
+     * Test de integración del endpoint  /users/{userId}/followers/count
+     * T-0007 (US-0002) Verifica la cantidad de seguidores de un determinado usuario.
+     */
+    @Test
+    void getFollowersCountByUserId_shouldReturn200() throws Exception {
+        mockMvc.perform(get("/users/3/followers/count")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user_id").value(3))
+                .andExpect(jsonPath("$.user_name").exists())
+                .andExpect(jsonPath("$.followers_count").value(1));
+    }
+
+    /*
+     * Test de integración del endpoint  /users/{userId}/followers/count
+     * T-0007 (US-0002) Lanza la excepción 404 debido a que el id que le pasamos no existe.
+     */
+    @Test
+    void getFollowersCountByUserId_shouldReturn404() throws Exception {
+        mockMvc.perform(get("/users/999/followers/count")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 }
