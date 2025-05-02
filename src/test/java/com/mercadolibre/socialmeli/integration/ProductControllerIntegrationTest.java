@@ -253,4 +253,16 @@ public class ProductControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
+    @DisplayName("Test de integración del endpoint /products/promo-post/list " +
+            "US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor" +
+            "Usuario no encontrado.")
+    @Test
+    public void getPromotionalProductsFromSellers_UserNotFound() throws Exception {
+        mockMvc.perform(get("/products/promo-post/list", 1)
+                        .param("user_id", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Usuario no encontrado."));
+    }
 }
