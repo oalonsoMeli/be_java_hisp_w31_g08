@@ -180,6 +180,7 @@ class ProductControllerTest {
 
 
     // US 0015 Listar las valoraciones que realizó un usuario
+    @Test
     void getAllValorationsByUser_ShouldReturnOnlyMatchingValorations() {
         // Assert
         Integer userId = 1;

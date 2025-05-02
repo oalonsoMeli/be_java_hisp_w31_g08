@@ -98,6 +98,7 @@ public class ProductControllerIntegrationTest {
         return mapper.readValue(jsonResponse, PostsDto.class);
     }
 
+
     private void assertPostsSorted(PostsDto postsDto, boolean ascending) {
         assertNotNull(postsDto);
         assertEquals(3, postsDto.getPosts().size());
