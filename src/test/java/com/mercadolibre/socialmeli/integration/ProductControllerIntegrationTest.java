@@ -201,4 +201,46 @@ public class ProductControllerIntegrationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
+
+    /*
+     * Test de integración del endpoint /products/{user_id}/user/valorations
+     * T-0015 (US-0015) Verifica que devuelva las valoraciones del usuario
+     */
+    @Test
+    void getAllValorationsByUser_ShouldReturnOnlyMatchingValorations() throws Exception {
+        mockMvc.perform(get("/products/{user_id}/user/valorations", userId))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].user_id").value(userId))
+                .andExpect(jsonPath("$[0].post_id").value(post4.getPostId()))
+                .andExpect(jsonPath("$[0].valoration").value(5));
+    }
+
+    /*
+     * Test de integración del endpoint /products/{user_id}/user/valorations
+     * T-0015 (US-0015) Verifica que devuelva una lista vacía si el usuario no ha valorado post
+     */
+    @Test
+    void getAllValorationsByUser_ShouldReturnEmptyValorations() throws Exception {
+        Integer userWithNotValorations = 3;
+        mockMvc.perform(get("/products/{user_id}/user/valorations", userWithNotValorations))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    /*
+     * Test de integración del endpoint /products/{user_id}/user/valorations
+     * T-0015 (US-0015) Verifica que devuelva excepción si el id no existe
+     */
+    @Test
+    void getAllValorationsByUser_shoulReturnNotFound() throws Exception {
+        mockMvc.perform(get("/products/{user_id}/user/valorations", Integer.MAX_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
 }
