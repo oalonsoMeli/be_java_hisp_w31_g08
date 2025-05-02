@@ -294,5 +294,84 @@ class ProductServiceImplTest {
         Assertions.assertEquals(0,postList.size());
     }
 
+    //US0014.1 Verificar que la valoración es procesada correctamente cuando la valoración está entre 1 y 5
+    @Test
+    void testValoratePost_validValoration_shouldProcessWithoutException() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 1, 3);
+        Post post = TestFactory.createPost(1, 1, LocalDate.now().minusWeeks(1));
+        User user = TestFactory.createUser(1);
+
+        when(productRepository.getPostsByPostId(1)).thenReturn(Optional.of(post));
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(user));
+
+        // Act & Assert
+        assertDoesNotThrow(() -> productService.valorateAPost(valorationDTO));
+    }
+
+    //US0014.1 Verificar que no se lanza ninguna excepción cuando la valoración es válida
+    @Test
+    void testValoratePost_withoutException() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 1, 3); 
+        Post post = TestFactory.createPost(1, 1, LocalDate.now().minusWeeks(1));
+        User user = TestFactory.createUser(1);
+
+        when(productRepository.getPostsByPostId(1)).thenReturn(Optional.of(post));
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(user));
+
+        // Act & Assert
+        assertDoesNotThrow(() -> productService.valorateAPost(valorationDTO));
+    }
+
+
+   // US0014.1 Verificar que se lanza una excepción cuando la valoración es menor que 1
+    @Test
+    void valorateAPost_shouldThrowExceptionWhenValorationIsLessThan1() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 1, 0);
+        Post post = TestFactory.createPost(1, 1, LocalDate.now().minusWeeks(1));
+        User user = TestFactory.createUser(1);
+
+        when(productRepository.getPostsByPostId(1)).thenReturn(Optional.of(post));
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(user));
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
+    }
+
+    // US0014.1 Verificar que se lanza una excepción cuando el post no existe
+    @Test
+    void valorateAPost_shouldThrowExceptionWhenPostNotFound() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 1, 3);
+        when(productRepository.getPostsByPostId(1)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
+    }
+
+
+    //US0014.1 Verificar que se lanza una excepción cuando la valoración es mayor que 5
+    @Test
+    void valorateAPost_shouldThrowExceptionWhenValorationIsGreaterThan5() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 1, 6);
+        Post post = TestFactory.createPost(1, 1, LocalDate.now().minusWeeks(1));
+        User user = TestFactory.createUser(1);
+
+        when(productRepository.getPostsByPostId(1)).thenReturn(Optional.of(post));
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(user));
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
+    }
+
+
+
+
+
+
+
 }
 

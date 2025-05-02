@@ -105,6 +105,7 @@ public class ProductServiceImpl implements IProductService {
         return new PromoProductsDto(user.getUserId(),user.getUserName(),promoPostDtoList);
     }
 
+    // Registra una valoración (1 a 5) de un usuario sobre un post.
     @Override
     public void valorateAPost(ValorationDTO valorationDTO) {
         Post post = getPostById(valorationDTO.getPost_id());
@@ -156,5 +157,6 @@ public class ProductServiceImpl implements IProductService {
         Double average = valorations.values().stream().mapToDouble(v -> v).average().orElse(0.0);
         return new ValorationAverageDto(average);
     }
+
 
 }
