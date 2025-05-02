@@ -179,4 +179,14 @@ class ProductRepositoryImplTest {
 
     }
 
+    @Test
+    // US0015 - El método retorna la lista de post
+    void getAll_shouldReturnAllProducts() {
+        // Act
+        List<Post> posts = productRepository.getAll();
+        // Assert
+        assertNotNull(posts);
+        assertFalse(posts.isEmpty(), "The posts list should not be empty");
+    }
+
 }

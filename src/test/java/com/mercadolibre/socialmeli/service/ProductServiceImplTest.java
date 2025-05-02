@@ -53,6 +53,17 @@ class ProductServiceImplTest {
     private User defaultUser;
     private List<Post> defaultPostsFollowedUsers;
 
+    @BeforeEach
+    void setUp() {
+        defaultUser = TestFactory.createUserFollowing(DEFAULT_USER_ID, 2, 3);
+        defaultPostsFollowedUsers = TestFactory.createPostsForFollowedUsers(2, 3);
+    }
+
+    private void mockUserAndPosts(String orderType) {
+        when(userRepository.getUserById(DEFAULT_USER_ID)).thenReturn(Optional.of(defaultUser));
+        when(productRepository.getPostsByUserIdsInLastTwoWeeks(anySet(), eq(orderType)))
+                .thenReturn(defaultPostsFollowedUsers);
+    }
 
     @DisplayName("Verificar que el tipo de ordenamiento por fecha exista (US-0009) de forma ascendente")
     @Test
@@ -112,19 +123,6 @@ class ProductServiceImplTest {
         //Act y Assert
         Assertions.assertThrows(NotFoundException.class, ()-> this.productService.getListOfPublicationsByUser(user.getUserId(),
                 OrderType.ORDER_DATE_DESC.getValue()));
-    }
-
-
-    @BeforeEach
-    void setUp() {
-        defaultUser = TestFactory.createUserFollowing(DEFAULT_USER_ID, 2, 3);
-        defaultPostsFollowedUsers = TestFactory.createPostsForFollowedUsers(2, 3);
-    }
-
-    private void mockUserAndPosts(String orderType) {
-        when(userRepository.getUserById(DEFAULT_USER_ID)).thenReturn(Optional.of(defaultUser));
-        when(productRepository.getPostsByUserIdsInLastTwoWeeks(anySet(), eq(orderType)))
-                .thenReturn(defaultPostsFollowedUsers);
     }
 
     @Test
@@ -293,6 +291,51 @@ class ProductServiceImplTest {
         //Assert
         Assertions.assertEquals(0,postList.size());
     }
+
+    @Test
+    // US 0015 Listar las valoraciones que realizó un usuario
+    void getAllValorationsByUser_ShouldReturnOnlyMatchingValorations() {
+        // Arrange
+        List<Post> post = TestFactory.createPostListWithValorations();
+        when(userRepository.getUserById(DEFAULT_USER_ID)).thenReturn(Optional.of(defaultUser));
+        when(productRepository.getAll()).thenReturn(post);
+        // Act
+        List<ValorationDTO> result = productService.getAllValorationsByUser(DEFAULT_USER_ID);
+        // Assert
+        assertEquals(3, result.size());
+        assertTrue(result.stream().anyMatch(v -> v.getPost_id() == 1));
+        assertTrue(result.stream().anyMatch(v -> v.getPost_id() == 2));
+        assertTrue(result.stream().anyMatch(v -> v.getPost_id() == 5));
+        assertTrue(result.stream().anyMatch(v -> v.getValoration() == 3));
+        assertTrue(result.stream().anyMatch(v -> v.getValoration() == 4));
+        assertTrue(result.stream().anyMatch(v -> v.getValoration() == 5));
+    }
+
+    @Test
+        // US 0015 Listar las valoraciones que realizó un usuario
+    void getAllValorationsByUser_ShouldReturnEmptyValorations() {
+        // Arrange
+        Integer userId = 4;
+        User user = TestFactory.createUser(userId);
+        List<Post> posts = TestFactory.createPostListWithValorations();
+        when(userRepository.getUserById(userId)).thenReturn(Optional.of(user));
+        when(productRepository.getAll()).thenReturn(posts);
+        // Act
+        List<ValorationDTO> result = productService.getAllValorationsByUser(userId);
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    // US 0015 Listar las valoraciones que realizó un usuario
+    void getAllValorationsByUser_ShouldReturnBadRequestException() {
+        // Arrange
+        when(userRepository.getUserById(DEFAULT_USER_ID)).thenReturn(Optional.empty());
+        // Act & Assert
+        assertThrows(BadRequestException.class,()->productService.getAllValorationsByUser(DEFAULT_USER_ID));
+    }
+
+
 
 }
 

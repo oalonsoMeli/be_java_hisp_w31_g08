@@ -3,6 +3,7 @@ import com.mercadolibre.socialmeli.dto.*;
 import com.mercadolibre.socialmeli.dto.PostDto;
 import com.mercadolibre.socialmeli.dto.PostsDto;
 import com.mercadolibre.socialmeli.dto.ValorationAverageDto;
+import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.dto.ValorationDTO;
 import com.mercadolibre.socialmeli.factory.TestFactory;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -76,6 +78,7 @@ class ProductControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(valorationsExpected, response.getBody().getAverage());
     }
+
     @Test
     // US0014.2 - Controller devuelve OK con lista filtrada por puntuacion
     void getValorationsByPost_shouldReturnOkWithFilteredResults() {
@@ -154,6 +157,35 @@ class ProductControllerTest {
         });
 
         verify(productService, times(1)).getListOfPublicationsByUser(userId, order);
+
+    }
+
+    @Test
+    // US 0015 Listar las valoraciones que realizó un usuario
+    void getAllValorationsByUser_ShouldReturnOnlyMatchingValorations() {
+        // Assert
+        Integer userId = 1;
+        when(productService.getAllValorationsByUser(userId)).thenReturn(new ArrayList<ValorationDTO>());
+
+        // Act
+        ResponseEntity<List<ValorationDTO>> response = productController.getAllValorationsByUser(userId);
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(productService, times(1)).getAllValorationsByUser(userId);
+    }
+
+    @Test
+        // US 0015 Listar las valoraciones que realizó un usuario
+    void getAllValorationsByUser_shouldPropagateExceptionWhenServiceFails() {
+        // Assert
+        when(productService.getAllValorationsByUser(Integer.MAX_VALUE))
+                .thenThrow(new BadRequestException("Usuario no encontrado."));
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> {
+            productController.getAllValorationsByUser(Integer.MAX_VALUE);
+        });
+        verify(productService, times(1)).getAllValorationsByUser(Integer.MAX_VALUE);
 
     }
 }

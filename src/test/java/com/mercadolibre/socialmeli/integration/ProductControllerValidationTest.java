@@ -1,6 +1,5 @@
 package com.mercadolibre.socialmeli.integration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -23,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ProductControllerValidationIntegrationTest {
+public class ProductControllerValidationTest {
 
     @Autowired
     private MockMvc mockMvc;
