@@ -161,6 +161,24 @@ class ProductControllerTest {
     }
 
     @Test
+
+    // US0014.1 - Controller recibe correctamente una valoración y devuelve status OK
+    void valorateAPost_shouldCallServiceAndReturnOk() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 10, 4);
+
+        doNothing().when(productService).valorateAPost(valorationDTO);
+
+        // Act
+        ResponseEntity<Void> response = productController.valorateAPost(valorationDTO);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(productService, times(1)).valorateAPost(valorationDTO);
+    }
+
+
     // US 0015 Listar las valoraciones que realizó un usuario
     void getAllValorationsByUser_ShouldReturnOnlyMatchingValorations() {
         // Assert

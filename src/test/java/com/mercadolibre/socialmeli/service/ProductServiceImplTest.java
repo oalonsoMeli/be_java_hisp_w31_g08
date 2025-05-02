@@ -70,8 +70,8 @@ class ProductServiceImplTest {
     void getListOfPublicationsByUser_verifyDateSortTypeExistsAsc() {
         //Arrange
         User user = TestFactory.createUser(1);
-        List<Post> postList = TestFactory.createPostList(5,1);
-        when(this.productRepository.getPostsByUserIdsInLastTwoWeeks(anySet(),anyString())).thenReturn(postList);
+        List<Post> postList = TestFactory.createPostList(5, 1);
+        when(this.productRepository.getPostsByUserIdsInLastTwoWeeks(anySet(), anyString())).thenReturn(postList);
         when(this.userRepository.getUserById(anyInt())).thenReturn(Optional.of(user));
 
         //Act
@@ -79,7 +79,7 @@ class ProductServiceImplTest {
                 OrderType.ORDER_DATE_ASC.getValue());
 
         //Assert
-        Assertions.assertEquals(5,postsDto.getPosts().size());
+        Assertions.assertEquals(5, postsDto.getPosts().size());
     }
 
     @DisplayName("Verificar que el tipo de ordenamiento por fecha exista (US-0009) de forma descendente")
@@ -87,8 +87,8 @@ class ProductServiceImplTest {
     void getListOfPublicationsByUser_verifyDateSortTypeExistsDesc() {
         //Arrange
         User user = TestFactory.createUser(1);
-        List<Post> postList = TestFactory.createPostList(5,1);
-        when(this.productRepository.getPostsByUserIdsInLastTwoWeeks(anySet(),anyString())).thenReturn(postList);
+        List<Post> postList = TestFactory.createPostList(5, 1);
+        when(this.productRepository.getPostsByUserIdsInLastTwoWeeks(anySet(), anyString())).thenReturn(postList);
         when(this.userRepository.getUserById(anyInt())).thenReturn(Optional.of(user));
 
         //Act
@@ -96,7 +96,7 @@ class ProductServiceImplTest {
                 OrderType.ORDER_DATE_DESC.getValue());
 
         //Assert
-        Assertions.assertEquals(5,postsDto.getPosts().size());
+        Assertions.assertEquals(5, postsDto.getPosts().size());
     }
 
     @DisplayName("Verificar que el tipo de ordenamiento por fecha exista (US-0009) - NO EXISTE")
@@ -117,11 +117,11 @@ class ProductServiceImplTest {
         //Arrange
         User user = TestFactory.createUser(1);
         List<Post> postList = new ArrayList<>();
-        when(this.productRepository.getPostsByUserIdsInLastTwoWeeks(anySet(),anyString())).thenReturn(postList);
+        when(this.productRepository.getPostsByUserIdsInLastTwoWeeks(anySet(), anyString())).thenReturn(postList);
         when(this.userRepository.getUserById(anyInt())).thenReturn(Optional.of(user));
 
         //Act y Assert
-        Assertions.assertThrows(NotFoundException.class, ()-> this.productService.getListOfPublicationsByUser(user.getUserId(),
+        Assertions.assertThrows(NotFoundException.class, () -> this.productService.getListOfPublicationsByUser(user.getUserId(),
                 OrderType.ORDER_DATE_DESC.getValue()));
     }
 
@@ -160,7 +160,7 @@ class ProductServiceImplTest {
 
     // T-00016 - US0016: Verifica que calcule el promedio de las valoraciones de un post.
     @Test
-    void getValorationsAverageByPost_shouldCalculateTheAverage(){
+    void getValorationsAverageByPost_shouldCalculateTheAverage() {
         // Arrange
         Integer postId = 1;
         Post post = TestFactory.createPost(postId, 1, LocalDate.now().minusWeeks(1));
@@ -180,9 +180,9 @@ class ProductServiceImplTest {
 
     // T-00016 - US0016: Verifica que largue una excepción si el id del post buscado no existe.
     @Test
-    void getValorationsAverageByPost_withIdInexistent_shouldReturnException(){
+    void getValorationsAverageByPost_withIdInexistent_shouldReturnException() {
         when(productRepository.getPostsByPostId(9999)).thenReturn(Optional.empty());
-        assertThrows(BadRequestException.class, () ->  productService.getValorationsAverageByPost(9999));
+        assertThrows(BadRequestException.class, () -> productService.getValorationsAverageByPost(9999));
     }
 
     @Test
@@ -242,12 +242,13 @@ class ProductServiceImplTest {
         // Assert
         assertTrue(result.isEmpty());
     }
+
     @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor")
     @Test
-    void getPromotionalProductsFromSellers(){
+    void getPromotionalProductsFromSellers() {
         //Arrange
         User user = TestFactory.createUser(1);
-        List<Post> postList = TestFactory.createPostList(5,1);
+        List<Post> postList = TestFactory.createPostList(5, 1);
         when(this.userRepository.getUserById(anyInt())).thenReturn(Optional.of(user));
         when(this.productRepository.getPromotionalProductsFromSellers(anyInt())).
                 thenReturn(postList);
@@ -257,19 +258,19 @@ class ProductServiceImplTest {
                 getPromotionalProductsFromSellers(user.getUserId());
 
         //Assert
-        assertEquals(5,promoProductsDto.getPromoPostDtoList().size());
+        assertEquals(5, promoProductsDto.getPromoPostDtoList().size());
     }
 
     @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor" +
             "Usuario no encontrado")
     @Test
-    void getPromotionalProductsFromSellersUserNotFound(){
+    void getPromotionalProductsFromSellersUserNotFound() {
         //Arrange
         User user = TestFactory.createUser(1);
         when(this.userRepository.getUserById(anyInt())).thenThrow(BadRequestException.class);
 
         //Act y Assert
-        assertThrows(BadRequestException.class,()->this.productService.
+        assertThrows(BadRequestException.class, () -> this.productService.
                 getPromotionalProductsFromSellers(user.getUserId()));
     }
 
@@ -278,8 +279,8 @@ class ProductServiceImplTest {
     void getPromotionalProductsFromSellersNotPromo() {
         //Arrange
         User user = TestFactory.createUser(5);
-        Post post1 = TestFactory.createPost(10,5);
-        Post post2 = TestFactory.createPost(11,5);
+        Post post1 = TestFactory.createPost(10, 5);
+        Post post2 = TestFactory.createPost(11, 5);
 
         this.productRepository.save(post1);
         this.productRepository.save(post2);
@@ -289,53 +290,127 @@ class ProductServiceImplTest {
                 getPromotionalProductsFromSellers(user.getUserId());
 
         //Assert
-        Assertions.assertEquals(0,postList.size());
+        Assertions.assertEquals(0, postList.size());
     }
 
-    @Test
-    // US 0015 Listar las valoraciones que realizó un usuario
-    void getAllValorationsByUser_ShouldReturnOnlyMatchingValorations() {
-        // Arrange
-        List<Post> post = TestFactory.createPostListWithValorations();
-        when(userRepository.getUserById(DEFAULT_USER_ID)).thenReturn(Optional.of(defaultUser));
-        when(productRepository.getAll()).thenReturn(post);
-        // Act
-        List<ValorationDTO> result = productService.getAllValorationsByUser(DEFAULT_USER_ID);
-        // Assert
-        assertEquals(3, result.size());
-        assertTrue(result.stream().anyMatch(v -> v.getPost_id() == 1));
-        assertTrue(result.stream().anyMatch(v -> v.getPost_id() == 2));
-        assertTrue(result.stream().anyMatch(v -> v.getPost_id() == 5));
-        assertTrue(result.stream().anyMatch(v -> v.getValoration() == 3));
-        assertTrue(result.stream().anyMatch(v -> v.getValoration() == 4));
-        assertTrue(result.stream().anyMatch(v -> v.getValoration() == 5));
-    }
 
+    //US0014.1 Verificar que la valoración es procesada correctamente cuando la valoración está entre 1 y 5
     @Test
-        // US 0015 Listar las valoraciones que realizó un usuario
-    void getAllValorationsByUser_ShouldReturnEmptyValorations() {
+            void testValoratePost_validValoration_shouldProcessWithoutException() {
         // Arrange
-        Integer userId = 4;
-        User user = TestFactory.createUser(userId);
-        List<Post> posts = TestFactory.createPostListWithValorations();
-        when(userRepository.getUserById(userId)).thenReturn(Optional.of(user));
-        when(productRepository.getAll()).thenReturn(posts);
-        // Act
-        List<ValorationDTO> result = productService.getAllValorationsByUser(userId);
-        // Assert
-        assertTrue(result.isEmpty());
-    }
+        ValorationDTO valorationDTO = new ValorationDTO(1, 1, 3);
+        Post post = TestFactory.createPost(1, 1, LocalDate.now().minusWeeks(1));
+        User user = TestFactory.createUser(1);
 
-    @Test
-    // US 0015 Listar las valoraciones que realizó un usuario
-    void getAllValorationsByUser_ShouldReturnBadRequestException() {
-        // Arrange
-        when(userRepository.getUserById(DEFAULT_USER_ID)).thenReturn(Optional.empty());
+        when(productRepository.getPostsByPostId(1)).thenReturn(Optional.of(post));
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(user));
+
         // Act & Assert
-        assertThrows(BadRequestException.class,()->productService.getAllValorationsByUser(DEFAULT_USER_ID));
+        assertDoesNotThrow(() -> productService.valorateAPost(valorationDTO));
+    }
+
+    //US0014.1 Verificar que no se lanza ninguna excepción cuando la valoración es válida
+    @Test
+    void testValoratePost_withoutException() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 1, 3);
+        Post post = TestFactory.createPost(1, 1, LocalDate.now().minusWeeks(1));
+        User user = TestFactory.createUser(1);
+
+        when(productRepository.getPostsByPostId(1)).thenReturn(Optional.of(post));
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(user));
+
+        // Act & Assert
+        assertDoesNotThrow(() -> productService.valorateAPost(valorationDTO));
     }
 
 
+    // US0014.1 Verificar que se lanza una excepción cuando la valoración es menor que 1
+    @Test
+    void valorateAPost_shouldThrowExceptionWhenValorationIsLessThan1() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 1, 0);
+        Post post = TestFactory.createPost(1, 1, LocalDate.now().minusWeeks(1));
+        User user = TestFactory.createUser(1);
 
-}
+        when(productRepository.getPostsByPostId(1)).thenReturn(Optional.of(post));
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(user));
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
+    }
+
+    // US0014.1 Verificar que se lanza una excepción cuando el post no existe
+    @Test
+    void valorateAPost_shouldThrowExceptionWhenPostNotFound() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 1, 3);
+        when(productRepository.getPostsByPostId(1)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
+    }
+
+
+    //US0014.1 Verificar que se lanza una excepción cuando la valoración es mayor que 5
+    @Test
+    void valorateAPost_shouldThrowExceptionWhenValorationIsGreaterThan5() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 1, 6);
+        Post post = TestFactory.createPost(1, 1, LocalDate.now().minusWeeks(1));
+        User user = TestFactory.createUser(1);
+
+        when(productRepository.getPostsByPostId(1)).thenReturn(Optional.of(post));
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(user));
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
+
+    }
+        @Test
+        // US 0015 Listar las valoraciones que realizó un usuario
+        void getAllValorationsByUser_ShouldReturnOnlyMatchingValorations () {
+            // Arrange
+            List<Post> post = TestFactory.createPostListWithValorations();
+            when(userRepository.getUserById(DEFAULT_USER_ID)).thenReturn(Optional.of(defaultUser));
+            when(productRepository.getAll()).thenReturn(post);
+            // Act
+            List<ValorationDTO> result = productService.getAllValorationsByUser(DEFAULT_USER_ID);
+            // Assert
+            assertEquals(3, result.size());
+            assertTrue(result.stream().anyMatch(v -> v.getPost_id() == 1));
+            assertTrue(result.stream().anyMatch(v -> v.getPost_id() == 2));
+            assertTrue(result.stream().anyMatch(v -> v.getPost_id() == 5));
+            assertTrue(result.stream().anyMatch(v -> v.getValoration() == 3));
+            assertTrue(result.stream().anyMatch(v -> v.getValoration() == 4));
+            assertTrue(result.stream().anyMatch(v -> v.getValoration() == 5));
+        }
+
+        @Test
+        // US 0015 Listar las valoraciones que realizó un usuario
+        void getAllValorationsByUser_ShouldReturnEmptyValorations () {
+            // Arrange
+            Integer userId = 4;
+            User user = TestFactory.createUser(userId);
+            List<Post> posts = TestFactory.createPostListWithValorations();
+            when(userRepository.getUserById(userId)).thenReturn(Optional.of(user));
+            when(productRepository.getAll()).thenReturn(posts);
+            // Act
+            List<ValorationDTO> result = productService.getAllValorationsByUser(userId);
+            // Assert
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        // US 0015 Listar las valoraciones que realizó un usuario
+        void getAllValorationsByUser_ShouldReturnBadRequestException () {
+            // Arrange
+            when(userRepository.getUserById(DEFAULT_USER_ID)).thenReturn(Optional.empty());
+            // Act & Assert
+            assertThrows(BadRequestException.class, () -> productService.getAllValorationsByUser(DEFAULT_USER_ID));
+        }
+
+
+    }
+
 
