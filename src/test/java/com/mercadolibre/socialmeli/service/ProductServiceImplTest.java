@@ -409,8 +409,6 @@ class ProductServiceImplTest {
             // Act & Assert
             assertThrows(BadRequestException.class, () -> productService.getAllValorationsByUser(DEFAULT_USER_ID));
         }
-
-
     }
 
 

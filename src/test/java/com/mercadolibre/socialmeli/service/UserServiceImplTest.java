@@ -9,6 +9,7 @@ import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
 import com.mercadolibre.socialmeli.repository.UserRepositoryImpl;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -370,6 +371,96 @@ class UserServiceImplTest {
 
         // Assert
         assertTrue(follower.getFollows().contains(2), "El ID del usuario seguido debe estar en la lista");
+    }
+
+    // T-0004 - US0008: Verifica que la lista de followers este ordenada de manera ASC.
+    @Test
+    void searchFollowersUsers_withOrderAsc_shouldHaveOrderAsc() {
+        // Arrange
+        User user1 = TestFactory.createUser(1);
+        user1.setUserName("John");
+        User user3 = TestFactory.createUser(3);
+        user3.setUserName("Jane");
+
+        Integer userId = 2;
+        User user2 = TestFactory.createUserFollowing(userId, 1, 3);
+
+        when(repository.getUserById(userId)).thenReturn(Optional.of(user2));
+        when(repository.findUsersById(List.of(1, 3))).thenReturn(List.of(user1, user3));
+
+        // Act
+        FollowersDto result = service.getUserFollowers(userId, "name_asc");
+
+        // Assert
+        assertEquals(user3.getUserName(), result.getFollowers().get(0).getUser_name());
+        assertEquals(user1.getUserName(), result.getFollowers().get(1).getUser_name());
+    }
+
+    // T-0004 - US0008: T-0004 - US0008: Verifica que la lista de follower este ordenada de manera DESC.
+   @Test
+    void searchFollowersUsers_withOrderDesc_shouldHaveOrderDesc() {
+        // Arrange
+       User user1 = TestFactory.createUser(1);
+       user1.setUserName("John");
+       User user3 = TestFactory.createUser(3);
+       user3.setUserName("Jane");
+
+       Integer userId = 2;
+       User user2 = TestFactory.createUserFollowing(userId, 1, 3);
+
+       when(repository.getUserById(userId)).thenReturn(Optional.of(user2));
+       when(repository.findUsersById(List.of(1, 3))).thenReturn(List.of(user1, user3));
+
+       // Act
+       FollowersDto result = service.getUserFollowers(userId, "name_desc");
+
+       // Assert
+       assertEquals(user1.getUserName(), result.getFollowers().get(0).getUser_name());
+       assertEquals(user3.getUserName(), result.getFollowers().get(1).getUser_name());
+    }
+
+    // T-0004 - US0008: Verifica que la lista de sellers este ordenada de manera ASC.
+    @Test
+    void searchFollowedSellers_withOrderAsc_shouldHaveOrderAsc() {
+        // Arrange
+        User user1 = TestFactory.createUserFollowing(1, 2, 3);
+        User user2 = TestFactory.createUser(2);
+        user2.setUserName("John");
+        User user3 = TestFactory.createUser(3);
+        user3.setUserName("Jane");
+
+        when(repository.getUserById(1)).thenReturn(Optional.of(user1));
+        when(repository.findUsersById(List.of(2, 3))).thenReturn(List.of(user2, user3));
+
+        // Act
+        FollowedDto result = service.searchFollowedSellers(1, "name_asc");
+
+        // Assert
+       assertEquals(user3.getUserName(), result.getFollowed().get(0).getUser_name());
+       assertEquals(user2.getUserName(), result.getFollowed().get(1).getUser_name());
+    }
+
+   // T-0004 - US0008: Verifica que la lista de sellers este ordenada de manera DESC.
+   @Test
+    void searchFollowedSellers_withOrderDesc_shouldHaveOrderDesc() {
+        // Arrange
+        User user1 = TestFactory.createUserFollowing(1, 2, 3);
+
+        User user2 = TestFactory.createUser(2);
+        user2.setUserName("John");
+        User user3 = TestFactory.createUser(3);
+        user3.setUserName("Jane");
+
+        when(repository.getUserById(1)).thenReturn(Optional.of(user1));
+        when(repository.findUsersById(List.of(2, 3))).thenReturn(List.of(user2, user3));
+
+        // Act
+        FollowedDto result = service.searchFollowedSellers(1, "name_desc");
+
+        // Assert
+        assertEquals(user2.getUserName(), result.getFollowed().get(0).getUser_name());
+        assertEquals(user3.getUserName(), result.getFollowed().get(1).getUser_name());
+
     }
 }
 

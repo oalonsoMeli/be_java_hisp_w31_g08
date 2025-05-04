@@ -57,6 +57,7 @@ public class UserControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.followers").isNotEmpty())
                 .andExpect(jsonPath("$.followers[0].user_name").value("Analia"))
                 .andExpect(jsonPath("$.followers[1].user_name").value("Raul"));
     }
@@ -71,6 +72,7 @@ public class UserControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.followers").isNotEmpty())
                 .andExpect(jsonPath("$.followers[0].user_name").value("Raul"))
                 .andExpect(jsonPath("$.followers[1].user_name").value("Analia"));
     }
@@ -86,6 +88,7 @@ public class UserControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.followed").isNotEmpty())
                 .andExpect(jsonPath("$.followed[0].user_name").value("Analia"))
                 .andExpect(jsonPath("$.followed[1].user_name").value("Mariela"));
     }
@@ -101,6 +104,7 @@ public class UserControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.followed").isNotEmpty())
                 .andExpect(jsonPath("$.followed[0].user_name").value("Mariela"))
                 .andExpect(jsonPath("$.followed[1].user_name").value("Analia"));
     }
