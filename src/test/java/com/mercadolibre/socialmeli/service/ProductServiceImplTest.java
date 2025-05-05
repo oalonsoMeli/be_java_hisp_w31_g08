@@ -504,6 +504,24 @@ class ProductServiceImplTest {
         // Act & Assert
         assertThrows(BadRequestException.class, () -> productService.createPost(promoDto));
     }
+    @Test
+    void createPost_withNullDiscount_shouldThrowBadRequest() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1,null);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.createPost(promoDto));
+    }
+    @Test
+    void createPost_withZeroDiscount_shouldThrowBadRequest() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1,0.0);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.createPost(promoDto));
+    }
 }
 
 

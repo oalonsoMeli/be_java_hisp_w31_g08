@@ -107,7 +107,7 @@ class ProductControllerTest {
     void getPromotionalProductsFromSellers_shouldReturnPostsDtoAndStatusOk() {
         // Arrange
         User user = TestFactory.createUser(5);
-        PromoPostDto promoPostDto = TestFactory.createPromoPostDto(5, 5);
+        PromoPostDto promoPostDto = TestFactory.createPromoPostDto(5, 5.1);
         PromoProductsDto promoProductsDto = new PromoProductsDto(
                 user.getUserId(), user.getUserName(), List.of(promoPostDto)
         );

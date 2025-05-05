@@ -126,7 +126,7 @@ public class TestFactory {
                 .collect(Collectors.toList());
     }
 
-    public static PromoPostDto createPromoPostDto(Integer userId, double discount) {
+    public static PromoPostDto createPromoPostDto(Integer userId, Double discount) {
         PromoPostDto dto = new PromoPostDto();
         dto.setUserId(userId);
         dto.setDate(LocalDate.now().minusDays(1));
