@@ -238,4 +238,30 @@ class ProductControllerTest {
 
         verify(productService).valorateAPost(valorationDTO);
     }
+
+    @DisplayName("US 0011 - Verificar que la respuesta de getQuantityOfProducts obtenga la cantidad.")
+    @Test
+    void getQuantityOfProducts_shouldReturnResultWithCount(){
+        // Act
+        PromoProductsCountDto countDTO = new PromoProductsCountDto(5, "Ornella", 2);
+        when(productService.getQuantityOfProducts(countDTO.getUserId())).thenReturn(countDTO);
+        // Arrange
+        ResponseEntity<PromoProductsCountDto> result = productController.getQuantityOfProducts(countDTO.getUserId());
+        // Assert
+        assertTrue(result.hasBody());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(2, result.getBody().getPromoProductsCount());
+        assertEquals(5, result.getBody().getUserId());
+    }
+
+    @DisplayName("US 0011 -  Que al pasar un userId inexistente lance excepción.")
+    @Test
+    void getQuantityOfProducts_withFalseId_shouldReturnException(){
+        // Arrange
+        when(productService.getQuantityOfProducts(9999))
+                .thenThrow(new NotFoundException("Usuario no encontrado."));
+        //Act & Assert
+        assertThrows(NotFoundException.class, () ->
+                productController.getQuantityOfProducts(9999));
+    }
 }

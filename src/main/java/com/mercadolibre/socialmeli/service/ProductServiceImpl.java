@@ -63,6 +63,7 @@ public class ProductServiceImpl implements IProductService {
                 .orElseThrow(() -> new BadRequestException("Usuario no encontrado."));
     }
 
+    // Obtiene la cantidad de posteos con promo que tiene un usuario
     @Override
     public PromoProductsCountDto getQuantityOfProducts(Integer userId) {
         User user = validationUser(userId);

@@ -1,10 +1,6 @@
 package com.mercadolibre.socialmeli.service;
-import com.mercadolibre.socialmeli.dto.PostsDto;
-import com.mercadolibre.socialmeli.dto.ValorationAverageDto;
+import com.mercadolibre.socialmeli.dto.*;
 
-import com.mercadolibre.socialmeli.dto.ValorationDTO;
-
-import com.mercadolibre.socialmeli.dto.PromoProductsDto;
 import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.exception.ExceptionController;
 import com.mercadolibre.socialmeli.exception.IllegalArgumentException;
@@ -453,6 +449,50 @@ class ProductServiceImplTest {
         // Act & Assert
         assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
         verify(productRepository, never()).saveValoration(anyInt(), anyInt(), anyInt());
+    }
+
+    @DisplayName("US 0011 - Obtiene la cantidad de posteos con promoción según un usuario.")
+    @Test
+    void getQuantityOfProducts_withUserId_shouldReturnListOfProductsWithPromo(){
+        // Arrange
+        User user = TestFactory.createUser(5);
+        user.setUserName("Ornella");
+        Post post1 = TestFactory.createPost(10, user.getUserId());
+        post1.setHasPromo(true);
+        Post post2 = TestFactory.createPost(11, user.getUserId());
+        post2.setHasPromo(true);
+        when(userRepository.getUserById(5)).thenReturn(Optional.of(user));
+        when(productRepository.getPostsByUserId(user.getUserId())).thenReturn(List.of(post1, post2));
+        // Act
+        PromoProductsCountDto count = productService.getQuantityOfProducts(post1.getUserId());
+        // Assert
+        assertEquals(2, count.getPromoProductsCount());
+    }
+
+    @DisplayName("US 0011 - Si los hasPromo estan en false, la lista debería estar vacía.")
+    @Test
+    void getQuantityOfProducts_withHasPromoFalse_shouldReturnCero(){
+        // Arrange
+        User user = TestFactory.createUser(5);
+        user.setUserName("Ornella");
+        Post post1 = TestFactory.createPost(10, user.getUserId());
+        Post post2 = TestFactory.createPost(11, user.getUserId());
+        when(userRepository.getUserById(5)).thenReturn(Optional.of(user));
+        when(productRepository.getPostsByUserId(user.getUserId())).thenReturn(List.of(post1, post2));
+        // Act
+        PromoProductsCountDto count = productService.getQuantityOfProducts(post1.getUserId());
+        // Assert
+        assertEquals(0, count.getPromoProductsCount());
+    }
+
+    @DisplayName("US 0011 - Si el usuario no es encontrado, debería lanzar una excepción.")
+    @Test
+    void getQuantityOfProducts_withFalseUser_shouldReturnException(){
+        // Arrange
+        when(userRepository.getUserById(9999)).thenThrow(new NotFoundException("Usuario no encontrado"));
+        // Act & Assert
+        assertThrows(NotFoundException.class, () ->
+                productService.getQuantityOfProducts(9999));
     }
 }
 

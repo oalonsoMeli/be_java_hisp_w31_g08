@@ -23,7 +23,7 @@ class ProductRepositoryImplTest {
     private Post post1;
     private Post post2;
     private Post post3;
-
+    private Post post4;
     @BeforeEach
     void setUp() {
         productRepository = new ProductRepositoryImpl();
@@ -32,9 +32,11 @@ class ProductRepositoryImplTest {
         post1.getProduct().setProductName("Lavadora");
         post2 = TestFactory.createPost(2, 2, LocalDate.now().minusDays(5));
         post3 = TestFactory.createPost(3, 3, LocalDate.now().minusDays(3));
+        post4 = TestFactory.createPost(4, 2, LocalDate.now().minusDays(5));
         productRepository.save(post1);
         productRepository.save(post2);
         productRepository.save(post3);
+        productRepository.save(post4);
     }
 
     @Test
@@ -46,7 +48,7 @@ class ProductRepositoryImplTest {
         List<Post> posts = productRepository.getPostsByUserIdsInLastTwoWeeks(users, ORDER_DATE_DESC.getValue());
         // Assert
         assertNotNull(posts);
-        assertEquals(3, posts.size());
+        assertEquals(4, posts.size());
         for (int i = 0; i < posts.size() - 1; i++) {
             LocalDate current = posts.get(i).getDate();
             LocalDate next = posts.get(i + 1).getDate();
@@ -64,7 +66,7 @@ class ProductRepositoryImplTest {
         List<Post> posts = productRepository.getPostsByUserIdsInLastTwoWeeks(users, ORDER_DATE_ASC.getValue());
         // Assert
         assertNotNull(posts);
-        assertEquals(3, posts.size());
+        assertEquals(4, posts.size());
         for (int i = 0; i < posts.size() - 1; i++) {
             LocalDate current = posts.get(i).getDate();
             LocalDate next = posts.get(i + 1).getDate();
@@ -193,11 +195,26 @@ class ProductRepositoryImplTest {
     @Test
     void saveValoration_sholdSaveValorationInPost() {
         // Arrange
-        Post post = TestFactory.createPost(4, 1, LocalDate.now().minusWeeks(1));
+        Post post = TestFactory.createPost(5, 1, LocalDate.now().minusWeeks(1));
         productRepository.save(post);
         // Act
         productRepository.saveValoration(post.getPostId(), post.getUserId(), 3);
         // Assert
         assertFalse(post.getValorations().isEmpty());
     }
+
+    @DisplayName("US 0011 - Verifica que se obtenga la lista de post por userId.")
+    @Test
+    void getPostByUserId_shouldReturnThePost(){
+        // Arrange
+        int sizeExpected = 2;
+        // Act
+        List<Post> posts = productRepository.getPostsByUserId(2);
+        // Asert
+        assertEquals(sizeExpected, posts.size());
+        assertFalse(posts.isEmpty());
+        assertEquals(2, posts.get(0).getUserId());
+        assertEquals(2, posts.get(1).getUserId());
+    }
+
 }
