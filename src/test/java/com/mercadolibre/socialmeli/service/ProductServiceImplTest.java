@@ -1,10 +1,6 @@
 package com.mercadolibre.socialmeli.service;
-import com.mercadolibre.socialmeli.dto.PostsDto;
-import com.mercadolibre.socialmeli.dto.ValorationAverageDto;
+import com.mercadolibre.socialmeli.dto.*;
 
-import com.mercadolibre.socialmeli.dto.ValorationDTO;
-
-import com.mercadolibre.socialmeli.dto.PromoProductsDto;
 import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.exception.ExceptionController;
 import com.mercadolibre.socialmeli.exception.IllegalArgumentException;
@@ -470,6 +466,60 @@ class ProductServiceImplTest {
         // Act & Assert
         assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
         verify(productRepository, never()).saveValoration(anyInt(), anyInt(), anyInt());
+    }
+
+    // Test: metodo CreatePost
+    // Usuario válido, post sin promoción
+    @Test
+    void createPost_withValidPost_shouldSavePost() {
+        // Arrange
+        PostDto postDto = TestFactory.createPostDto(1);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act
+        productService.createPost(postDto);
+
+        // Assert
+        verify(userRepository).getUserById(1);
+        verify(productRepository).save(any(Post.class));
+    }
+
+    // Usuario válido, post con promoción válida
+    @Test
+    void createPost_withPromoAndValidDiscount_shouldApplyPromo() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1, 0.2);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act
+        productService.createPost(promoDto);
+
+        // Assert
+        verify(productRepository).save(argThat(post ->
+                post.getHasPromo() && post.getDiscount() == 0.2
+        ));
+    }
+
+    // Usuario no encontrado
+    @Test
+    void createPost_withInvalidUser_shouldThrowBadRequest() {
+        // Arrange
+        PostDto postDto = TestFactory.createPostDto(99);
+        when(userRepository.getUserById(99)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.createPost(postDto));
+    }
+
+    // Post con descuento inválido (> 1)
+    @Test
+    void createPost_withInvalidDiscount_shouldThrowBadRequest() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1, 1.5);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.createPost(promoDto));
     }
 }
 
