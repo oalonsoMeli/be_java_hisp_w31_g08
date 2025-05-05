@@ -10,6 +10,7 @@ import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.Post;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.service.IProductService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -106,7 +107,7 @@ class ProductControllerTest {
     void getPromotionalProductsFromSellers_shouldReturnPostsDtoAndStatusOk() {
         // Arrange
         User user = TestFactory.createUser(5);
-        PromoPostDto promoPostDto = TestFactory.createPromoPostDto(5, 5);
+        PromoPostDto promoPostDto = TestFactory.createPromoPostDto(5, 5.1);
         PromoProductsDto promoProductsDto = new PromoProductsDto(
                 user.getUserId(), user.getUserName(), List.of(promoPostDto)
         );
@@ -256,12 +257,68 @@ class ProductControllerTest {
 
     @DisplayName("US 0011 -  Que al pasar un userId inexistente lance excepción.")
     @Test
-    void getQuantityOfProducts_withFalseId_shouldReturnException(){
+    void getQuantityOfProducts_withFalseId_shouldReturnException() {
         // Arrange
         when(productService.getQuantityOfProducts(9999))
                 .thenThrow(new NotFoundException("Usuario no encontrado."));
         //Act & Assert
         assertThrows(NotFoundException.class, () ->
                 productController.getQuantityOfProducts(9999));
+    }
+    @Test
+    // Test Controller: crear un post con promocion válido
+    public void createPromoPost_shouldReturnStatusOk() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1, 0.2);
+
+        // Act
+        ResponseEntity<Void> response = productController.createPromoPost(promoDto);
+
+        // Assert
+        verify(productService, times(1)).createPost(promoDto);
+        Assertions.assertEquals(200, response.getStatusCodeValue());
+    }
+    @Test
+    // T-US0010 - error al crear post promocional
+    public void createPromoPost_shouldReturnBadRequestWhenDiscountInvalid() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1, 1.5);
+        doThrow(new BadRequestException("Descuento inválido"))
+                .when(productService).createPost(promoDto);
+
+        // Act + Assert
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            productController.createPromoPost(promoDto);
+        });
+        verify(productService).createPost(promoDto);
+    }
+
+    @Test
+    // T-US0005 - crear un post válido
+    public void createPost_shouldReturnStatusOk() {
+        // Arrange
+        PostDto postDto = TestFactory.createPostDto(1);
+
+        // Act
+        ResponseEntity<Void> response = productController.createPost(postDto);
+
+        // Assert
+        verify(productService, times(1)).createPost(postDto);
+        Assertions.assertEquals(200, response.getStatusCodeValue());
+    }
+    @Test
+    // T-US0005 - error al crear post
+    public void createPost_shouldReturnBadRequestWhenServiceFails() {
+        // Arrange
+        PostDto postDto = TestFactory.createPostDto(1);
+        doThrow(new BadRequestException("Usuario no válido"))
+                .when(productService).createPost(postDto);
+
+        // Act + Assert
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            productController.createPost(postDto);
+        });
+        verify(productService).createPost(postDto);
+
     }
 }

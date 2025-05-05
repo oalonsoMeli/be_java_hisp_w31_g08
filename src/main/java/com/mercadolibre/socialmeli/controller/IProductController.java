@@ -1,5 +1,4 @@
 package com.mercadolibre.socialmeli.controller;
-
 import com.mercadolibre.socialmeli.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -7,7 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 public interface IProductController {

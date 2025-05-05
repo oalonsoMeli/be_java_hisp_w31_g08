@@ -230,6 +230,23 @@ class ProductServiceImplTest {
     }
 
     @Test
+        // US0014.2 - Devuelve solo las valoraciones que coinciden con el número filtrado
+    void getValorationsByPost_shouldReturnOnlyMatchingValorationsWithValorationNull() {
+        // Arrange
+        Post post = TestFactory.createPostWithValoration(10, 1, 5);
+        post.getValorations().put(2, 3);
+        post.getValorations().put(3, 5);
+
+        when(productRepository.getPostsByPostId(10)).thenReturn(Optional.of(post));
+
+        // Act
+        List<ValorationDTO> result = productService.getValorationsByPost(10, null);
+
+        // Assert
+        assertEquals(3, result.size());
+    }
+
+    @Test
         // US0014.2 - Si ninguna valoración coincide con el filtro, devuelve lista vacía
     void getValorationsByPost_shouldReturnEmptyWhenNoMatchForValorationNumber() {
         // Arrange
@@ -451,6 +468,7 @@ class ProductServiceImplTest {
         verify(productRepository, never()).saveValoration(anyInt(), anyInt(), anyInt());
     }
 
+
     @DisplayName("US 0011 - Obtiene la cantidad de posteos con promoción según un usuario.")
     @Test
     void getQuantityOfProducts_withUserId_shouldReturnListOfProductsWithPromo(){
@@ -487,12 +505,84 @@ class ProductServiceImplTest {
 
     @DisplayName("US 0011 - Si el usuario no es encontrado, debería lanzar una excepción.")
     @Test
-    void getQuantityOfProducts_withFalseUser_shouldReturnException(){
+    void getQuantityOfProducts_withFalseUser_shouldReturnException() {
         // Arrange
         when(userRepository.getUserById(9999)).thenThrow(new NotFoundException("Usuario no encontrado"));
         // Act & Assert
         assertThrows(NotFoundException.class, () ->
                 productService.getQuantityOfProducts(9999));
+    }
+    // Test: metodo CreatePost
+    // Usuario válido, post sin promoción
+    @Test
+    void createPost_withValidPost_shouldSavePost() {
+        // Arrange
+        PostDto postDto = TestFactory.createPostDto(1);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act
+        productService.createPost(postDto);
+
+        // Assert
+        verify(userRepository).getUserById(1);
+        verify(productRepository).save(any(Post.class));
+    }
+
+    // Usuario válido, post con promoción válida
+    @Test
+    void createPost_withPromoAndValidDiscount_shouldApplyPromo() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1, 0.2);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act
+        productService.createPost(promoDto);
+
+        // Assert
+        verify(productRepository).save(argThat(post ->
+                post.getHasPromo() && post.getDiscount() == 0.2
+        ));
+    }
+
+    // Usuario no encontrado
+    @Test
+    void createPost_withInvalidUser_shouldThrowBadRequest() {
+        // Arrange
+        PostDto postDto = TestFactory.createPostDto(99);
+        when(userRepository.getUserById(99)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.createPost(postDto));
+    }
+
+    // Post con descuento inválido (> 1)
+    @Test
+    void createPost_withInvalidDiscount_shouldThrowBadRequest() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1, 1.5);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.createPost(promoDto));
+    }
+    @Test
+    void createPost_withNullDiscount_shouldThrowBadRequest() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1,null);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.createPost(promoDto));
+    }
+    @Test
+    void createPost_withZeroDiscount_shouldThrowBadRequest() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1,0.0);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.createPost(promoDto));
+
     }
 }
 
