@@ -192,10 +192,9 @@ class ProductControllerTest {
 
     }
 
-    @DisplayName("US-0013 - Excepción Ok para valoraciones dentro del rango de 1 a 5.")
 
+    @DisplayName("US-0014.1 - devuelve OK con todas las valoraciones de un post por su ID.")
     @Test
-    // US0014.1 - Controller devuelve OK con todas las valoraciones de un post por su ID
     void getValorationsByPost_shouldReturnAllValorationsForGivenPostId() {
         // Arrange
         Integer postId = 10;
@@ -211,7 +210,7 @@ class ProductControllerTest {
         ResponseEntity<List<ValorationDTO>> response = productController.getValorationsByPost(postId, valorationNumber);
     }
 
-    @DisplayName("US 0013 - Excepción Ok para valoraciones dentro del rango de 1 a 5.")
+    @DisplayName("US-0013 - Excepción Ok para valoraciones dentro del rango de 1 a 5.")
     @Test
     void valoratePost_shouldThrowExceptionWhenValidRangeValoration() {
         // Arrange
@@ -225,7 +224,7 @@ class ProductControllerTest {
         verify(productService).valorateAPost(valorationDTO);
     }
 
-    @DisplayName("US-0013 - Controller recibe correctamente una valoración y devuelve status OK.")
+    @DisplayName("Test controller: controller recibe correctamente una valoración y devuelve status OK.")
     @Test
     void valorateAPost_shouldCallServiceAndReturnOk() {
         // Arrange
@@ -234,12 +233,13 @@ class ProductControllerTest {
         doNothing().when(productService).valorateAPost(valorationDTO);
 
         // Act
-        ResponseEntity<Void> response = productController.valorateAPost(valorationDTO);
+        ResponseEntity<Void> response = productController.valorateAPost(valorationDTO); verify(productService, times(1)).valorateAPost(valorationDTO);
 
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(productService, times(1)).valorateAPost(valorationDTO);
+
     }
 
     @DisplayName("US 0013 - Excepción para valoración BadRequest.")
@@ -258,7 +258,36 @@ class ProductControllerTest {
         verify(productService).valorateAPost(valorationDTO);
     }
 
+
+    @DisplayName("US 0011 - Verificar que la respuesta de getQuantityOfProducts obtenga la cantidad.")
+    @Test
+    void getQuantityOfProducts_shouldReturnResultWithCount(){
+        // Act
+        PromoProductsCountDto countDTO = new PromoProductsCountDto(5, "Ornella", 2);
+        when(productService.getQuantityOfProducts(countDTO.getUserId())).thenReturn(countDTO);
+        // Arrange
+        ResponseEntity<PromoProductsCountDto> result = productController.getQuantityOfProducts(countDTO.getUserId());
+        // Assert
+        assertTrue(result.hasBody());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(2, result.getBody().getPromoProductsCount());
+        assertEquals(5, result.getBody().getUserId());
+    }
+
+    @DisplayName("US 0011 -  Que al pasar un userId inexistente lance excepción.")
+    @Test
+    void getQuantityOfProducts_withFalseId_shouldReturnException() {
+        // Arrange
+        when(productService.getQuantityOfProducts(9999))
+                .thenThrow(new NotFoundException("Usuario no encontrado."));
+        //Act & Assert
+        assertThrows(NotFoundException.class, () ->
+                productController.getQuantityOfProducts(9999));
+    }
+
+
     @DisplayName("Test Controller: crear un post con promocion válido.")
+
     @Test
     public void createPromoPost_shouldReturnStatusOk() {
         // Arrange
@@ -314,5 +343,6 @@ class ProductControllerTest {
             productController.createPost(postDto);
         });
         verify(productService).createPost(postDto);
+
     }
 }

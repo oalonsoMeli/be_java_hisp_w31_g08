@@ -65,6 +65,7 @@ public class ProductServiceImpl implements IProductService {
                 .orElseThrow(() -> new BadRequestException("Usuario no encontrado."));
     }
 
+
     // Obtiene la cantidad de productos en promoción de un determinado vendedor.
     @Override
     public PromoProductsCountDto getQuantityOfProducts(Integer userId) {

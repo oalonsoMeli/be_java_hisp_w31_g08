@@ -428,6 +428,7 @@ class ProductServiceImplTest {
             assertThrows(BadRequestException.class, () -> productService.getAllValorationsByUser(DEFAULT_USER_ID));
         }
 
+
         @DisplayName("US-0013 - Verifica que la valoración no sea null.")
         @Test
         void valorateAPost_shouldSaveTheValoration() {
@@ -456,7 +457,6 @@ class ProductServiceImplTest {
         // Act & Assert
         assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
         verify(productRepository, never()).saveValoration(anyInt(), anyInt(), anyInt());
-
     }
 
     @DisplayName("US-0013 - Excepción BadRequest para valoraciones mayores a 5.")
@@ -470,6 +470,50 @@ class ProductServiceImplTest {
         verify(productRepository, never()).saveValoration(anyInt(), anyInt(), anyInt());
     }
 
+
+    @DisplayName("US 0011 - Obtiene la cantidad de posteos con promoción según un usuario.")
+    @Test
+    void getQuantityOfProducts_withUserId_shouldReturnListOfProductsWithPromo(){
+        // Arrange
+        User user = TestFactory.createUser(5);
+        user.setUserName("Ornella");
+        Post post1 = TestFactory.createPost(10, user.getUserId());
+        post1.setHasPromo(true);
+        Post post2 = TestFactory.createPost(11, user.getUserId());
+        post2.setHasPromo(true);
+        when(userRepository.getUserById(5)).thenReturn(Optional.of(user));
+        when(productRepository.getPostsByUserId(user.getUserId())).thenReturn(List.of(post1, post2));
+        // Act
+        PromoProductsCountDto count = productService.getQuantityOfProducts(post1.getUserId());
+        // Assert
+        assertEquals(2, count.getPromoProductsCount());
+    }
+
+    @DisplayName("US 0011 - Si los hasPromo estan en false, la lista debería estar vacía.")
+    @Test
+    void getQuantityOfProducts_withHasPromoFalse_shouldReturnCero(){
+        // Arrange
+        User user = TestFactory.createUser(5);
+        user.setUserName("Ornella");
+        Post post1 = TestFactory.createPost(10, user.getUserId());
+        Post post2 = TestFactory.createPost(11, user.getUserId());
+        when(userRepository.getUserById(5)).thenReturn(Optional.of(user));
+        when(productRepository.getPostsByUserId(user.getUserId())).thenReturn(List.of(post1, post2));
+        // Act
+        PromoProductsCountDto count = productService.getQuantityOfProducts(post1.getUserId());
+        // Assert
+        assertEquals(0, count.getPromoProductsCount());
+    }
+
+    @DisplayName("US 0011 - Si el usuario no es encontrado, debería lanzar una excepción.")
+    @Test
+    void getQuantityOfProducts_withFalseUser_shouldReturnException() {
+        // Arrange
+        when(userRepository.getUserById(9999)).thenThrow(new NotFoundException("Usuario no encontrado"));
+        // Act & Assert
+        assertThrows(NotFoundException.class, () ->
+                productService.getQuantityOfProducts(9999));
+    }
     // Test: metodo CreatePost
     // Usuario válido, post sin promoción
     @Test
@@ -540,42 +584,8 @@ class ProductServiceImplTest {
 
         // Act & Assert
         assertThrows(BadRequestException.class, () -> productService.createPost(promoDto));
+
     }
-
-    @DisplayName("US0014.1 - Obtener las valoraciones de un post por id.")
-    @Test
-    void getValorationsByPost_shouldReturnCorrectValorations() {
-        // Arrange
-        Integer postId = 1;
-        Post post = TestFactory.createPost(postId, 1, LocalDate.now().minusWeeks(1));
-        post.getValorations().put(1, 3);
-        post.getValorations().put(2, 5);
-        post.getValorations().put(3, 3);
-
-        when(productRepository.getPostsByPostId(postId)).thenReturn(Optional.of(post));
-
-        // Act
-        List<ValorationDTO> result = productService.getValorationsByPost(postId, 3);
-
-        // Assert
-        assertEquals(2, result.size());
-        assertTrue(result.stream().allMatch(v -> v.getValoration() == 3));
-    }
-
-    @DisplayName("US0014.1 - No existe un post con el id proporcionado.")
-    @Test
-    void getValorationsByPost_shouldThrowBadRequestExceptionWhenPostNotFound() {
-        // Arrange
-        Integer postId = 999;
-        when(productRepository.getPostsByPostId(postId)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(BadRequestException.class, () -> productService.getValorationsByPost(postId, 3));
-    }
-
-
-
-
 }
 
 

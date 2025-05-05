@@ -15,6 +15,7 @@ import com.mercadolibre.socialmeli.service.ProductServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -72,6 +73,7 @@ public class ProductControllerIntegrationTest {
         user = TestFactory.createUserFollowing(userId, 2, 3);
         User followedUser2 = TestFactory.createUser(2);
         User followedUser3 = TestFactory.createUser(3);
+
         userRepository.getAll().addAll(List.of(user, followedUser2, followedUser3));
     }
 
@@ -80,9 +82,12 @@ public class ProductControllerIntegrationTest {
         post2 = TestFactory.createPost(2, 2, LocalDate.now().minusDays(5));
         post3 = TestFactory.createPost(3, 3, LocalDate.now().minusDays(3));
         post4 = TestFactory.createPost(4, 1, LocalDate.now().minusWeeks(1));
+
+
         productRepository.save(post1);
         productRepository.save(post2);
         productRepository.save(post3);
+
         postsFollowedUsers = List.of(post1, post2, post3);
         //
         productRepository.save(post4);
@@ -271,4 +276,40 @@ public class ProductControllerIntegrationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Usuario no encontrado."));
     }
+
+    @DisplayName("Test de integración del endpoint /products/promo-post/count" +
+            " US 0011 - Se debe obtener la cantidad de productos con promo")
+    @Test
+    void getQuantityOfProduct_shouldReturnCountOfPromoPost() throws Exception {
+        post1.setHasPromo(true);
+        post2.setHasPromo(true);
+        mockMvc.perform(get("/products/promo-post/count")
+                        .param("user_id", "2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.promo_products_count").value(2));
+    }
+
+    @DisplayName("Test de integración del endpoint /products/promo-post/count" +
+            " US 0011 - caso borde: obtener excepción con usuario no existente.")
+    @Test
+    void getQuantityOfProduct_withFalseUserId_shouldReturn400BadRequest() throws Exception {
+        mockMvc.perform(get("/products/promo-post/count")
+                        .param("user_id", "453")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @DisplayName("Test de integración del endpoint /products/promo-post/count" +
+            " US 0011 - caso border: usuario sin productos en promo, deberia devolver 0.")
+    @Test
+    void getQuantityOfProduct_withoutPromo_shouldContainCountCero() throws Exception {
+        mockMvc.perform(get("/products/promo-post/count")
+                        .param("user_id", "2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.promo_products_count").value(0));
+    }
+
+
 }
