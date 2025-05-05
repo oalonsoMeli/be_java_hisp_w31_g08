@@ -1,26 +1,11 @@
 package com.mercadolibre.socialmeli.repository;
-
-import com.mercadolibre.socialmeli.model.Post;
 import com.mercadolibre.socialmeli.model.User;
-import com.mercadolibre.socialmeli.repository.IUserRepository;
-import com.mercadolibre.socialmeli.repository.UserRepositoryImpl;
-import com.mercadolibre.socialmeli.utilities.OrderType;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
-
-import static com.mercadolibre.socialmeli.utilities.OrderType.ORDER_DATE_DESC;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest

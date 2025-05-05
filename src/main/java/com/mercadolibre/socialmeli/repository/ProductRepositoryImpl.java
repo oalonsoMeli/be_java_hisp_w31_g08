@@ -1,7 +1,6 @@
 package com.mercadolibre.socialmeli.repository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mercadolibre.socialmeli.dto.ValorationDTO;
 import com.mercadolibre.socialmeli.model.Post;
 import com.mercadolibre.socialmeli.model.Product;
 import com.mercadolibre.socialmeli.utilities.OrderType;

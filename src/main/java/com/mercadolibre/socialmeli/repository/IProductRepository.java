@@ -1,5 +1,4 @@
 package com.mercadolibre.socialmeli.repository;
-import com.mercadolibre.socialmeli.dto.ValorationDTO;
 import com.mercadolibre.socialmeli.model.Post;
 import java.util.List;
 import java.util.Optional;

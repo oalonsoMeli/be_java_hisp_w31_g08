@@ -234,6 +234,23 @@ class ProductServiceImplTest {
     }
 
     @Test
+        // US0014.2 - Devuelve solo las valoraciones que coinciden con el número filtrado
+    void getValorationsByPost_shouldReturnOnlyMatchingValorationsWithValorationNull() {
+        // Arrange
+        Post post = TestFactory.createPostWithValoration(10, 1, 5);
+        post.getValorations().put(2, 3);
+        post.getValorations().put(3, 5);
+
+        when(productRepository.getPostsByPostId(10)).thenReturn(Optional.of(post));
+
+        // Act
+        List<ValorationDTO> result = productService.getValorationsByPost(10, null);
+
+        // Assert
+        assertEquals(3, result.size());
+    }
+
+    @Test
         // US0014.2 - Si ninguna valoración coincide con el filtro, devuelve lista vacía
     void getValorationsByPost_shouldReturnEmptyWhenNoMatchForValorationNumber() {
         // Arrange
