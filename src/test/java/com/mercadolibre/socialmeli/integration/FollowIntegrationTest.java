@@ -4,6 +4,7 @@ import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,7 +40,7 @@ public class FollowIntegrationTest {
         userRepository.getAll().add(user2);
     }
 
-    // Caso de éxito: El usuario 1 sigue al usuario 2
+    @DisplayName("Caso de éxito: El usuario 1 sigue al usuario 2.")
     @Test
     void followUser_shouldReturn200() throws Exception {
         mockMvc.perform(post("/users/1/follow/2")
@@ -47,7 +48,7 @@ public class FollowIntegrationTest {
                 .andExpect(status().isOk());
     }
 
-    // Caso de error: Intentar seguir a un usuario que no existe
+    @DisplayName("Caso de error: Intentar seguir a un usuario que no existe.")
     @Test
     void followUser_shouldReturn400WhenUserToFollowDoesNotExist() throws Exception {
         mockMvc.perform(post("/users/1/follow/9999")

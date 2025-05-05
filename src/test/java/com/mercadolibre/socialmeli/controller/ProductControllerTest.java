@@ -39,7 +39,7 @@ class ProductControllerTest {
     private ProductController productController;
 
     @Test
-        // US 008 - Controller devuelve OK PostDto
+        @DisplayName("US-008 - Controller devuelve OK PostDto.")
     void getListOfPublicationsByUser_shouldReturnPostsDtoAndStatusOk() {
         // Arrange
         Integer userId = 1;
@@ -59,7 +59,7 @@ class ProductControllerTest {
         verify(productService, times(1)).getListOfPublicationsByUser(userId, order);
     }
 
-    // T-00016 - US0016: Verifica que calcule el promedio de las valoraciones de un post y que el body no esté vacío.
+    @DisplayName("US-0016: Verifica que calcule el promedio de las valoraciones de un post y que el body no esté vacío.")
     @Test
     void getValorationsByPost_shouldReturnValorationAverageDto() {
         // Arrange
@@ -80,8 +80,8 @@ class ProductControllerTest {
         assertEquals(valorationsExpected, response.getBody().getAverage());
     }
 
+    @DisplayName("US-0014.2 - Controller devuelve OK con lista filtrada por puntuación.")
     @Test
-        // US0014.2 - Controller devuelve OK con lista filtrada por puntuacion
     void getValorationsByPost_shouldReturnOkWithFilteredResults() {
         // Arrange - service devuelve 2 valoraciones con 5
         List<ValorationDTO> valorations = List.of(
@@ -101,7 +101,7 @@ class ProductControllerTest {
     }
 
 
-    @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor")
+    @DisplayName("US-0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor.")
     @Test
     void getPromotionalProductsFromSellers_shouldReturnPostsDtoAndStatusOk() {
         // Arrange
@@ -122,8 +122,8 @@ class ProductControllerTest {
                 getPromotionalProductsFromSellers(user.getUserId());
     }
 
+    @DisplayName("US-0008 - El controller toma el ordenamiento por defecto.")
     @Test
-        // US 008 - El controller toma el ordenamiento por defecto
     void getListOfPublicationsByUser_shouldUseDefaultOrderWhenOrderParamIsMissing() {
         // Arrange
         Integer userId = 1;
@@ -144,8 +144,8 @@ class ProductControllerTest {
         verify(productService, times(1)).getListOfPublicationsByUser(userId, null);
     }
 
+    @DisplayName("US-0008 - El controller  recibe la excepción lanzada desde el service.")
     @Test
-        // US 008 - El controller recibe la excepción lanzada desde el service
     void getListOfPublicationsByUser_shouldPropagateExceptionWhenServiceFails() {
         // Arrange
         Integer userId = 1;
@@ -162,7 +162,7 @@ class ProductControllerTest {
 
     }
 
-    // US 0015 Listar las valoraciones que realizó un usuario
+    @DisplayName("US-0015 - Listar las valoraciones que realizó un usuario.")
     @Test
     void getAllValorationsByUser_ShouldReturnOnlyMatchingValorations() {
         // Assert
@@ -177,8 +177,8 @@ class ProductControllerTest {
         verify(productService, times(1)).getAllValorationsByUser(userId);
     }
 
+    @DisplayName("US-0015 - Listar las valoraciones que realizó un usuario.")
     @Test
-        // US 0015 Listar las valoraciones que realizó un usuario
     void getAllValorationsByUser_shouldPropagateExceptionWhenServiceFails() {
         // Assert
         when(productService.getAllValorationsByUser(Integer.MAX_VALUE))
@@ -191,7 +191,7 @@ class ProductControllerTest {
 
     }
 
-    @DisplayName("US 0013 - Excepción Ok para valoraciones dentro del rango de 1 a 5.")
+    @DisplayName("US-0013 - Excepción Ok para valoraciones dentro del rango de 1 a 5.")
     @Test
     void valoratePost_shouldThrowExceptionWhenValidRangeValoration() {
         // Arrange
@@ -205,7 +205,7 @@ class ProductControllerTest {
         verify(productService).valorateAPost(valorationDTO);
     }
 
-    @DisplayName( "US0013 - Controller recibe correctamente una valoración y devuelve status OK")
+    @DisplayName("US-0013 - Controller recibe correctamente una valoración y devuelve status OK.")
     @Test
     void valorateAPost_shouldCallServiceAndReturnOk() {
         // Arrange

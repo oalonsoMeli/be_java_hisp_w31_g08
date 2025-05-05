@@ -37,8 +37,8 @@ class ProductRepositoryImplTest {
         productRepository.save(post3);
     }
 
+    @DisplayName("US-006 - Ordenamiento en orden descendente es correcto.")
     @Test
-    // US006 - Ordenamiento en orden descendente es correcto
     void getPostsByUserIdsInLastTwoWeeks_DescOrder(){
         // Arrange
         Set<Integer> users = Set.of(1, 2, 3);
@@ -54,9 +54,8 @@ class ProductRepositoryImplTest {
                     "Posts are not sorted in descending order: " + current + " vs " + next);
         }
     }
-
+    @DisplayName("US-006 - Ordenamiento en orden ascendente es correcto.")
     @Test
-    // US006 - Ordenamiento en orden ascendente es correcto
     void getPostsByUserIdsInLastTwoWeeks_AscOrder(){
         // Arrange
         Set<Integer> users = Set.of(1, 2, 3);
@@ -74,7 +73,7 @@ class ProductRepositoryImplTest {
     }
 
 
-    // Este test se fija si al buscar post por el id, me devuelva el nombre del producto que contiene ese post
+    @DisplayName("Se fija si al buscar post por el id, me devuelva el nombre del producto que contiene ese post.")
     @Test
     void getPostsById_shouldReturnTheNameOfTheProduct() {
         // Arrange
@@ -85,7 +84,7 @@ class ProductRepositoryImplTest {
         assertEquals(postObtained.get().getProduct().getProductName(), productNameExpected);
     }
 
-    @DisplayName("Verificar que el tipo de ordenamiento por fecha exista (US-0009) de forma ascendente")
+    @DisplayName("US-0009 - Verificar que el tipo de ordenamiento por fecha exista de forma ascendente.")
     @Test
     void getListOfPublicationsByUser_verifyDateSortTypeExistsAsc() {
         //Arrange
@@ -105,7 +104,7 @@ class ProductRepositoryImplTest {
         Assertions.assertEquals(2,posts.size());
     }
 
-    @DisplayName("Verificar que el tipo de ordenamiento por fecha exista (US-0009) de forma descendente")
+    @DisplayName("US-0009 - Verificar que el tipo de ordenamiento por fecha exista de forma descendente.")
     @Test
     void getListOfPublicationsByUser_verifyDateSortTypeExistsDesc() {
         //Arrange
@@ -125,7 +124,7 @@ class ProductRepositoryImplTest {
         Assertions.assertEquals(2,posts.size());
     }
 
-    @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor")
+    @DisplayName("US-0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor.")
     @Test
     void getPromotionalProductsFromSellers() {
         //Arrange
@@ -144,8 +143,8 @@ class ProductRepositoryImplTest {
         Assertions.assertEquals(2, postList.size());
     }
 
+    @DisplayName("US-0008 - Filtrado Post de las últimas dos semanas es correcto.")
     @Test
-    // US008 - Filtrado Post de las ultimas dos semanas es correcto
     void getPostsByUserIdsInLastTwoWeeks_shouldReturnOnlyPostsInLastTwoWeeks() {
         // Arrange
         Set<Integer> users = Set.of(1, 2, 3);
@@ -155,16 +154,16 @@ class ProductRepositoryImplTest {
         List<Post> posts = productRepository.getPostsByUserIdsInLastTwoWeeks(users, ORDER_DATE_DESC.getValue());
         // Assert
         assertNotNull(posts);
-        assertFalse(posts.isEmpty(), "The posts list should not be empty");
+        assertFalse(posts.isEmpty(), "La lista de publicaciones no debe estar vacía.");
         LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
         for (Post post : posts) {
             assertTrue(post.getDate().isAfter(twoWeeksAgo) || post.getDate().isEqual(twoWeeksAgo),
-                    "Found a post older than two weeks: " + post.getDate());
+                    "Se encontraron post de hace dos semanas: " + post.getDate());
         }
     }
 
+    @DisplayName("US-0008 - Filtrado Post de las ultimas dos semanas exactamente es correcto.")
     @Test
-    // US008 - Filtrado Post de las ultimas dos semanas exactamente es correcto
     void getPostsByUserIdsInLastTwoWeeks_shouldIncludePostExactlyTwoWeeksAgo() {
         // Arrange
         Set<Integer> users = Set.of(1, 2, 3);
@@ -174,22 +173,23 @@ class ProductRepositoryImplTest {
         List<Post> posts = productRepository.getPostsByUserIdsInLastTwoWeeks(users, ORDER_DATE_DESC.getValue());
         // Assert
         assertNotNull(posts);
-        assertTrue(posts.stream().anyMatch(post -> post.getDate().isEqual(LocalDate.now().minusWeeks(2))),
-                "The post created exactly two weeks ago should be included.");
+        assertTrue(posts.stream()
+                .anyMatch(post -> post.getDate().isEqual(LocalDate.now()
+                .minusWeeks(2))), "El post creado hace dos semanas está incluido.");
 
     }
 
+    @DisplayName("US-0015 - El método retorna la lista de post.")
     @Test
-    // US0015 - El método retorna la lista de post
     void getAll_shouldReturnAllProducts() {
         // Act
         List<Post> posts = productRepository.getAll();
         // Assert
         assertNotNull(posts);
-        assertFalse(posts.isEmpty(), "The posts list should not be empty");
+        assertFalse(posts.isEmpty(), "La lista de publicaciones no debe estar vacía.");
     }
 
-    @DisplayName("US 0013 - Verifica que la valoración no sea null.")
+    @DisplayName("US-0013 - Verifica que la valoración no sea null.")
     @Test
     void saveValoration_sholdSaveValorationInPost() {
         // Arrange
