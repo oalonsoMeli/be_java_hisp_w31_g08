@@ -23,12 +23,15 @@ public class ProductServiceImpl implements IProductService {
     private IUserRepository userRepository;
     private IProductRepository productRepository;
     private Integer countId = 1;
+
     @Autowired
     public ProductServiceImpl(IUserRepository userRepository, IProductRepository productRepository) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
     }
 
+    // Crea un nuevo post, y permite al vendedor de alta una nueva publicación.
+    // Además de que tiene una validación para saber si esa promo esta activ o no.
 
     @Override
     public void createPost(PostDto postDto) {
@@ -56,13 +59,14 @@ public class ProductServiceImpl implements IProductService {
         post.setHasPromo(true);
     }
 
-    // Valida que el usuario exista
+    // Valida que el usuario exista.
     private User validationUser(Integer userId) {
         return userRepository.getUserById(userId)
                 .orElseThrow(() -> new BadRequestException("Usuario no encontrado."));
     }
 
-    // Obtiene la cantidad de posteos con promo que tiene un usuario
+
+    // Obtiene la cantidad de productos en promoción de un determinado vendedor.
     @Override
     public PromoProductsCountDto getQuantityOfProducts(Integer userId) {
         User user = validationUser(userId);
@@ -94,7 +98,7 @@ public class ProductServiceImpl implements IProductService {
          return new PostsDto(userId, postDtos);
     }
 
-    //Obtiene el listado de los productos que un vendedor tiene en promoción
+    //Obtiene el listado de los productos que un vendedor tiene en promoción.
     @Override
     public PromoProductsDto getPromotionalProductsFromSellers(Integer userId){
         ObjectMapper mapper = new ObjectMapper();
@@ -140,6 +144,7 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
+    // Todas las valoraciones de un usuario.
     public List<ValorationDTO> getAllValorationsByUser(Integer userId) {
         User user = validationUser(userId);
         return this.productRepository.getAll().stream()
@@ -152,12 +157,11 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
+    //Valoración promedio de un post.
     public ValorationAverageDto getValorationsAverageByPost(Integer postId) {
         Post post = getPostById(postId);
         Map<Integer, Integer> valorations = post.getValorations();
         Double average = valorations.values().stream().mapToDouble(v -> v).average().orElse(0.0);
         return new ValorationAverageDto(average);
     }
-
-
 }

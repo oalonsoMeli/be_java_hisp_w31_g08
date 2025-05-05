@@ -1,6 +1,7 @@
 package com.mercadolibre.socialmeli.repository;
 import com.mercadolibre.socialmeli.model.User;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.io.IOException;
@@ -25,7 +26,7 @@ class UserRepositoryImplTest {
         userExpected2 = repository.getUserById(2).orElseThrow();
     }
 
-    // Al pasarle los ids de usuarios, debería devolverme aquellos usuarios con ese id.
+    @DisplayName("Al pasarle los ids de usuarios, debería devolverme aquellos usuarios con ese id.")
     @Test
     void findUsersById_shouldReturnListOfUsers() {
         // Arrange
@@ -40,7 +41,7 @@ class UserRepositoryImplTest {
     }
 
 
-    // Buscar por id de usuario debería retornarme el usuario que busco y no estar vacío.
+    @DisplayName("Buscar por id de usuario debería retornarme el usuario que busco y no estar vacío.")
     @Test
     void getUserById_shoulReturnUser() {
         // Arrange
@@ -53,17 +54,17 @@ class UserRepositoryImplTest {
         assertEquals(nameExpected, user.getUserName());
     }
 
-    // Verifica el comportamiento esperado cuando se consulta un usuario que NO existe.
+    @DisplayName("Verifica el comportamiento esperado cuando se consulta un usuario que no existe.")
     @Test
     void getUserById_shouldReturnEmptyWhenUserDoesNotExist() {
         // Act
         Optional<User> result = repository.getUserById(9999);
         // Assert
-        assertTrue(result.isEmpty(), "Debe devolver vacio si el usuario no existe");
+        assertTrue(result.isEmpty(), "Debe devolver vacío si el usuario no existe.");
     }
 
 
-    // Devuelve el cálculo correcto del total de la cantidad de seguidores que posee un usuario.
+    @DisplayName("Devuelve el cálculo correcto del total de la cantidad de seguidores que posee un usuario.")
     @Test
     void getAll_souldReturnAllUsers() {
         //Act
@@ -76,7 +77,7 @@ class UserRepositoryImplTest {
         assertEquals(100, result.size());
     }
 
-    // buscar por id de usuario debería devolverme el usuario si existe
+    @DisplayName("buscar por id de usuario debería devolverme el usuario si existe.")
     @Test
     void getUserById_shouldReturnUserIfExists() {
         // Arrange
@@ -86,7 +87,7 @@ class UserRepositoryImplTest {
         Optional<User> result = repository.getUserById(userId);
 
         // Assert
-        assertTrue(result.isPresent(), "El usuario debería existir");
+        assertTrue(result.isPresent(), "El usuario debería existir.");
         assertEquals("John Doe", result.get().getUserName());
     }
 }

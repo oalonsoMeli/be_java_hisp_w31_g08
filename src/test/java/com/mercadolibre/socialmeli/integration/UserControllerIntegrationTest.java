@@ -4,6 +4,7 @@ import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -46,10 +47,8 @@ public class UserControllerIntegrationTest {
         userRepository.getAll().add(user4);
     }
 
-    /*
-     * Test de integración del endpoint /users/{userId}/followers/list
-     * T-0003 (US-0008) Verifica que el flujo funcione correctamente con orden ascendente
-     */
+    @DisplayName("Test de integración del endpoint /products/users/{userId}/followers/list" +
+                 "US-0008 - Verifica que el flujo funcione correctamente con orden ascendente.")
     @Test
     public void testGetFollowersUsers_withParamAsc_shouldOrderAsc() throws Exception {
         mockMvc.perform(get("/users/{userId}/followers/list", 3)
@@ -61,10 +60,9 @@ public class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$.followers[0].user_name").value("Analia"))
                 .andExpect(jsonPath("$.followers[1].user_name").value("Raul"));
     }
-    /*
-     * Test de integración del endpoint /users/{userId}/followers/list
-     * T-0003 (US-0008) Verifica que el flujo funcione correctamente con orden descendente
-     */
+
+    @DisplayName("Test de integración del endpoint /products/users/{userId}/followers/list" +
+                 "US-0008 - Verifica que el flujo funcione correctamente con orden descendente.")
     @Test
     public void testGetFollowersUsers_withParamDesc_shouldOrderDesc() throws Exception {
         mockMvc.perform(get("/users/{userId}/followers/list", 3)
@@ -77,10 +75,8 @@ public class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$.followers[1].user_name").value("Analia"));
     }
 
-    /*
-     * Test de integración del endpoint  /users/{userId}/followed/list
-     * T-0003 (US-0008) Verifica que el flujo funcione correctamente con orden ascendente
-     */
+    @DisplayName("Test de integración del endpoint /products/users/{userId}/followed/list" +
+                 "US-0008 - Verifica que el flujo funcione correctamente con orden ascendente.")
     @Test
     public void testGetFollowedSellers_withParamAsc_shouldOrderAsc() throws Exception {
         mockMvc.perform(get("/users/{userId}/followed/list", 4)
@@ -93,10 +89,8 @@ public class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$.followed[1].user_name").value("Mariela"));
     }
 
-    /*
-     * Test de integración del endpoint  /users/{userId}/followed/list
-     * T-0003 (US-0008) Verifica que el flujo funcione correctamente con orden descendente
-     */
+    @DisplayName("Test de integración del endpoint /products/users/{userId}/followed/list" +
+                 "US-0008 - Verifica que el flujo funcione correctamente con orden descendente.")
     @Test
     public void testGetFollowedSellers_withParamDesc_shouldOrderDesc() throws Exception {
         mockMvc.perform(get("/users/{userId}/followed/list", 4)
@@ -109,10 +103,8 @@ public class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$.followed[1].user_name").value("Analia"));
     }
 
-    /*
-     * Test de integración del endpoint  /users/{userId}/followed/list
-     * T-0003 (US-0008) Verifica que el flujo largue una excepcion si no funciona
-     */
+    @DisplayName("Test de integración del endpoint /products/users/{userId}/followed/list" +
+                 "US-0008 - Verifica que el flujo largue una excepción si no funciona.")
     @Test
     public void testGetFollowedSellers_withIdInexistent_shouldReturn404() throws Exception {
         mockMvc.perform(get("/users/{userId}/followed/list", 4345)
@@ -122,10 +114,8 @@ public class UserControllerIntegrationTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
-    /*
-     * Test de integración del endpoint /users/{userId}/followers/list
-     * T-0003 (US-0008) Verifica que el flujo funcione correctamente con orden descendente
-     */
+    @DisplayName("Test de integración del endpoint /products/users/{userId}/followers/list" +
+                 "US-0008 - Verifica que el flujo funcione correctamente con orden descendente.")
     @Test
     public void testGetFollowersUsers_withIdInexistent_shouldReturn404() throws Exception {
         mockMvc.perform(get("/users/{userId}/followers/list", 3453)
@@ -135,20 +125,17 @@ public class UserControllerIntegrationTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
-    /*
-     * Test de integracion del endpoint /users/{userId}/unfollow/{userIdToUnfollow}
-     * T-0002 (US-0007) - Verifica que el flujo real de unfollow funcione correctamente
-     */
+    @DisplayName("Test de integración del endpoint /products/users/{userId}/unfollow/{userIdToUnfollow}" +
+                 "US-0007 - Verifica que el flujo real de unfollow funcione correctamente.")
     @Test
     void unfollowUser_shouldReturn200() throws Exception {
         mockMvc.perform(put("/users/1/unfollow/2")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
-    /*
-     * Test de integracion del endpoint /users/{userId}/unfollow/{userIdToUnfollow}
-     * T-0002 (US-0007) - Verifica que el flujo real de unfollow funcione correctamente
-     */
+
+    @DisplayName("Test de integración del endpoint /products/users/{userId}/unfollow/{userIdToUnfollow}" +
+                 "US-0007 - Verifica que el flujo real de unfollow funcione correctamente.")
     @Test
     void unfollowUser_shouldReturn400WhenUserToUnfollowDoesNotExist() throws Exception {
         mockMvc.perform(put("/users/1/unfollow/9999")
@@ -157,10 +144,8 @@ public class UserControllerIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
-    /*
-     * Test de integración del endpoint  /users/{userId}/followers/count
-     * T-0007 (US-0002) Verifica la cantidad de seguidores de un determinado usuario.
-     */
+    @DisplayName("Test de integración del endpoint  /users/{userId}/followers/count" +
+                 "US-0002 - Verifica la cantidad de seguidores de un determinado usuario.")
     @Test
     void getFollowersCountByUserId_shouldReturn200() throws Exception {
         mockMvc.perform(get("/users/3/followers/count")
@@ -171,10 +156,8 @@ public class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$.followers_count").value(1));
     }
 
-    /*
-     * Test de integración del endpoint  /users/{userId}/followers/count
-     * T-0007 (US-0002) Lanza la excepción 404 debido a que el id que le pasamos no existe.
-     */
+    @DisplayName("Test de integración del endpoint  /users/{userId}/followers/count" +
+                 "US-0002 - Lanza la excepción 404 debido a que el id que le pasamos no existe.")
     @Test
     void getFollowersCountByUserId_shouldReturn404() throws Exception {
         mockMvc.perform(get("/users/999/followers/count")

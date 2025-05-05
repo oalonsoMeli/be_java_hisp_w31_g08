@@ -38,8 +38,7 @@ class UserServiceImplTest {
     @Autowired
     private UserServiceImpl userServiceImpl;
 
-
-    // T-0003 - US0008: Verifica que exista la lista al obtener los seguidores de un vendedor de manera ASC.
+    @DisplayName("US-0008 - Verifica que exista la lista al obtener los seguidores de un vendedor de manera ASC.")
     @Test
     void searchFollowersUsers_withOrderAsc_shouldExistsAndContainUsers() {
         // Arrange
@@ -61,7 +60,7 @@ class UserServiceImplTest {
         assertFalse(result.getFollowers().isEmpty());
     }
 
-    // T-0003 - US0008: Verifica que exista la lista al obtener los seguidores de un vendedor con un ordenamiento que no existe.
+    @DisplayName("US-0008 - Verifica que exista la lista al obtener los seguidores de un vendedor con un ordenamiento que no existe.")
     @Test
     void searchFollowersUsers_withOrderAsc_shouldExistsAndContainUsersWithOtherOrder() {
         // Arrange
@@ -83,7 +82,7 @@ class UserServiceImplTest {
         assertFalse(result.getFollowers().isEmpty());
     }
 
-    // T-0003 - US0008: Verifica que exista la lista al obtener los seguidores de un vendedor de manera DESC.
+    @DisplayName("US-0008 - Verifica que exista la lista al obtener los seguidores de un vendedor de manera DESC.")
     @Test
     void searchFollowersUsers_withOrderDesc_shouldExistsAndContainUsers() {
         // Arrange
@@ -104,7 +103,7 @@ class UserServiceImplTest {
         assertFalse(result.getFollowers().isEmpty());
     }
 
-    // T-0003 - US0008: Verifica que exista la lista al obtener los seguidos de un usuario de manera ASC.
+    @DisplayName("US-0008 - Verifica que exista la lista al obtener los seguidos de un usuario de manera ASC.")
     @Test
     void searchFollowedSellers_withOrderAsc_shouldExistsAndContainUsers() {
         // Arrange
@@ -123,7 +122,7 @@ class UserServiceImplTest {
         assertFalse(result.getFollowed().isEmpty());
     }
 
-    // T-0003 - US0008: Verifica que exista la lista al obtener los seguidos de un usuario de manera DESC.
+    @DisplayName("US-0008 - Verifica que exista la lista al obtener los seguidos de un usuario de manera DESC.")
     @Test
     void searchFollowedSellers_withOrderDesc_shouldExistsAndContainUsers() {
         // Arrange
@@ -146,7 +145,7 @@ class UserServiceImplTest {
     }
 
 
-    // T-0003 - US0008: Verifica que se lance una excepcion si se busca un usuario con id inexistente.
+    @DisplayName("US-0008 - Verifica que se lance una excepción si se busca un usuario con id inexistente.")
     @Test
     void searchFollowedSellers_withAnUserIdInexistent_shouldReturnAnException() {
         // Arrange
@@ -158,7 +157,7 @@ class UserServiceImplTest {
         });
     }
 
-    // T-0003 - US0008: Verifica que se lance una excepcion si se busca vendedores con id inexistentes.
+    @DisplayName("US-0008 - Verifica que se lance una excepción si se busca vendedores con id inexistentes.")
     @Test
     void searchFollowedSellers_withFollowedUsersIdInexistent_shouldReturnAnException() {
         // Arrange
@@ -173,7 +172,7 @@ class UserServiceImplTest {
     }
 
 
-    // T-0003 - US0008: Verifica que se lance una excepcion si se busca un vendedor con id inexistente.
+    @DisplayName("US-0008 - Verifica que se lance una excepción si se busca un vendedor con id inexistente.")
     @Test
     void searchFollowersUsers_withAnUserIdInexistent_shouldReturnAnException() {
         // Arrange
@@ -185,7 +184,7 @@ class UserServiceImplTest {
         });
     }
 
-    // T-0003 - US0008: Verifica que se lance una excepcion si se busca usuarios con id inexistentes.
+    @DisplayName("US-0008 - Verifica que se lance una excepción si se busca usuarios con id inexistentes.")
     @Test
     void searchFollowersUsers_withFollowedUsersIdInexistent_shouldReturnAnException() {
         // Arrange
@@ -199,9 +198,8 @@ class UserServiceImplTest {
         });
     }
 
-
+    @DisplayName("US-0007 - Verifica que se lance una excepción cuando el usuario a dejar de seguir no existe.")
     @Test
-    // T-0002 - US0007: Verifica que se lance una excepcion cuando el usuario a dejar de seguir no existe.
     void unfollowUser_shouldThrowExceptionWhenUserToUnfollowDoesNotExist() {
         // Arrange
         User user = com.mercadolibre.socialmeli.factory.TestFactory.createUserWithFollow(1, 2);
@@ -215,8 +213,8 @@ class UserServiceImplTest {
         });
     }
 
+    @DisplayName("US-0007 - Verifica que se elimine el usuario a dejar de seguir cuando existe y esta en la lista.")
     @Test
-    // T-0002 - US0007: Verifica que se elimine el usuario a dejar de seguir cuando existe y esta en la lista.
     void unfollowUser_shouldRemoveUserSuccessfully() {
         // Arrange
         User user = com.mercadolibre.socialmeli.factory.TestFactory.createUserWithFollow(1, 2);
@@ -229,9 +227,9 @@ class UserServiceImplTest {
         assertFalse(user.getFollows().contains(2));
     }
 
+    @DisplayName("US-0007 - Caso borde - el usuario existe pero no sigue a nadie." +
+                 "Al intentar dejar de seguir, debería lanzar excepción por no encontrar la relación.")
     @Test
-    // T002 - US0007: Caso borde - el usuario existe pero no sigue a nadie.
-    // Al intentar dejar de seguir, debería lanzar excepcion por no encontrar la relación.
     void unfollowUser_shouldThrowWhenUserHasNoFollowings() {
         User user = TestFactory.createUser(1);
         User target = TestFactory.createUser(2);
@@ -244,15 +242,15 @@ class UserServiceImplTest {
         });
     }
 
+    @DisplayName("US-0007 - Caso borde - IDs invalidos que deberían provocar una excepcion.")
     @Test
-    // T002 - US0007: Caso borde - IDs invalidos que deberían provocar una excepcion.
     void unfollowUser_shouldThrowWhenUserIdIsNull() {
         assertThrows(BadRequestException.class, () -> {
             service.unfollowUser(null, 2);
         });
     }
 
-    // T-0007 - US0002: Verificar que la cantidad de seguidores de un determinado usuario sea correcta.
+    @DisplayName("US-0002 - Verificar que la cantidad de seguidores de un determinado usuario sea correcta.")
     @Test
     void  getFollowersCountByUserId_shouldReturnCountFollowers(){
         // Arrange
@@ -274,7 +272,7 @@ class UserServiceImplTest {
         assertEquals(2, result.getFollowers_count());
     }
 
-    // T-0007 - US0002: Verifica que no tenga ningún seguidor.
+    @DisplayName("US-0002 - Verificar que no tenga ningún seguidor.")
     @Test
     void  getFollowersCountByUserId_shouldReturnNonFollowers() {
         // Arrange
@@ -294,8 +292,8 @@ class UserServiceImplTest {
         assertEquals(0, result.getFollowers_count());
     }
 
+    @DisplayName("US-0001 - Verifica que el usuario a seguir exista y se pueda seguir correctamente.")
     @Test
-    // T-0001 - US0001 : Verifica que el usuario a seguir exista y se pueda seguir correctamente
     void followUser_shouldAddFollowingSuccessfully_whenUserToFollowExists() {
         // Arrange
         User follower = TestFactory.createUser(1);
@@ -311,9 +309,8 @@ class UserServiceImplTest {
         assertTrue(follower.getFollows().contains(2), "El ID del usuario seguido debe estar en la lista");
     }
 
-
+    @DisplayName("US-0001 - Verifica que se lance excepción cuando el usuario a seguir no existe.")
     @Test
-    // T-0001 - US0001 Verifica que se lance excepción cuando el usuario a seguir no existe
     void followUser_shouldThrowException_whenUserToFollowDoesNotExist() {
         // Arrange
         User follower = TestFactory.createUser(1);
@@ -327,18 +324,16 @@ class UserServiceImplTest {
         });
     }
 
-
-
+    @DisplayName("US-0001 - Caso borde: Verifica que se lance una excepción cuando el userId sea nulo.")
     @Test
-    // T-0001 - US0001 Caso borde: Verifica que se lance una excepción cuando el userId sea nulo
     void followUser_shouldThrowException_whenUserIdIsNull() {
         assertThrows(BadRequestException.class, () -> {
             service.followUser(null, 2);
         });
     }
 
+    @DisplayName("US-0001 - Caso borde: Verifica que se lance una excepción cuando el userIdToFollow sea nulo.")
     @Test
-    // T-0001 - US0001 Caso borde: Verifica que se lance una excepción cuando el userIdToFollow sea nulo
     void followUser_shouldThrowException_whenUserToFollowIdIsNull() {
 
         assertThrows(BadRequestException.class, () -> {
@@ -346,10 +341,8 @@ class UserServiceImplTest {
         });
     }
 
-
-
+    @DisplayName("US-0001 - Caso borde: Verifica que no se permita seguir a un usuario que ya está en la lista de seguidos.")
     @Test
-    // T-0001 - US0001 Caso borde: Verifica que no se permita seguir a un usuario que ya está en la lista de seguidos
     void followUser_shouldNotAddDuplicateFollow() {
         // Arrange
         User follower = TestFactory.createUser(1);
@@ -366,8 +359,9 @@ class UserServiceImplTest {
         assertEquals(1, follower.getFollows().size(), "El usuario no debe ser seguido más de una vez.");
     }
 
+    @DisplayName("US-0001 - Caso borde: Verifica que se lance una excepción cuando no se encuentra al usuario a seguir.")
     @Test
-    // T-0001 - US0001  Caso borde: Verifica que se lance una excepción cuando no se encuentra al usuario a seguir
+
     void followUser_shouldThrowException_whenUserNotFound() {
         // Arrange
         when(repository.getUserById(1)).thenReturn(Optional.empty());
@@ -378,8 +372,8 @@ class UserServiceImplTest {
         });
     }
 
+    @DisplayName("US-0001 - Caso borde: Verifica que el usuario puede seguir correctamente a otro cuando todo está bien.")
     @Test
-    // T-0001 - US0001  Caso borde: Verifica que el usuario puede seguir correctamente a otro usuario cuando todo está bien
     void followUser_shouldAddFollowingSuccessfully_whenEverythingIsValid() {
         // Arrange
         User follower = TestFactory.createUser(1);
@@ -392,10 +386,10 @@ class UserServiceImplTest {
         service.followUser(1, 2);
 
         // Assert
-        assertTrue(follower.getFollows().contains(2), "El ID del usuario seguido debe estar en la lista");
+        assertTrue(follower.getFollows().contains(2), "El ID del usuario seguido debe estar en la lista.");
     }
 
-    // T-0004 - US0008: Verifica que la lista de followers este ordenada de manera ASC.
+    @DisplayName("US-0008 - Verifica que la lista de followers este ordenada de manera ASC.")
     @Test
     void searchFollowersUsers_withOrderAsc_shouldHaveOrderAsc() {
         // Arrange
@@ -418,8 +412,8 @@ class UserServiceImplTest {
         assertEquals(user1.getUserName(), result.getFollowers().get(1).getUser_name());
     }
 
-    // T-0004 - US0008: T-0004 - US0008: Verifica que la lista de follower este ordenada de manera DESC.
-   @Test
+    @DisplayName("US-0008 - Verifica que la lista de followers este ordenada de manera DESC.")
+    @Test
     void searchFollowersUsers_withOrderDesc_shouldHaveOrderDesc() {
         // Arrange
        User user1 = TestFactory.createUser(1);
@@ -441,7 +435,7 @@ class UserServiceImplTest {
        assertEquals(user3.getUserName(), result.getFollowers().get(1).getUser_name());
     }
 
-    // T-0004 - US0008: Verifica que la lista de sellers este ordenada de manera ASC.
+    @DisplayName("US-0008 - Verifica que la lista de sellers este ordenada de manera ASC.")
     @Test
     void searchFollowedSellers_withOrderAsc_shouldHaveOrderAsc() {
         // Arrange
@@ -462,8 +456,8 @@ class UserServiceImplTest {
        assertEquals(user2.getUserName(), result.getFollowed().get(1).getUser_name());
     }
 
-   // T-0004 - US0008: Verifica que la lista de sellers este ordenada de manera DESC.
-   @Test
+    @DisplayName("US-0008 - Verifica que la lista de sellers este ordenada de manera DESC.")
+    @Test
     void searchFollowedSellers_withOrderDesc_shouldHaveOrderDesc() {
         // Arrange
         User user1 = TestFactory.createUserFollowing(1, 2, 3);

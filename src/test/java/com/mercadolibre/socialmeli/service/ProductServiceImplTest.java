@@ -65,7 +65,7 @@ class ProductServiceImplTest {
                 .thenReturn(defaultPostsFollowedUsers);
     }
 
-    @DisplayName("Verificar que el tipo de ordenamiento por fecha exista (US-0009) de forma ascendente")
+    @DisplayName("US-0009 - Verificar que el tipo de ordenamiento por fecha exista de forma ascendente.")
     @Test
     void getListOfPublicationsByUser_verifyDateSortTypeExistsAsc() {
         //Arrange
@@ -82,7 +82,7 @@ class ProductServiceImplTest {
         Assertions.assertEquals(5, postsDto.getPosts().size());
     }
 
-    @DisplayName("Verificar que el tipo de ordenamiento por fecha exista (US-0009) de forma descendente")
+    @DisplayName("US-0009 - Verificar que el tipo de ordenamiento por fecha exista de forma descendente.")
     @Test
     void getListOfPublicationsByUser_verifyDateSortTypeExistsDesc() {
         //Arrange
@@ -99,7 +99,7 @@ class ProductServiceImplTest {
         Assertions.assertEquals(5, postsDto.getPosts().size());
     }
 
-    @DisplayName("Verificar que el tipo de ordenamiento por fecha exista (US-0009) - NO EXISTE")
+    @DisplayName("US-0009 - Verificar que el tipo de ordenamiento por fecha exista no existe.")
     @Test
     void getListOfPublicationsByUser_verifyDateSortTypeNoExist() {
         //Arrange
@@ -107,11 +107,11 @@ class ProductServiceImplTest {
         when(this.userRepository.getUserById(anyInt())).thenReturn(Optional.of(user));
 
         //Act y Assert
-        Assertions.assertThrows(IllegalArgumentException.class, () -> this.productService.getListOfPublicationsByUser(user.getUserId(),
-                "otro"));
+        Assertions.assertThrows(IllegalArgumentException.class, () ->
+                this.productService.getListOfPublicationsByUser(user.getUserId(), "otro"));
     }
 
-    @DisplayName("Verificar que el tipo de ordenamiento por fecha exista (US-0009). Lista de posts vacías")
+    @DisplayName("US-0009 - Verificar que el tipo de ordenamiento por fecha exista. Lista de posts vacías.")
     @Test
     void getListOfPublicationsByUser_verifyDateSortTypeExistPostsEmpty() {
         //Arrange
@@ -121,12 +121,13 @@ class ProductServiceImplTest {
         when(this.userRepository.getUserById(anyInt())).thenReturn(Optional.of(user));
 
         //Act y Assert
-        Assertions.assertThrows(NotFoundException.class, () -> this.productService.getListOfPublicationsByUser(user.getUserId(),
+        Assertions.assertThrows(NotFoundException.class, () ->
+                this.productService.getListOfPublicationsByUser(user.getUserId(),
                 OrderType.ORDER_DATE_DESC.getValue()));
     }
 
+    @DisplayName("US-006 - Ordenamiento por fecha Desc Order.")
     @Test
-        // US006 - Ordenamiento por fecha Desc Order
     void getListOfPublicationsByUser_shouldSortDescOrder() {
         // Arrange
         mockUserAndPosts(OrderType.ORDER_DATE_DESC.getValue());
@@ -141,8 +142,8 @@ class ProductServiceImplTest {
                 || result.getPosts().get(0).getDate().isEqual(result.getPosts().get(1).getDate()));
     }
 
+    @DisplayName("US-006 - Ordenamiento por fecha Asc Order.")
     @Test
-        // US006 - Ordenamiento por fecha Asc Order
     void getListOfPublicationsByUser_shouldSortAscOrder() {
         // Arrange
         mockUserAndPosts(OrderType.ORDER_DATE_ASC.getValue());
@@ -158,7 +159,7 @@ class ProductServiceImplTest {
     }
 
 
-    // T-00016 - US0016: Verifica que calcule el promedio de las valoraciones de un post.
+    @DisplayName("US-0016 - Verifica que calcule el promedio de las valoraciones de un post.")
     @Test
     void getValorationsAverageByPost_shouldCalculateTheAverage() {
         // Arrange
@@ -178,15 +179,15 @@ class ProductServiceImplTest {
         assertEquals(averageExpected, averageObtained.getAverage());
     }
 
-    // T-00016 - US0016: Verifica que largue una excepción si el id del post buscado no existe.
+    @DisplayName("US-0016 - Verifica que largue una excepción si el id del post buscado no existe.")
     @Test
     void getValorationsAverageByPost_withIdInexistent_shouldReturnException() {
         when(productRepository.getPostsByPostId(9999)).thenReturn(Optional.empty());
         assertThrows(BadRequestException.class, () -> productService.getValorationsAverageByPost(9999));
     }
 
+    @DisplayName("US-0008 - Excepción no hay publicaciones de quienes siguen.")
     @Test
-        // US008 - Excepción no hay publicaciones de quienes siguen
     void getListOfPublicationsByUser_shouldThrowNotFoundWhenNoPosts() {
         // Arrange
         when(userRepository.getUserById(DEFAULT_USER_ID)).thenReturn(Optional.of(defaultUser));
@@ -198,9 +199,8 @@ class ProductServiceImplTest {
                 productService.getListOfPublicationsByUser(DEFAULT_USER_ID, OrderType.ORDER_DATE_DESC.getValue())
         );
     }
-
+    @DisplayName("US-0008 - Lanza excepción si el usuario no existe.")
     @Test
-        // US008 - Lanza excepción si el usuario no existe
     void getListOfPublicationsByUser_shouldThrowExceptionWhenUserNotFound() {
         // Arrange
         when(userRepository.getUserById(DEFAULT_USER_ID)).thenReturn(Optional.empty());
@@ -211,8 +211,8 @@ class ProductServiceImplTest {
         );
     }
 
+    @DisplayName("US-0014.2 - Devuelve solo las valoraciones que coinciden con el número filtrado.")
     @Test
-        // US0014.2 - Devuelve solo las valoraciones que coinciden con el número filtrado
     void getValorationsByPost_shouldReturnOnlyMatchingValorations() {
         // Arrange
         Post post = TestFactory.createPostWithValoration(10, 1, 5);
@@ -229,6 +229,7 @@ class ProductServiceImplTest {
         assertTrue(result.stream().allMatch(v -> v.getValoration() == 5));
     }
 
+    @DisplayName("US-0014.2 -  Si ninguna valoración coincide con el filtro, devuelve lista vacía.")
     @Test
         // US0014.2 - Devuelve solo las valoraciones que coinciden con el número filtrado
     void getValorationsByPost_shouldReturnOnlyMatchingValorationsWithValorationNull() {
@@ -246,8 +247,8 @@ class ProductServiceImplTest {
         assertEquals(3, result.size());
     }
 
+    @DisplayName("US-0014.2 - Si ninguna valoración coincide con el filtro, devuelve lista vacía.")
     @Test
-        // US0014.2 - Si ninguna valoración coincide con el filtro, devuelve lista vacía
     void getValorationsByPost_shouldReturnEmptyWhenNoMatchForValorationNumber() {
         // Arrange
         Post post = TestFactory.createPostWithValoration(30, 1, 3);
@@ -260,7 +261,7 @@ class ProductServiceImplTest {
         assertTrue(result.isEmpty());
     }
 
-    @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor")
+    @DisplayName("US-0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor.")
     @Test
     void getPromotionalProductsFromSellers() {
         //Arrange
@@ -278,8 +279,8 @@ class ProductServiceImplTest {
         assertEquals(5, promoProductsDto.getPromoPostDtoList().size());
     }
 
-    @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor" +
-            "Usuario no encontrado")
+    @DisplayName("US-0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor." +
+                 "Usuario no encontrado.")
     @Test
     void getPromotionalProductsFromSellersUserNotFound() {
         //Arrange
@@ -291,7 +292,8 @@ class ProductServiceImplTest {
                 getPromotionalProductsFromSellers(user.getUserId()));
     }
 
-    @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor. - No tiene promo")
+    @DisplayName("US-0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor. " +
+                 "- No tiene promo")
     @Test
     void getPromotionalProductsFromSellersNotPromo() {
         //Arrange
@@ -310,8 +312,7 @@ class ProductServiceImplTest {
         Assertions.assertEquals(0, postList.size());
     }
 
-
-    //US0014.1 Verificar que la valoración es procesada correctamente cuando la valoración está entre 1 y 5
+    @DisplayName("US-0014.1 - Verificar que la valoración es procesada correctamente cuando la valoración está entre 1 y 5.")
     @Test
             void testValoratePost_validValoration_shouldProcessWithoutException() {
         // Arrange
@@ -326,7 +327,7 @@ class ProductServiceImplTest {
         assertDoesNotThrow(() -> productService.valorateAPost(valorationDTO));
     }
 
-    //US0014.1 Verificar que no se lanza ninguna excepción cuando la valoración es válida
+    @DisplayName("US-0014.1 - Verificar que no se lanza ninguna excepción cuando la valoración es válida.")
     @Test
     void testValoratePost_withoutException() {
         // Arrange
@@ -342,7 +343,7 @@ class ProductServiceImplTest {
     }
 
 
-    // US0014.1 Verificar que se lanza una excepción cuando la valoración es menor que 1
+    @DisplayName("US-0014.1 - Verificar que se lanza una excepción cuando la valoración es menor que 1.")
     @Test
     void valorateAPost_shouldThrowExceptionWhenValorationIsLessThan1() {
         // Arrange
@@ -357,7 +358,7 @@ class ProductServiceImplTest {
         assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
     }
 
-    // US0014.1 Verificar que se lanza una excepción cuando el post no existe
+    @DisplayName("US-0014.1 - Verificar que se lanza una excepción cuando el post no existe.")
     @Test
     void valorateAPost_shouldThrowExceptionWhenPostNotFound() {
         // Arrange
@@ -369,7 +370,7 @@ class ProductServiceImplTest {
     }
 
 
-    //US0014.1 Verificar que se lanza una excepción cuando la valoración es mayor que 5
+    @DisplayName("US-0014.1 - Verificar que se lanza una excepción cuando la valoración es mayor que 5.")
     @Test
     void valorateAPost_shouldThrowExceptionWhenValorationIsGreaterThan5() {
         // Arrange
@@ -384,8 +385,8 @@ class ProductServiceImplTest {
         assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
 
     }
+    @DisplayName("US-0015 - Listar las valoraciones que realizó un usuario.")
         @Test
-        // US 0015 Listar las valoraciones que realizó un usuario
         void getAllValorationsByUser_ShouldReturnOnlyMatchingValorations () {
             // Arrange
             List<Post> post = TestFactory.createPostListWithValorations();
@@ -403,8 +404,8 @@ class ProductServiceImplTest {
             assertTrue(result.stream().anyMatch(v -> v.getValoration() == 5));
         }
 
+        @DisplayName("US-0015 - Listar las valoraciones que realizó un usuario.")
         @Test
-        // US 0015 Listar las valoraciones que realizó un usuario
         void getAllValorationsByUser_ShouldReturnEmptyValorations () {
             // Arrange
             Integer userId = 4;
@@ -418,8 +419,8 @@ class ProductServiceImplTest {
             assertTrue(result.isEmpty());
         }
 
+        @DisplayName("US-0015 - Listar las valoraciones que realizó un usuario.")
         @Test
-        // US 0015 Listar las valoraciones que realizó un usuario
         void getAllValorationsByUser_ShouldReturnBadRequestException () {
             // Arrange
             when(userRepository.getUserById(DEFAULT_USER_ID)).thenReturn(Optional.empty());
@@ -427,7 +428,8 @@ class ProductServiceImplTest {
             assertThrows(BadRequestException.class, () -> productService.getAllValorationsByUser(DEFAULT_USER_ID));
         }
 
-        @DisplayName("US 0013 - Verifica que la valoración no sea null.")
+
+        @DisplayName("US-0013 - Verifica que la valoración no sea null.")
         @Test
         void valorateAPost_shouldSaveTheValoration() {
             // Arrange
@@ -446,7 +448,7 @@ class ProductServiceImplTest {
 
         }
 
-    @DisplayName("US 0013 - Excepción BadRequest para valoraciones menores a 1")
+    @DisplayName("US-0013 - Excepción BadRequest para valoraciones menores a 1.")
     @Test
     void valoratePost_shouldThrowExceptionWhenInvalidLowValoration() {
         // Arrange
@@ -457,7 +459,7 @@ class ProductServiceImplTest {
         verify(productRepository, never()).saveValoration(anyInt(), anyInt(), anyInt());
     }
 
-    @DisplayName("US 0013 - Excepción BadRequest para valoraciones mayores a 5")
+    @DisplayName("US-0013 - Excepción BadRequest para valoraciones mayores a 5.")
     @Test
     void valoratePost_shouldThrowExceptionWhenInvalidHighValoration() {
         // Arrange
