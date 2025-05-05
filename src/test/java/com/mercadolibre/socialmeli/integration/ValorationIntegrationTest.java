@@ -5,6 +5,7 @@ import com.mercadolibre.socialmeli.model.Post;
 import com.mercadolibre.socialmeli.repository.IProductRepository;
 import com.mercadolibre.socialmeli.repository.ProductRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -44,6 +45,7 @@ public class ValorationIntegrationTest {
         productRepository.getAll().add(post);
     }
 
+    @DisplayName("Test de integración del endpoint /products/100/valorations")
     @Test
     void getValorationsByPost_withValorationNumberParam_shouldReturnOnlyMatches() throws Exception {
         mockMvc.perform(get("/products/100/valorations")
@@ -55,6 +57,7 @@ public class ValorationIntegrationTest {
                 .andExpect(jsonPath("$[1].valoration").value(5));
     }
 
+    @DisplayName("Test de integración del endpoint /products/100/valorations")
     @Test
     void getValorationsByPost_withNoMatches_shouldReturnEmptyList() throws Exception {
         mockMvc.perform(get("/products/100/valorations")
@@ -65,7 +68,7 @@ public class ValorationIntegrationTest {
     }
 
 
-
+    @DisplayName("Test de integración del endpoint /products/valoration")
     @Test
     void postValoration_withValidData_shouldReturnStatusOk() throws Exception {
         mockMvc.perform(post("/products/valoration")
@@ -75,7 +78,7 @@ public class ValorationIntegrationTest {
     }
 
 
-
+    @DisplayName("Test de integración del endpoint /products/valoration")
     @Test
     void postValoration_withInvalidValoration_shouldReturnBadRequest() throws Exception {
         mockMvc.perform(post("/products/valoration")

@@ -40,7 +40,7 @@ class ProductControllerTest {
     private ProductController productController;
 
     @Test
-        // US 008 - Controller devuelve OK PostDto
+        @DisplayName("US-008 - Controller devuelve OK PostDto.")
     void getListOfPublicationsByUser_shouldReturnPostsDtoAndStatusOk() {
         // Arrange
         Integer userId = 1;
@@ -60,7 +60,7 @@ class ProductControllerTest {
         verify(productService, times(1)).getListOfPublicationsByUser(userId, order);
     }
 
-    // T-00016 - US0016: Verifica que calcule el promedio de las valoraciones de un post y que el body no esté vacío.
+    @DisplayName("US-0016: Verifica que calcule el promedio de las valoraciones de un post y que el body no esté vacío.")
     @Test
     void getValorationsByPost_shouldReturnValorationAverageDto() {
         // Arrange
@@ -81,8 +81,8 @@ class ProductControllerTest {
         assertEquals(valorationsExpected, response.getBody().getAverage());
     }
 
+    @DisplayName("US-0014.2 - Controller devuelve OK con lista filtrada por puntuación.")
     @Test
-        // US0014.2 - Controller devuelve OK con lista filtrada por puntuacion
     void getValorationsByPost_shouldReturnOkWithFilteredResults() {
         // Arrange - service devuelve 2 valoraciones con 5
         List<ValorationDTO> valorations = List.of(
@@ -102,7 +102,7 @@ class ProductControllerTest {
     }
 
 
-    @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor")
+    @DisplayName("US-0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor.")
     @Test
     void getPromotionalProductsFromSellers_shouldReturnPostsDtoAndStatusOk() {
         // Arrange
@@ -123,8 +123,8 @@ class ProductControllerTest {
                 getPromotionalProductsFromSellers(user.getUserId());
     }
 
+    @DisplayName("US-0008 - El controller toma el ordenamiento por defecto.")
     @Test
-        // US 008 - El controller toma el ordenamiento por defecto
     void getListOfPublicationsByUser_shouldUseDefaultOrderWhenOrderParamIsMissing() {
         // Arrange
         Integer userId = 1;
@@ -145,8 +145,8 @@ class ProductControllerTest {
         verify(productService, times(1)).getListOfPublicationsByUser(userId, null);
     }
 
+    @DisplayName("US-0008 - El controller  recibe la excepción lanzada desde el service.")
     @Test
-        // US 008 - El controller recibe la excepción lanzada desde el service
     void getListOfPublicationsByUser_shouldPropagateExceptionWhenServiceFails() {
         // Arrange
         Integer userId = 1;
@@ -163,7 +163,7 @@ class ProductControllerTest {
 
     }
 
-    // US 0015 Listar las valoraciones que realizó un usuario
+    @DisplayName("US-0015 - Listar las valoraciones que realizó un usuario.")
     @Test
     void getAllValorationsByUser_ShouldReturnOnlyMatchingValorations() {
         // Assert
@@ -178,8 +178,8 @@ class ProductControllerTest {
         verify(productService, times(1)).getAllValorationsByUser(userId);
     }
 
+    @DisplayName("US-0015 - Listar las valoraciones que realizó un usuario.")
     @Test
-        // US 0015 Listar las valoraciones que realizó un usuario
     void getAllValorationsByUser_shouldPropagateExceptionWhenServiceFails() {
         // Assert
         when(productService.getAllValorationsByUser(Integer.MAX_VALUE))
@@ -192,6 +192,7 @@ class ProductControllerTest {
 
     }
 
+    @DisplayName("US-0013 - Excepción Ok para valoraciones dentro del rango de 1 a 5.")
 
     @Test
     // US0014.1 - Controller devuelve OK con todas las valoraciones de un post por su ID
@@ -209,6 +210,7 @@ class ProductControllerTest {
         // Act
         ResponseEntity<List<ValorationDTO>> response = productController.getValorationsByPost(postId, valorationNumber);
     }
+
     @DisplayName("US 0013 - Excepción Ok para valoraciones dentro del rango de 1 a 5.")
     @Test
     void valoratePost_shouldThrowExceptionWhenValidRangeValoration() {
@@ -223,7 +225,22 @@ class ProductControllerTest {
         verify(productService).valorateAPost(valorationDTO);
     }
 
+    @DisplayName("US-0013 - Controller recibe correctamente una valoración y devuelve status OK.")
+    @Test
+    void valorateAPost_shouldCallServiceAndReturnOk() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 10, 4);
 
+        doNothing().when(productService).valorateAPost(valorationDTO);
+
+        // Act
+        ResponseEntity<Void> response = productController.valorateAPost(valorationDTO);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(productService, times(1)).valorateAPost(valorationDTO);
+    }
 
     @DisplayName("US 0013 - Excepción para valoración BadRequest.")
     @Test
@@ -241,8 +258,8 @@ class ProductControllerTest {
         verify(productService).valorateAPost(valorationDTO);
     }
 
+    @DisplayName("Test Controller: crear un post con promocion válido.")
     @Test
-    // Test Controller: crear un post con promocion válido
     public void createPromoPost_shouldReturnStatusOk() {
         // Arrange
         PromoPostDto promoDto = TestFactory.createPromoPostDto(1, 0.2);
@@ -254,8 +271,9 @@ class ProductControllerTest {
         verify(productService, times(1)).createPost(promoDto);
         Assertions.assertEquals(200, response.getStatusCodeValue());
     }
+
+    @DisplayName("Test Controller: error al crear post promocional.")
     @Test
-    // T-US0010 - error al crear post promocional
     public void createPromoPost_shouldReturnBadRequestWhenDiscountInvalid() {
         // Arrange
         PromoPostDto promoDto = TestFactory.createPromoPostDto(1, 1.5);
@@ -269,8 +287,8 @@ class ProductControllerTest {
         verify(productService).createPost(promoDto);
     }
 
+    @DisplayName("Test Controller: crear un post válido.")
     @Test
-    // T-US0005 - crear un post válido
     public void createPost_shouldReturnStatusOk() {
         // Arrange
         PostDto postDto = TestFactory.createPostDto(1);
@@ -282,8 +300,9 @@ class ProductControllerTest {
         verify(productService, times(1)).createPost(postDto);
         Assertions.assertEquals(200, response.getStatusCodeValue());
     }
+
+    @DisplayName("Test Controller: error al crear un post.")
     @Test
-    // T-US0005 - error al crear post
     public void createPost_shouldReturnBadRequestWhenServiceFails() {
         // Arrange
         PostDto postDto = TestFactory.createPostDto(1);

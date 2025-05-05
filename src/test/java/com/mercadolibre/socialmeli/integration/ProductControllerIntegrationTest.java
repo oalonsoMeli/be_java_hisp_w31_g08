@@ -240,10 +240,8 @@ public class ProductControllerIntegrationTest {
                 .andExpect(jsonPath("$", hasSize(0)));
     }
 
-    /*
-     * Test de integración del endpoint /products/{user_id}/user/valorations
-     * T-0015 (US-0015) Verifica que devuelva excepción si el id no existe
-     */
+    @DisplayName("Test de integración del endpoint /products/{user_id}/user/valorations" +
+                 "US-0015 Verifica que devuelva excepción si el id no existe.")
     @Test
     void getAllValorationsByUser_shoulReturnNotFound() throws Exception {
         mockMvc.perform(get("/products/{user_id}/user/valorations", Integer.MAX_VALUE)
@@ -253,7 +251,7 @@ public class ProductControllerIntegrationTest {
     }
 
     @DisplayName("Test de integración del endpoint /products/promo-post/list " +
-            "US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor")
+                 "US-0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor")
     @Test
     public void getPromotionalProductsFromSellersIntegration() throws Exception {
         mockMvc.perform(get("/products/promo-post/list", 1)
@@ -263,8 +261,8 @@ public class ProductControllerIntegrationTest {
     }
 
     @DisplayName("Test de integración del endpoint /products/promo-post/list " +
-            "US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor" +
-            "Usuario no encontrado.")
+                 "US-0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor" +
+                 "Usuario no encontrado.")
     @Test
     public void getPromotionalProductsFromSellers_UserNotFound() throws Exception {
         mockMvc.perform(get("/products/promo-post/list", 1)

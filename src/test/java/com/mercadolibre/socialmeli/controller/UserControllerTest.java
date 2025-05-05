@@ -39,7 +39,7 @@ class UserControllerTest {
 
 
 
-    // T-0003 - Test de Controller: la lista de seguidos con orden ascendente debería existir y no estar vacía
+    @DisplayName("Test de Controller: la lista de seguidos con orden ascendente debería existir y no estar vacía.")
     @Test
     void getFollowed_withOrderAsc_shouldExists() {
         // Arrange
@@ -63,7 +63,7 @@ class UserControllerTest {
         assertFalse(body.getFollowed().isEmpty());
     }
 
-    // T-0003 - Test de Controller: la lista de seguidos con orden descendente debería existir y no estar vacía
+    @DisplayName("Test de Controller: la lista de seguidos con orden descendente debería existir y no estar vacía.")
     @Test
     void getFollowed_withOrderDesc_shouldExists() {
         // Arrange
@@ -87,7 +87,7 @@ class UserControllerTest {
         assertFalse(body.getFollowed().isEmpty());
     }
 
-    // T-0003 - Test de Controller: la lista de seguidores con orden ascendente debería existir y no estar vacía
+    @DisplayName("Test de Controller: la lista de seguidores con orden ascendente debería existir y no estar vacía.")
     @Test
     void getFollowers_withOrderAsc_shouldExists() {
         // Arrange
@@ -111,7 +111,7 @@ class UserControllerTest {
         assertFalse(body.getFollowers().isEmpty());
     }
 
-    // T-0003 - Test de Controller: la lista de seguidores con orden descendente debería existir y no estar vacía
+    @DisplayName("Test de Controller: la lista de seguidores con orden descendente debería existir y no estar vacía.")
     @Test
     void getFollowers_withOrderDesc_shouldExists() {
         // Arrange
@@ -135,7 +135,7 @@ class UserControllerTest {
         assertFalse(body.getFollowers().isEmpty());
     }
 
-    // T-0003 - Test de Controller: el ID del usuario seguido no existe
+    @DisplayName("Test de Controller: el ID del usuario seguido no existe.")
     @Test
     void getFollowed_withInexistentId_shouldReturnException() {
         // Arrange
@@ -147,7 +147,7 @@ class UserControllerTest {
         });
     }
 
-    // T-0003 - Test de Controller: el ID del usuario seguidor no existe
+    @DisplayName("Test de Controller: el ID del usuario seguidor no existe.")
     @Test
     void getFollowers_withInexistentId_shouldReturnException() {
         // Arrange
@@ -159,8 +159,8 @@ class UserControllerTest {
         });
     }
 
+    @DisplayName("Test de Controller: operación correcta.")
     @Test
-    // T-0002 - Test de Controller: operacion correcta
     public void unfollowUser_shouldReturnOkWhenUnfollowSuccess() {
         // Act
         ResponseEntity<Void> response = controller.unfollowUser(1, 2);
@@ -170,8 +170,8 @@ class UserControllerTest {
         Assertions.assertEquals(200, response.getStatusCodeValue());
     }
 
+    @DisplayName("Test de Controller: el usuario al dejar de seguir, no existe.")
     @Test
-    // T-0002 - Test de Controller: el usuario a dejar de seguir no existe
     public void unfollowUser_shouldThrowBadRequest() {
         // Arrange
         Mockito.doThrow(new BadRequestException("Usuario no encontrado"))
@@ -185,7 +185,7 @@ class UserControllerTest {
         Mockito.verify(service).unfollowUser(1, 2);
     }
 
-    // T-0007 - US0002: Verifica que se cumpla el happypath
+    @DisplayName("Test de Controller: Verifica que se cumpla el happypath.")
     @Test
     public void getFollowersCountByUserId_shouldReturnOk(){
         // Arrange
@@ -204,7 +204,7 @@ class UserControllerTest {
         assertEquals(3, response.getBody().getFollowers_count());
     }
 
-    @DisplayName("T-0007 - US-0002: Verifica que se cumpla el sadpath.")
+    @DisplayName("Test de Controller: Verifica que se cumpla el sadpath.")
     @Test
     public void getFollowersCountByUserId_shouldReturnErrorNotFound(){
         // Arrange
@@ -217,7 +217,7 @@ class UserControllerTest {
         });
     }
 
-    // T-0001 - Test de Controller: seguir usuario con éxito
+    @DisplayName("Test de Controller: Test de Controller: seguir usuario con éxito.")
     @Test
     void followUser_shouldReturnOkWhenFollowSuccess() throws Exception {
 
@@ -230,7 +230,7 @@ class UserControllerTest {
     }
 
 
-    // T-0001 - Test de Controller: el usuario a seguir no existe
+    @DisplayName("Test de Controller: el usuario a seguir no existe.")
     @Test
     void followUser_shouldReturnBadRequestWhenUserToFollowDoesNotExist() throws Exception {
         // Arrange
@@ -245,7 +245,7 @@ class UserControllerTest {
         Mockito.verify(service).followUser(1, 2);
     }
 
-    @DisplayName("T-0004 - US-0008 la lista de seguidos deberia estar con orden ascendente.")
+    @DisplayName("Test de controller: la lista de seguidos debería estar con orden ascendente.")
     @Test
     void getFollowed_withOrderAsc_shouldHaveOrderAsc() {
         // Arrange
@@ -269,7 +269,7 @@ class UserControllerTest {
         assertEquals(user1.getUser_name(), body.getFollowed().get(1).getUser_name());
     }
 
-    @DisplayName("T-0004 - US-0008 la lista de seguidos deberia estar con orden descendente.")
+    @DisplayName("Test de controller: la lista de seguidos deberia estar con orden descendente.")
     @Test
     void getFollowed_withOrderDesc_shouldHaveOrderDesc() {
         // Arrange
@@ -293,7 +293,7 @@ class UserControllerTest {
         assertEquals(user3.getUser_name(), body.getFollowed().get(1).getUser_name());
     }
 
-    @DisplayName("T-0004 - US-0008 la lista de seguidores debería estar con orden ascendente.")
+    @DisplayName("Test de controller: la lista de seguidores debería estar con orden ascendente.")
     @Test
     void getFollowers_withOrderAsc_shouldHaveOderderAsc() {
         // Arrange
@@ -317,7 +317,7 @@ class UserControllerTest {
         assertEquals(user3.getUser_name(), body.getFollowers().get(1).getUser_name());
     }
 
-@DisplayName("T-0004 - US-0008 la lista de seguidores debería estar con orden descendente.")
+    @DisplayName("Test de controller: la lista de seguidores debería estar con orden descendente.")
     @Test
     void getFollowers_withOrderDesc_shouldHaveOrderDesc() {
         // Arrange
