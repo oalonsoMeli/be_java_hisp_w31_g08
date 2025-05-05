@@ -6,6 +6,7 @@ import com.mercadolibre.socialmeli.dto.ValorationDTO;
 
 import com.mercadolibre.socialmeli.dto.PromoProductsDto;
 import com.mercadolibre.socialmeli.exception.BadRequestException;
+import com.mercadolibre.socialmeli.exception.ExceptionController;
 import com.mercadolibre.socialmeli.exception.IllegalArgumentException;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.dto.ValorationDTO;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
@@ -33,7 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import static org.mockito.ArgumentMatchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -52,6 +54,8 @@ class ProductServiceImplTest {
 
     private User defaultUser;
     private List<Post> defaultPostsFollowedUsers;
+    @Autowired
+    private ExceptionController exceptionController;
 
     @BeforeEach
     void setUp() {
@@ -409,6 +413,47 @@ class ProductServiceImplTest {
             // Act & Assert
             assertThrows(BadRequestException.class, () -> productService.getAllValorationsByUser(DEFAULT_USER_ID));
         }
+
+        @DisplayName("US 0013 - Verifica que la valoración no sea null.")
+        @Test
+        void valorateAPost_shouldSaveTheValoration() {
+            // Arrange
+            ValorationDTO valorationDTO = TestFactory.createValorationDTO(1, 2, 4);
+            Post post = TestFactory.createPost(2, 1);
+            User user = TestFactory.createUser(1);
+
+            when(productRepository.getPostsByPostId(2)).thenReturn(Optional.of(post));
+            when(userRepository.getUserById(1)).thenReturn(Optional.of(user));
+
+            //Act
+            productService.valorateAPost(valorationDTO);
+
+            //Assert
+            verify(productRepository).saveValoration(2, 1, 4);
+
+        }
+
+    @DisplayName("US 0013 - Excepción BadRequest para valoraciones menores a 1")
+    @Test
+    void valoratePost_shouldThrowExceptionWhenInvalidLowValoration() {
+        // Arrange
+        ValorationDTO valorationDTO = TestFactory.createValorationDTO(1, 2, 0);
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
+        verify(productRepository, never()).saveValoration(anyInt(), anyInt(), anyInt());
     }
+
+    @DisplayName("US 0013 - Excepción BadRequest para valoraciones mayores a 5")
+    @Test
+    void valoratePost_shouldThrowExceptionWhenInvalidHighValoration() {
+        // Arrange
+        ValorationDTO valorationDTO = TestFactory.createValorationDTO(1, 2, 6);
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
+        verify(productRepository, never()).saveValoration(anyInt(), anyInt(), anyInt());
+    }
+}
 
 

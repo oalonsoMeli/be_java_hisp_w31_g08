@@ -39,7 +39,7 @@ class ProductControllerTest {
     private ProductController productController;
 
     @Test
-    // US 008 - Controller devuelve OK PostDto
+        // US 008 - Controller devuelve OK PostDto
     void getListOfPublicationsByUser_shouldReturnPostsDtoAndStatusOk() {
         // Arrange
         Integer userId = 1;
@@ -81,7 +81,7 @@ class ProductControllerTest {
     }
 
     @Test
-    // US0014.2 - Controller devuelve OK con lista filtrada por puntuacion
+        // US0014.2 - Controller devuelve OK con lista filtrada por puntuacion
     void getValorationsByPost_shouldReturnOkWithFilteredResults() {
         // Arrange - service devuelve 2 valoraciones con 5
         List<ValorationDTO> valorations = List.of(
@@ -145,7 +145,7 @@ class ProductControllerTest {
     }
 
     @Test
-    // US 008 - El controller recibe la excepción lanzada desde el service
+        // US 008 - El controller recibe la excepción lanzada desde el service
     void getListOfPublicationsByUser_shouldPropagateExceptionWhenServiceFails() {
         // Arrange
         Integer userId = 1;
@@ -161,25 +161,6 @@ class ProductControllerTest {
         verify(productService, times(1)).getListOfPublicationsByUser(userId, order);
 
     }
-
-    @Test
-
-    // US0014.1 - Controller recibe correctamente una valoración y devuelve status OK
-    void valorateAPost_shouldCallServiceAndReturnOk() {
-        // Arrange
-        ValorationDTO valorationDTO = new ValorationDTO(1, 10, 4);
-
-        doNothing().when(productService).valorateAPost(valorationDTO);
-
-        // Act
-        ResponseEntity<Void> response = productController.valorateAPost(valorationDTO);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(productService, times(1)).valorateAPost(valorationDTO);
-    }
-
 
     // US 0015 Listar las valoraciones que realizó un usuario
     @Test
@@ -208,5 +189,53 @@ class ProductControllerTest {
         });
         verify(productService, times(1)).getAllValorationsByUser(Integer.MAX_VALUE);
 
+    }
+
+    @DisplayName("US 0013 - Excepción Ok para valoraciones dentro del rango de 1 a 5.")
+    @Test
+    void valoratePost_shouldThrowExceptionWhenValidRangeValoration() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 2, 5);
+
+        // Act
+        ResponseEntity<Void> response = productController.valorateAPost(valorationDTO);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(productService).valorateAPost(valorationDTO);
+    }
+
+    @DisplayName( "US0013 - Controller recibe correctamente una valoración y devuelve status OK")
+    @Test
+    void valorateAPost_shouldCallServiceAndReturnOk() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 10, 4);
+
+        doNothing().when(productService).valorateAPost(valorationDTO);
+
+        // Act
+        ResponseEntity<Void> response = productController.valorateAPost(valorationDTO);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(productService, times(1)).valorateAPost(valorationDTO);
+    }
+
+
+    @DisplayName("US 0013 - Excepción para valoración BadRequest.")
+    @Test
+    void valoratePost_shouldThrowExceptionWhenBadRequestExceptionThrown() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 2, 6);
+        doThrow(new BadRequestException("Se permiten solo valoraciones del 1 al 5."))
+                .when(productService).valorateAPost(valorationDTO);
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> {
+            productController.valorateAPost(valorationDTO);
+        });
+
+        verify(productService).valorateAPost(valorationDTO);
     }
 }

@@ -9,6 +9,7 @@ import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.service.IUserService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -203,7 +204,7 @@ class UserControllerTest {
         assertEquals(3, response.getBody().getFollowers_count());
     }
 
-    // T-0007 - US0002: Verifica que se cumpla el sadpath.
+    @DisplayName("T-0007 - US-0002: Verifica que se cumpla el sadpath.")
     @Test
     public void getFollowersCountByUserId_shouldReturnErrorNotFound(){
         // Arrange
@@ -244,7 +245,7 @@ class UserControllerTest {
         Mockito.verify(service).followUser(1, 2);
     }
 
-    // T-0004 - Test de Controller: la lista de seguidos deberia estar con orden ascendente.
+    @DisplayName("T-0004 - US-0008 la lista de seguidos deberia estar con orden ascendente.")
     @Test
     void getFollowed_withOrderAsc_shouldHaveOrderAsc() {
         // Arrange
@@ -268,7 +269,7 @@ class UserControllerTest {
         assertEquals(user1.getUser_name(), body.getFollowed().get(1).getUser_name());
     }
 
-    // T-0004 - Test de Controller: la lista de seguidos deberia estar con orden descendente.
+    @DisplayName("T-0004 - US-0008 la lista de seguidos deberia estar con orden descendente.")
     @Test
     void getFollowed_withOrderDesc_shouldHaveOrderDesc() {
         // Arrange
@@ -292,7 +293,7 @@ class UserControllerTest {
         assertEquals(user3.getUser_name(), body.getFollowed().get(1).getUser_name());
     }
 
-    // T-0004 - Test de Controller: la lista de seguidores deberia estar con orden ascendente.
+    @DisplayName("T-0004 - US-0008 la lista de seguidores debería estar con orden ascendente.")
     @Test
     void getFollowers_withOrderAsc_shouldHaveOderderAsc() {
         // Arrange
@@ -316,7 +317,7 @@ class UserControllerTest {
         assertEquals(user3.getUser_name(), body.getFollowers().get(1).getUser_name());
     }
 
-// T-0004 - Test de Controller: la lista de seguidores deberia estar con orden descendente.
+@DisplayName("T-0004 - US-0008 la lista de seguidores debería estar con orden descendente.")
     @Test
     void getFollowers_withOrderDesc_shouldHaveOrderDesc() {
         // Arrange

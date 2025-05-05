@@ -189,4 +189,15 @@ class ProductRepositoryImplTest {
         assertFalse(posts.isEmpty(), "The posts list should not be empty");
     }
 
+    @DisplayName("US 0013 - Verifica que la valoración no sea null.")
+    @Test
+    void saveValoration_sholdSaveValorationInPost() {
+        // Arrange
+        Post post = TestFactory.createPost(4, 1, LocalDate.now().minusWeeks(1));
+        productRepository.save(post);
+        // Act
+        productRepository.saveValoration(post.getPostId(), post.getUserId(), 3);
+        // Assert
+        assertFalse(post.getValorations().isEmpty());
+    }
 }
