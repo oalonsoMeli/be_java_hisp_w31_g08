@@ -1,5 +1,4 @@
 package com.mercadolibre.socialmeli.utilities;
-
 import com.mercadolibre.socialmeli.dto.PostDto;
 import com.mercadolibre.socialmeli.dto.ProductDto;
 import com.mercadolibre.socialmeli.model.Post;
