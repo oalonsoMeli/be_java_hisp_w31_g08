@@ -9,6 +9,7 @@ import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.service.IUserService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -203,7 +204,7 @@ class UserControllerTest {
         assertEquals(3, response.getBody().getFollowers_count());
     }
 
-    // T-0007 - US0002: Verifica que se cumpla el sadpath.
+    @DisplayName("T-0007 - US-0002: Verifica que se cumpla el sadpath.")
     @Test
     public void getFollowersCountByUserId_shouldReturnErrorNotFound(){
         // Arrange
@@ -242,5 +243,101 @@ class UserControllerTest {
         });
 
         Mockito.verify(service).followUser(1, 2);
+    }
+
+    @DisplayName("T-0004 - US-0008 la lista de seguidos deberia estar con orden ascendente.")
+    @Test
+    void getFollowed_withOrderAsc_shouldHaveOrderAsc() {
+        // Arrange
+        UserDto user1 = TestFactory.createUserDTO(1);
+        user1.setUser_name("John");
+        UserDto user3 = TestFactory.createUserDTO(3);
+        user3.setUser_name("Jane");
+        UserDto user2 = TestFactory.createUserDTO(2);
+
+        FollowedDto followedDto = new FollowedDto(user2.getUser_id(), user2.getUser_name(),  List.of(user3, user1));
+
+        when(service.searchFollowedSellers(2, "name_asc")).thenReturn(followedDto);
+
+        // Act
+        ResponseEntity<FollowedDto> response = controller.getFollowed(2, "name_asc");
+        FollowedDto body = response.getBody();
+
+        // Assert
+        assertNotNull(body);
+        assertEquals(user3.getUser_name(), body.getFollowed().get(0).getUser_name());
+        assertEquals(user1.getUser_name(), body.getFollowed().get(1).getUser_name());
+    }
+
+    @DisplayName("T-0004 - US-0008 la lista de seguidos deberia estar con orden descendente.")
+    @Test
+    void getFollowed_withOrderDesc_shouldHaveOrderDesc() {
+        // Arrange
+        UserDto user1 = TestFactory.createUserDTO(1);
+        user1.setUser_name("John");
+        UserDto user3 = TestFactory.createUserDTO(3);
+        user3.setUser_name("Jane");
+        UserDto user2 = TestFactory.createUserDTO(2);
+
+        FollowedDto followedDto = new FollowedDto(user2.getUser_id(), user2.getUser_name(),  List.of(user1, user3));
+
+        when(service.searchFollowedSellers(2, "name_desc")).thenReturn(followedDto);
+
+        // Act
+        ResponseEntity<FollowedDto> response = controller.getFollowed(2, "name_desc");
+        FollowedDto body = response.getBody();
+
+        // Assert
+        assertNotNull(body);
+        assertEquals(user1.getUser_name(), body.getFollowed().get(0).getUser_name());
+        assertEquals(user3.getUser_name(), body.getFollowed().get(1).getUser_name());
+    }
+
+    @DisplayName("T-0004 - US-0008 la lista de seguidores debería estar con orden ascendente.")
+    @Test
+    void getFollowers_withOrderAsc_shouldHaveOderderAsc() {
+        // Arrange
+        UserDto user1 = TestFactory.createUserDTO(1);
+
+        UserDto user3 = TestFactory.createUserDTO(3);
+        user3.setUser_name("John");
+        UserDto user2 = TestFactory.createUserDTO(2);
+        user2.setUser_name("Jane");
+        FollowersDto followersDto = new FollowersDto(user1.getUser_id(), user1.getUser_name(),  List.of(user2, user3));
+
+        when(service.getUserFollowers(2, "name_asc")).thenReturn(followersDto);
+
+        // Act
+        ResponseEntity<FollowersDto> response = controller.getFollowers(2, "name_asc");
+        FollowersDto body = response.getBody();
+
+        // Assert
+        assertNotNull(body);
+        assertEquals(user2.getUser_name(), body.getFollowers().get(0).getUser_name());
+        assertEquals(user3.getUser_name(), body.getFollowers().get(1).getUser_name());
+    }
+
+@DisplayName("T-0004 - US-0008 la lista de seguidores debería estar con orden descendente.")
+    @Test
+    void getFollowers_withOrderDesc_shouldHaveOrderDesc() {
+        // Arrange
+        UserDto user1 = TestFactory.createUserDTO(1);
+
+        UserDto user3 = TestFactory.createUserDTO(3);
+        user3.setUser_name("John");
+        UserDto user2 = TestFactory.createUserDTO(2);
+        user2.setUser_name("Jane");
+        FollowersDto followersDto = new FollowersDto(user1.getUser_id(), user1.getUser_name(),  List.of(user3, user2));
+
+        when(service.getUserFollowers(2, "name_desc")).thenReturn(followersDto);
+
+        // Act
+        ResponseEntity<FollowersDto> response = controller.getFollowers(2, "name_desc");
+        FollowersDto body = response.getBody();
+
+        // Assert
+        assertNotNull(body);
+        assertEquals(user3.getUser_name(), body.getFollowers().get(0).getUser_name());
+        assertEquals(user2.getUser_name(), body.getFollowers().get(1).getUser_name());
     }
 }

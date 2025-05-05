@@ -1,14 +1,18 @@
 package com.mercadolibre.socialmeli.integration;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mercadolibre.socialmeli.dto.PostsDto;
+import com.mercadolibre.socialmeli.dto.ValorationDTO;
+import com.mercadolibre.socialmeli.exception.BadRequestException;
 import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.Post;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.repository.IProductRepository;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
+import com.mercadolibre.socialmeli.service.ProductServiceImpl;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +21,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -46,6 +50,8 @@ public class ProductControllerIntegrationTest {
     private User user;
     private List<Post> postsFollowedUsers;
     private Post post1, post2, post3, post4;
+    @Autowired
+    private ProductServiceImpl productServiceImpl;
 
     @BeforeEach
     void setUp() {
@@ -54,6 +60,7 @@ public class ProductControllerIntegrationTest {
         initializePosts();
         System.out.println(productRepository.getAll());
     }
+
 
     private void clearRepositories() {
         userRepository.getAll().clear();
@@ -97,6 +104,7 @@ public class ProductControllerIntegrationTest {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(jsonResponse, PostsDto.class);
     }
+
 
     private void assertPostsSorted(PostsDto postsDto, boolean ascending) {
         assertNotNull(postsDto);
@@ -242,5 +250,27 @@ public class ProductControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @DisplayName("Test de integración del endpoint /products/promo-post/list " +
+            "US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor")
+    @Test
+    public void getPromotionalProductsFromSellersIntegration() throws Exception {
+        mockMvc.perform(get("/products/promo-post/list", 1)
+                        .param("user_id", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("Test de integración del endpoint /products/promo-post/list " +
+            "US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor" +
+            "Usuario no encontrado.")
+    @Test
+    public void getPromotionalProductsFromSellers_UserNotFound() throws Exception {
+        mockMvc.perform(get("/products/promo-post/list", 1)
+                        .param("user_id", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Usuario no encontrado."));
     }
 }

@@ -1,11 +1,8 @@
 package com.mercadolibre.socialmeli.service;
-import com.mercadolibre.socialmeli.dto.PostsDto;
-import com.mercadolibre.socialmeli.dto.ValorationAverageDto;
+import com.mercadolibre.socialmeli.dto.*;
 
-import com.mercadolibre.socialmeli.dto.ValorationDTO;
-
-import com.mercadolibre.socialmeli.dto.PromoProductsDto;
 import com.mercadolibre.socialmeli.exception.BadRequestException;
+import com.mercadolibre.socialmeli.exception.ExceptionController;
 import com.mercadolibre.socialmeli.exception.IllegalArgumentException;
 import com.mercadolibre.socialmeli.exception.NotFoundException;
 import com.mercadolibre.socialmeli.dto.ValorationDTO;
@@ -23,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
@@ -33,7 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import static org.mockito.ArgumentMatchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -52,6 +50,8 @@ class ProductServiceImplTest {
 
     private User defaultUser;
     private List<Post> defaultPostsFollowedUsers;
+    @Autowired
+    private ExceptionController exceptionController;
 
     @BeforeEach
     void setUp() {
@@ -227,6 +227,23 @@ class ProductServiceImplTest {
         // Assert
         assertEquals(2, result.size());
         assertTrue(result.stream().allMatch(v -> v.getValoration() == 5));
+    }
+
+    @Test
+        // US0014.2 - Devuelve solo las valoraciones que coinciden con el número filtrado
+    void getValorationsByPost_shouldReturnOnlyMatchingValorationsWithValorationNull() {
+        // Arrange
+        Post post = TestFactory.createPostWithValoration(10, 1, 5);
+        post.getValorations().put(2, 3);
+        post.getValorations().put(3, 5);
+
+        when(productRepository.getPostsByPostId(10)).thenReturn(Optional.of(post));
+
+        // Act
+        List<ValorationDTO> result = productService.getValorationsByPost(10, null);
+
+        // Assert
+        assertEquals(3, result.size());
     }
 
     @Test
@@ -410,6 +427,122 @@ class ProductServiceImplTest {
             assertThrows(BadRequestException.class, () -> productService.getAllValorationsByUser(DEFAULT_USER_ID));
         }
 
+
+
+        @DisplayName("US 0013 - Verifica que la valoración no sea null.")
+        @Test
+        void valorateAPost_shouldSaveTheValoration() {
+            // Arrange
+            ValorationDTO valorationDTO = TestFactory.createValorationDTO(1, 2, 4);
+            Post post = TestFactory.createPost(2, 1);
+            User user = TestFactory.createUser(1);
+
+            when(productRepository.getPostsByPostId(2)).thenReturn(Optional.of(post));
+            when(userRepository.getUserById(1)).thenReturn(Optional.of(user));
+
+            //Act
+            productService.valorateAPost(valorationDTO);
+
+            //Assert
+            verify(productRepository).saveValoration(2, 1, 4);
+
+        }
+
+    @DisplayName("US 0013 - Excepción BadRequest para valoraciones menores a 1")
+    @Test
+    void valoratePost_shouldThrowExceptionWhenInvalidLowValoration() {
+        // Arrange
+        ValorationDTO valorationDTO = TestFactory.createValorationDTO(1, 2, 0);
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
+        verify(productRepository, never()).saveValoration(anyInt(), anyInt(), anyInt());
+
+    }
+
+    @DisplayName("US 0013 - Excepción BadRequest para valoraciones mayores a 5")
+    @Test
+    void valoratePost_shouldThrowExceptionWhenInvalidHighValoration() {
+        // Arrange
+        ValorationDTO valorationDTO = TestFactory.createValorationDTO(1, 2, 6);
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.valorateAPost(valorationDTO));
+        verify(productRepository, never()).saveValoration(anyInt(), anyInt(), anyInt());
+    }
+
+    // Test: metodo CreatePost
+    // Usuario válido, post sin promoción
+    @Test
+    void createPost_withValidPost_shouldSavePost() {
+        // Arrange
+        PostDto postDto = TestFactory.createPostDto(1);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act
+        productService.createPost(postDto);
+
+        // Assert
+        verify(userRepository).getUserById(1);
+        verify(productRepository).save(any(Post.class));
+    }
+
+    // Usuario válido, post con promoción válida
+    @Test
+    void createPost_withPromoAndValidDiscount_shouldApplyPromo() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1, 0.2);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act
+        productService.createPost(promoDto);
+
+        // Assert
+        verify(productRepository).save(argThat(post ->
+                post.getHasPromo() && post.getDiscount() == 0.2
+        ));
+    }
+
+    // Usuario no encontrado
+    @Test
+    void createPost_withInvalidUser_shouldThrowBadRequest() {
+        // Arrange
+        PostDto postDto = TestFactory.createPostDto(99);
+        when(userRepository.getUserById(99)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.createPost(postDto));
+    }
+
+    // Post con descuento inválido (> 1)
+    @Test
+    void createPost_withInvalidDiscount_shouldThrowBadRequest() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1, 1.5);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.createPost(promoDto));
+    }
+    @Test
+    void createPost_withNullDiscount_shouldThrowBadRequest() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1,null);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.createPost(promoDto));
+    }
+    @Test
+    void createPost_withZeroDiscount_shouldThrowBadRequest() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1,0.0);
+        when(userRepository.getUserById(1)).thenReturn(Optional.of(new User()));
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.createPost(promoDto));
+    }
+
     @DisplayName("US0014.1 - Obtener las valoraciones de un post por id.")
     @Test
     void getValorationsByPost_shouldReturnCorrectValorations() {
@@ -429,7 +562,6 @@ class ProductServiceImplTest {
         assertEquals(2, result.size());
         assertTrue(result.stream().allMatch(v -> v.getValoration() == 3));
     }
-
 
     @DisplayName("US0014.1 - No existe un post con el id proporcionado.")
     @Test

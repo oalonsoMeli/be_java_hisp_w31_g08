@@ -189,4 +189,49 @@ class ProductRepositoryImplTest {
         assertFalse(posts.isEmpty(), "The posts list should not be empty");
     }
 
+    @DisplayName("US 0013 - Verifica que la valoración no sea null.")
+    @Test
+    void saveValoration_sholdSaveValorationInPost() {
+        // Arrange
+        Post post = TestFactory.createPost(4, 1, LocalDate.now().minusWeeks(1));
+        productRepository.save(post);
+        // Act
+        productRepository.saveValoration(post.getPostId(), post.getUserId(), 3);
+        // Assert
+        assertFalse(post.getValorations().isEmpty());
+    }
+
+    @DisplayName("Verifica que se retonen los post de un usuario")
+    @Test
+    void getPostsByUserId_shouldReturnUserPost(){
+        // Arrange
+        Integer userId = 1;
+        // Act
+        List<Post> posts = productRepository.getPostsByUserId(userId);
+        // Assert
+        assertFalse(posts.isEmpty());
+        posts.forEach(post -> {
+            assertEquals(userId, post.getUserId());
+        });
+    }
+
+    @DisplayName("Verifica que se retorne una lista vacía cuando el usuario no tiene posts")
+    @Test
+    void getPostsByUserId_shouldReturnEmptyListWhenNoPostsExist() {
+        // Arrange
+        Integer userId = Integer.MAX_VALUE;
+        // Act
+        List<Post> posts = productRepository.getPostsByUserId(userId);
+        // Assert
+        assertTrue(posts.isEmpty(), "La lista debería estar vacía");
+    }
+
+    @DisplayName("Verifica que se lance la excepción cuando userId es null")
+    @Test
+    void getPostsByUserId_shouldHandleNullUserId() {
+        // Arrange
+        Integer userId = null;
+        // Act && Assert
+        assertThrows(NullPointerException.class, ()-> productRepository.getPostsByUserId(userId));
+    }
 }

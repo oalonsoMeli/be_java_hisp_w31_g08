@@ -1,7 +1,6 @@
 package com.mercadolibre.socialmeli.repository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mercadolibre.socialmeli.dto.ValorationDTO;
 import com.mercadolibre.socialmeli.model.Post;
 import com.mercadolibre.socialmeli.model.Product;
 import com.mercadolibre.socialmeli.utilities.OrderType;
@@ -58,7 +57,12 @@ public class ProductRepositoryImpl implements IProductRepository {
         }
     }
 
-    //Parametro Order: Indica que tipo de ordenamiento se realizará por fecha (ascendente o descendente).
+    /*
+    Obtiene un listado de las publicaciones realizadas por los vendedores
+    que un usuario sigue en las últimas dos semanas
+
+    Parametro Order: Indica que tipo de ordenamiento se realizará por fecha (ascendente o descendente).
+    */
     @Override
     public List<Post> getPostsByUserIdsInLastTwoWeeks(Set<Integer> userIds, String order) {
         LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
@@ -84,6 +88,8 @@ public class ProductRepositoryImpl implements IProductRepository {
                         .toList();
     }
 
+
+    //Obtiene el listado de los productos que un vendedor tiene en promoción
     @Override
     public List<Post> getPromotionalProductsFromSellers(Integer userId){
         return this.listOfPost.stream().filter(post -> post.getUserId().equals(userId)

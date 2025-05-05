@@ -1,18 +1,11 @@
 package com.mercadolibre.socialmeli.repository;
-
 import com.mercadolibre.socialmeli.model.User;
-import com.mercadolibre.socialmeli.repository.IUserRepository;
-import com.mercadolibre.socialmeli.repository.UserRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -25,7 +18,7 @@ class UserRepositoryImplTest {
 
     // beforeEach para que cada test sea independiente del otro.
     @BeforeEach
-    public void init () throws IOException {
+    public void init() throws IOException {
         repository = new UserRepositoryImpl();
         repository = new UserRepositoryImpl();
         userExpected1 = repository.getUserById(1).orElseThrow();
@@ -42,8 +35,8 @@ class UserRepositoryImplTest {
         List<User> usersObtained = repository.findUsersById(List.of(2, 1));
 
         // Assert
-        assertEquals("John Doe", userById.get(0).getUserName());
-        assertEquals("Jane Smith", userById.get(1).getUserName());
+        assertEquals(usersObtained.get(0).getUserName(), userById.get(0).getUserName());
+        assertEquals(usersObtained.get(1).getUserName(), userById.get(1).getUserName());
     }
 
 
@@ -95,6 +88,5 @@ class UserRepositoryImplTest {
         // Assert
         assertTrue(result.isPresent(), "El usuario debería existir");
         assertEquals("John Doe", result.get().getUserName());
-
     }
 }

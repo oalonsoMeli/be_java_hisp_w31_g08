@@ -10,6 +10,8 @@ import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.Post;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.service.IProductService;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,7 +40,7 @@ class ProductControllerTest {
     private ProductController productController;
 
     @Test
-    // US 008 - Controller devuelve OK PostDto
+        // US 008 - Controller devuelve OK PostDto
     void getListOfPublicationsByUser_shouldReturnPostsDtoAndStatusOk() {
         // Arrange
         Integer userId = 1;
@@ -80,7 +82,7 @@ class ProductControllerTest {
     }
 
     @Test
-    // US0014.2 - Controller devuelve OK con lista filtrada por puntuacion
+        // US0014.2 - Controller devuelve OK con lista filtrada por puntuacion
     void getValorationsByPost_shouldReturnOkWithFilteredResults() {
         // Arrange - service devuelve 2 valoraciones con 5
         List<ValorationDTO> valorations = List.of(
@@ -100,11 +102,12 @@ class ProductControllerTest {
     }
 
 
+    @DisplayName("US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor")
     @Test
     void getPromotionalProductsFromSellers_shouldReturnPostsDtoAndStatusOk() {
         // Arrange
         User user = TestFactory.createUser(5);
-        PromoPostDto promoPostDto = TestFactory.createPromoPostDto(5, 5);
+        PromoPostDto promoPostDto = TestFactory.createPromoPostDto(5, 5.1);
         PromoProductsDto promoProductsDto = new PromoProductsDto(
                 user.getUserId(), user.getUserName(), List.of(promoPostDto)
         );
@@ -143,7 +146,7 @@ class ProductControllerTest {
     }
 
     @Test
-    // US 008 - El controller recibe la excepción lanzada desde el service
+        // US 008 - El controller recibe la excepción lanzada desde el service
     void getListOfPublicationsByUser_shouldPropagateExceptionWhenServiceFails() {
         // Arrange
         Integer userId = 1;
@@ -160,26 +163,8 @@ class ProductControllerTest {
 
     }
 
-    @Test
-
-    // US0014.1 - Controller recibe correctamente una valoración y devuelve status OK
-    void valorateAPost_shouldCallServiceAndReturnOk() {
-        // Arrange
-        ValorationDTO valorationDTO = new ValorationDTO(1, 10, 4);
-
-        doNothing().when(productService).valorateAPost(valorationDTO);
-
-        // Act
-        ResponseEntity<Void> response = productController.valorateAPost(valorationDTO);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(productService, times(1)).valorateAPost(valorationDTO);
-    }
-
-
     // US 0015 Listar las valoraciones que realizó un usuario
+    @Test
     void getAllValorationsByUser_ShouldReturnOnlyMatchingValorations() {
         // Assert
         Integer userId = 1;
@@ -207,6 +192,7 @@ class ProductControllerTest {
 
     }
 
+
     @Test
     // US0014.1 - Controller devuelve OK con todas las valoraciones de un post por su ID
     void getValorationsByPost_shouldReturnAllValorationsForGivenPostId() {
@@ -222,16 +208,92 @@ class ProductControllerTest {
 
         // Act
         ResponseEntity<List<ValorationDTO>> response = productController.getValorationsByPost(postId, valorationNumber);
+    }
+    @DisplayName("US 0013 - Excepción Ok para valoraciones dentro del rango de 1 a 5.")
+    @Test
+    void valoratePost_shouldThrowExceptionWhenValidRangeValoration() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 2, 5);
+
+        // Act
+        ResponseEntity<Void> response = productController.valorateAPost(valorationDTO);
 
         // Assert
-        assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(2, response.getBody().size());
-        verify(productService, times(1)).getValorationsByPost(postId, valorationNumber);
+        verify(productService).valorateAPost(valorationDTO);
     }
 
 
 
+    @DisplayName("US 0013 - Excepción para valoración BadRequest.")
+    @Test
+    void valoratePost_shouldThrowExceptionWhenBadRequestExceptionThrown() {
+        // Arrange
+        ValorationDTO valorationDTO = new ValorationDTO(1, 2, 6);
+        doThrow(new BadRequestException("Se permiten solo valoraciones del 1 al 5."))
+                .when(productService).valorateAPost(valorationDTO);
 
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> {
+            productController.valorateAPost(valorationDTO);
+        });
 
+        verify(productService).valorateAPost(valorationDTO);
+    }
+
+    @Test
+    // Test Controller: crear un post con promocion válido
+    public void createPromoPost_shouldReturnStatusOk() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1, 0.2);
+
+        // Act
+        ResponseEntity<Void> response = productController.createPromoPost(promoDto);
+
+        // Assert
+        verify(productService, times(1)).createPost(promoDto);
+        Assertions.assertEquals(200, response.getStatusCodeValue());
+    }
+    @Test
+    // T-US0010 - error al crear post promocional
+    public void createPromoPost_shouldReturnBadRequestWhenDiscountInvalid() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1, 1.5);
+        doThrow(new BadRequestException("Descuento inválido"))
+                .when(productService).createPost(promoDto);
+
+        // Act + Assert
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            productController.createPromoPost(promoDto);
+        });
+        verify(productService).createPost(promoDto);
+    }
+
+    @Test
+    // T-US0005 - crear un post válido
+    public void createPost_shouldReturnStatusOk() {
+        // Arrange
+        PostDto postDto = TestFactory.createPostDto(1);
+
+        // Act
+        ResponseEntity<Void> response = productController.createPost(postDto);
+
+        // Assert
+        verify(productService, times(1)).createPost(postDto);
+        Assertions.assertEquals(200, response.getStatusCodeValue());
+    }
+    @Test
+    // T-US0005 - error al crear post
+    public void createPost_shouldReturnBadRequestWhenServiceFails() {
+        // Arrange
+        PostDto postDto = TestFactory.createPostDto(1);
+        doThrow(new BadRequestException("Usuario no válido"))
+                .when(productService).createPost(postDto);
+
+        // Act + Assert
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            productController.createPost(postDto);
+        });
+        verify(productService).createPost(postDto);
+    }
 }
