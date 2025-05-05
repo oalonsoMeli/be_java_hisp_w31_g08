@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -82,6 +83,30 @@ public class ValorationIntegrationTest {
                         .content("{\"post_id\":100, \"user_id\":4, \"valoration\":6}"))
                 .andExpect(status().isBadRequest());
     }
+
+
+    @Test
+    void getValorationsByPost_shouldReturnAllValorations() throws Exception {
+        mockMvc.perform(get("/products/100/valorations")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0].valoration").value(5))
+                .andExpect(jsonPath("$[1].valoration").value(3))
+                .andExpect(jsonPath("$[2].valoration").value(5));
+    }
+
+    @Test
+    void getValorationsByPost_shouldReturnNotFound_whenPostDoesNotExist() throws Exception {
+        mockMvc.perform(get("/products/999/valorations")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("No se encontró el post a valorar."));
+    }
+
+
+
+
 
 
 }
