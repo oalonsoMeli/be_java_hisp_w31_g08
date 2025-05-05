@@ -410,7 +410,41 @@ class ProductServiceImplTest {
             assertThrows(BadRequestException.class, () -> productService.getAllValorationsByUser(DEFAULT_USER_ID));
         }
 
+    @DisplayName("US0014.1 - Obtener las valoraciones de un post por id.")
+    @Test
+    void getValorationsByPost_shouldReturnCorrectValorations() {
+        // Arrange
+        Integer postId = 1;
+        Post post = TestFactory.createPost(postId, 1, LocalDate.now().minusWeeks(1));
+        post.getValorations().put(1, 3);
+        post.getValorations().put(2, 5);
+        post.getValorations().put(3, 3);
 
+        when(productRepository.getPostsByPostId(postId)).thenReturn(Optional.of(post));
+
+        // Act
+        List<ValorationDTO> result = productService.getValorationsByPost(postId, 3);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.stream().allMatch(v -> v.getValoration() == 3));
     }
+
+
+    @DisplayName("US0014.1 - No existe un post con el id proporcionado.")
+    @Test
+    void getValorationsByPost_shouldThrowBadRequestExceptionWhenPostNotFound() {
+        // Arrange
+        Integer postId = 999;
+        when(productRepository.getPostsByPostId(postId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> productService.getValorationsByPost(postId, 3));
+    }
+
+
+
+
+}
 
 
