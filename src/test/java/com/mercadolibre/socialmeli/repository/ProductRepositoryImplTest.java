@@ -203,7 +203,7 @@ class ProductRepositoryImplTest {
         assertFalse(post.getValorations().isEmpty());
     }
 
-<<<<<<< HEAD
+
     @DisplayName("US 0011 - Verifica que se obtenga la lista de post por userId.")
     @Test
     void getPostByUserId_shouldReturnThePost(){
@@ -218,7 +218,7 @@ class ProductRepositoryImplTest {
         assertEquals(2, posts.get(1).getUserId());
     }
 
-=======
+
     @DisplayName("Verifica que se retonen los post de un usuario")
     @Test
     void getPostsByUserId_shouldReturnUserPost(){
@@ -252,5 +252,5 @@ class ProductRepositoryImplTest {
         // Act && Assert
         assertThrows(NullPointerException.class, ()-> productRepository.getPostsByUserId(userId));
     }
->>>>>>> develop
+
 }
