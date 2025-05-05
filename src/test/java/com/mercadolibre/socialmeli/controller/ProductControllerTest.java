@@ -10,6 +10,7 @@ import com.mercadolibre.socialmeli.factory.TestFactory;
 import com.mercadolibre.socialmeli.model.Post;
 import com.mercadolibre.socialmeli.model.User;
 import com.mercadolibre.socialmeli.service.IProductService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -106,7 +107,7 @@ class ProductControllerTest {
     void getPromotionalProductsFromSellers_shouldReturnPostsDtoAndStatusOk() {
         // Arrange
         User user = TestFactory.createUser(5);
-        PromoPostDto promoPostDto = TestFactory.createPromoPostDto(5, 5);
+        PromoPostDto promoPostDto = TestFactory.createPromoPostDto(5, 5.1);
         PromoProductsDto promoProductsDto = new PromoProductsDto(
                 user.getUserId(), user.getUserName(), List.of(promoPostDto)
         );
@@ -192,6 +193,25 @@ class ProductControllerTest {
     }
 
     @DisplayName("US-0013 - Excepción Ok para valoraciones dentro del rango de 1 a 5.")
+
+    @Test
+    // US0014.1 - Controller devuelve OK con todas las valoraciones de un post por su ID
+    void getValorationsByPost_shouldReturnAllValorationsForGivenPostId() {
+        // Arrange
+        Integer postId = 10;
+        Integer valorationNumber = 3;
+        List<ValorationDTO> valorations = List.of(
+                new ValorationDTO(1, postId, 3),
+                new ValorationDTO(2, postId, 5)
+        );
+
+        when(productService.getValorationsByPost(postId, valorationNumber)).thenReturn(valorations);
+
+        // Act
+        ResponseEntity<List<ValorationDTO>> response = productController.getValorationsByPost(postId, valorationNumber);
+    }
+
+    @DisplayName("US 0013 - Excepción Ok para valoraciones dentro del rango de 1 a 5.")
     @Test
     void valoratePost_shouldThrowExceptionWhenValidRangeValoration() {
         // Arrange
@@ -222,7 +242,6 @@ class ProductControllerTest {
         verify(productService, times(1)).valorateAPost(valorationDTO);
     }
 
-
     @DisplayName("US 0013 - Excepción para valoración BadRequest.")
     @Test
     void valoratePost_shouldThrowExceptionWhenBadRequestExceptionThrown() {
@@ -237,5 +256,63 @@ class ProductControllerTest {
         });
 
         verify(productService).valorateAPost(valorationDTO);
+    }
+
+    @DisplayName("Test Controller: crear un post con promocion válido.")
+    @Test
+    public void createPromoPost_shouldReturnStatusOk() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1, 0.2);
+
+        // Act
+        ResponseEntity<Void> response = productController.createPromoPost(promoDto);
+
+        // Assert
+        verify(productService, times(1)).createPost(promoDto);
+        Assertions.assertEquals(200, response.getStatusCodeValue());
+    }
+
+    @DisplayName("Test Controller: error al crear post promocional.")
+    @Test
+    public void createPromoPost_shouldReturnBadRequestWhenDiscountInvalid() {
+        // Arrange
+        PromoPostDto promoDto = TestFactory.createPromoPostDto(1, 1.5);
+        doThrow(new BadRequestException("Descuento inválido"))
+                .when(productService).createPost(promoDto);
+
+        // Act + Assert
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            productController.createPromoPost(promoDto);
+        });
+        verify(productService).createPost(promoDto);
+    }
+
+    @DisplayName("Test Controller: crear un post válido.")
+    @Test
+    public void createPost_shouldReturnStatusOk() {
+        // Arrange
+        PostDto postDto = TestFactory.createPostDto(1);
+
+        // Act
+        ResponseEntity<Void> response = productController.createPost(postDto);
+
+        // Assert
+        verify(productService, times(1)).createPost(postDto);
+        Assertions.assertEquals(200, response.getStatusCodeValue());
+    }
+
+    @DisplayName("Test Controller: error al crear un post.")
+    @Test
+    public void createPost_shouldReturnBadRequestWhenServiceFails() {
+        // Arrange
+        PostDto postDto = TestFactory.createPostDto(1);
+        doThrow(new BadRequestException("Usuario no válido"))
+                .when(productService).createPost(postDto);
+
+        // Act + Assert
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            productController.createPost(postDto);
+        });
+        verify(productService).createPost(postDto);
     }
 }

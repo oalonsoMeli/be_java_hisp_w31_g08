@@ -51,7 +51,7 @@ public class ProductControllerValidationTest {
                         .content(asJsonString(postDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("La id no puede estar vacía."));
+                .andExpect(jsonPath("$.message").value("La id no puede estar vacía"));
     }
 
     @DisplayName("Test de integración del endpoint /products" +
@@ -66,7 +66,7 @@ public class ProductControllerValidationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(postDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("El campo no permite caracteres especiales."));
+                .andExpect(jsonPath("$.message").value("El campo no puede poseer caracteres especiales"));
     }
     @DisplayName("Test de integración del endpoint /products" +
                  "Verifica que retorne error si el type supera los 15 caracteres.")
@@ -95,7 +95,7 @@ public class ProductControllerValidationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(postDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("El campo no permite caracteres especiales"));
+                .andExpect(jsonPath("$.message").value("El campo no puede poseer caracteres especiales"));
     }
 
     @DisplayName("Test de integración del endpoint /products" +
@@ -155,7 +155,7 @@ public class ProductControllerValidationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(postDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("El campo no permite caracteres especiales"));
+                .andExpect(jsonPath("$.message").value("El campo no puede poseer caracteres especiales"));
     }
 
     @DisplayName("Test de integración del endpoint /products" +
@@ -170,7 +170,7 @@ public class ProductControllerValidationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(postDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("El producto no permite un precio negativo."));
+                .andExpect(jsonPath("$.message").value("El producto no puede tener un precio negativo"));
     }
 
     @DisplayName("Test de integración del endpoint /products" +
@@ -200,7 +200,7 @@ public class ProductControllerValidationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(postDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("El id debe ser mayor a cero."));
+                .andExpect(jsonPath("$.message").value("El id debe ser mayor a cero"));
     }
 }
 

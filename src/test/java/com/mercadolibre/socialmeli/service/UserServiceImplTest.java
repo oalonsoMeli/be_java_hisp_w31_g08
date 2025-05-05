@@ -60,6 +60,28 @@ class UserServiceImplTest {
         assertFalse(result.getFollowers().isEmpty());
     }
 
+    @DisplayName("US-0008 - Verifica que exista la lista al obtener los seguidores de un vendedor con un ordenamiento que no existe.")
+    @Test
+    void searchFollowersUsers_withOrderAsc_shouldExistsAndContainUsersWithOtherOrder() {
+        // Arrange
+        User user1 = TestFactory.createUser(1);
+
+        User user3 = TestFactory.createUser(3);
+
+        Integer userId = 2;
+        User user2 = TestFactory.createUserFollowing(userId, 1, 3);
+
+        when(repository.getUserById(2)).thenReturn(Optional.of(user2));
+        when(repository.findUsersById(List.of(1, 3))).thenReturn(List.of(user1, user3));
+
+        // Act
+        FollowersDto result = service.getUserFollowers(2, "otro");
+
+        // Assert
+        assertEquals(2, result.getFollowers().size());
+        assertFalse(result.getFollowers().isEmpty());
+    }
+
     @DisplayName("US-0008 - Verifica que exista la lista al obtener los seguidores de un vendedor de manera DESC.")
     @Test
     void searchFollowersUsers_withOrderDesc_shouldExistsAndContainUsers() {

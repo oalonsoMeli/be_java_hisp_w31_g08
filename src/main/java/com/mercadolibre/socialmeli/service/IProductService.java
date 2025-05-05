@@ -1,7 +1,5 @@
 package com.mercadolibre.socialmeli.service;
 import com.mercadolibre.socialmeli.dto.*;
-
-import java.util.HashMap;
 import java.util.List;
 
 public interface IProductService {
