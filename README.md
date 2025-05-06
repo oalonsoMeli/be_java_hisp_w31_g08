@@ -1,4 +1,4 @@
-# Bootcamp Backend Java - Sprint Nº1 (Equipo 8)
+# Bootcamp Backend Java - Sprint Nº2 (Equipo 8)
 
 ## Proyecto SocialMeli
 
@@ -122,8 +122,6 @@ mvn spring-boot:run
 | US0014  | Listar valoraciones de un posteo por puntuación especifica (**BONUS**) | GET    | `/products/{post_id}/valorations?valoration_number={number}`| Todos (reunión)|
 | US0015  | Listar las valoraciones que realizó un usuario (**BONUS**)             | GET    | `products/{user_id}/user/valorations`                       | Todos (reunión)|
 | US0016  | Obtener el promedio de valoraciones de un producto (**BONUS**)         | GET    | `products/{product_id}/valorations/average`                 | Todos (reunión)|
-<<<<<<< HEAD
-=======
 
 ### Validaciones de datos
 Se implementaron validaciones utilizando anotaciones de `jakarta.validation` en los DTOs, para garantizar integridad y coherencia en los datos recibidos por los endpoints. Entre las principales validaciones:
@@ -152,7 +150,7 @@ Se llevaron a cabo **pruebas unitarias** y de **integración** para garantizar e
 | T-0008   | Verificar que la consulta de publicaciones realizadas en las últimas 2 semanas de un determinado vendedor sean de ese plazo. (US-0006)| Unitario + Int | Andres         |
 | T-0009   | Verificar que se registre la valoracion que hizo un usuario a un posteo (US0013)                                                      | Unitario + Int | Yoana          |
 | T-0010   | Verificar que se listen todas las valoraciones de un determinado posteo (US0014.1)                                                    | Unitario + Int | Abril          |
-| T-0012   | Verificar que se listen todas las valoraciones de un determinado posteo y una determinada puntuacion (US0014.2)                       | Unitario + Int | Manuela        |
+| T-0011   | Verificar que se listen todas las valoraciones de un determinado posteo y una determinada puntuacion (US0014.2)                       | Unitario + Int | Manuela        |
 | T-0012   | Verificar que se listen todas las valoraciones que realizo un determinado usuario (US0015)                                            | Unitario + Int | Andres         |
 | T-0013   | Verificar que el promedio de valoracion de un producto sea el correcto (US0016)                                                       | Unitario + Int | Ornella        |
 
@@ -161,5 +159,4 @@ Se llevaron a cabo **pruebas unitarias** y de **integración** para garantizar e
 ---
 
 
->>>>>>> develop
 
