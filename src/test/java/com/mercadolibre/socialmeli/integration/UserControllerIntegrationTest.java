@@ -16,8 +16,8 @@ import java.io.File;
 import java.nio.file.Files;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -163,5 +163,21 @@ public class UserControllerIntegrationTest {
         mockMvc.perform(get("/users/999/followers/count")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @DisplayName("Caso de éxito: El usuario 1 sigue al usuario 2.")
+    @Test
+    void followUser_shouldReturn200() throws Exception {
+        mockMvc.perform(post("/users/1/follow/2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("Caso de error: Intentar seguir a un usuario que no existe.")
+    @Test
+    void followUser_shouldReturn400WhenUserToFollowDoesNotExist() throws Exception {
+        mockMvc.perform(post("/users/1/follow/9999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }
