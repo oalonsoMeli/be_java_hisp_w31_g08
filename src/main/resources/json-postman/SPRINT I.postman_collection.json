@@ -1,22 +1,22 @@
 {
 	"info": {
 		"_postman_id": "c3e390b2-a767-4b1d-8ce3-b3026d42de3f",
-		"name": "SPRINT I",
+		"name": "SPRINT I I",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "43463605",
-		"_collection_link": "https://gold-shuttle-2364172.postman.co/workspace/Grupo-8---Postman~8ba12393-727b-4fd7-af93-66f735901020/collection/44162811-c3e390b2-a767-4b1d-8ce3-b3026d42de3f?action=share&source=collection_link&creator=43463605"
+		"_exporter_id": "43763204",
+		"_collection_link": "https://gold-shuttle-2364172.postman.co/workspace/Grupo-8---Postman~8ba12393-727b-4fd7-af93-66f735901020/collection/44162811-c3e390b2-a767-4b1d-8ce3-b3026d42de3f?action=share&source=collection_link&creator=43763204"
 	},
 	"item": [
 		{
 			"name": "US 0001 - Seguir vendedor",
 			"item": [
 				{
-					"name": "Seguir Vendedor",
+					"name": "Ok - Seguir Vendedor",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/users/{userId}/follow/{userIdToFollow}",
+							"raw": "http://localhost:8080/users/1/follow/2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -24,9 +24,31 @@
 							"port": "8080",
 							"path": [
 								"users",
-								"{userId}",
+								"1",
 								"follow",
-								"{userIdToFollow}"
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Error - Seguir vendedor",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users/3245/follow/345",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"3245",
+								"follow",
+								"345"
 							]
 						}
 					},
@@ -38,12 +60,12 @@
 			"name": "US 0002 - Obtener cantidad de seguidores por vendedor",
 			"item": [
 				{
-					"name": "Obtener Cantidad de Seguidores por vendedor",
+					"name": "Ok - Obtener Cantidad de Seguidores por vendedor",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/users/{userId}/followers/count",
+							"raw": "http://localhost:8080/users/2/followers/count",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -51,7 +73,29 @@
 							"port": "8080",
 							"path": [
 								"users",
-								"{userId}",
+								"2",
+								"followers",
+								"count"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Error - Obtener Cantidad de Seguidores por vendedor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users/5345/followers/count",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"5345",
 								"followers",
 								"count"
 							]
@@ -65,12 +109,12 @@
 			"name": "US 0003 - Listar Seguidores Por Vendedor",
 			"item": [
 				{
-					"name": "Listar Seguidores por vendedor",
+					"name": "Ok - Listar Seguidores por vendedor",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/users/{userId}/followers/list",
+							"raw": "http://localhost:8080/users/1/followers/list",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -78,7 +122,29 @@
 							"port": "8080",
 							"path": [
 								"users",
-								"{userId}",
+								"1",
+								"followers",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Error - Listar Seguidores por vendedor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users/3456/followers/list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"3456",
 								"followers",
 								"list"
 							]
@@ -92,7 +158,7 @@
 			"name": "US 0004 - Obtener vendedores seguidos por un usuario",
 			"item": [
 				{
-					"name": "Obtener vendedores seguidos por un usuario",
+					"name": "Ok - Obtener vendedores seguidos por un usuario",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -109,7 +175,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/users/{userId}/followed/list",
+							"raw": "http://localhost:8080/users/1/followed/list",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -117,7 +183,41 @@
 							"port": "8080",
 							"path": [
 								"users",
-								"{userId}",
+								"1",
+								"followed",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Error - Obtener vendedores seguidos por un usuario",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/4235/followed/list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"4235",
 								"followed",
 								"list"
 							]
@@ -131,13 +231,42 @@
 			"name": "US 0005 - Crear publicación",
 			"item": [
 				{
-					"name": "Crear Publicación",
+					"name": "Ok - Crear Publicación",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"user_id\": 1,\n    \"date\": \"29-04-2021\",\n    \"product\": {\n        \"product_id\": 1,\n        \"product_name\": \"Silla Gamer\",\n        \"type\": \"Gamer\",\n        \"brand\": \"Racer\",\n        \"color\": \"Red & Black\",\n        \"notes\": \"Special Edition\"\n    },\n    \"category\": 100,\n    \"price\": 1500.50\n}\n",
+							"raw": "{\n    \"user_id\": 2,\n    \"date\": \"05-05-2025\",\n    \"product\": {\n        \"product_id\": 1,\n        \"product_name\": \"Silla Gamer\",\n        \"type\": \"Gamer\",\n        \"brand\": \"Racer\",\n        \"color\": \"Red\",\n        \"notes\": \"Special Edition\"\n    },\n    \"category\": 100,\n    \"price\": 1500.50\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/products/post",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"post"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Error - Crear Publicación",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": 543,\n    \"date\": \"20-04-2025\",\n    \"product\": {\n        \"product_id\": 1,\n        \"product_name\": \"Silla Gamer\",\n        \"type\": \"Gamer\",\n        \"brand\": \"Racer\",\n        \"color\": \"Red y Black\",\n        \"notes\": \"Special Edition\"\n    },\n    \"category\": 100,\n    \"price\": 1500.50\n}\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -165,12 +294,12 @@
 			"name": "US 0006 - Obtener lista de publicaciones realizadas en las ultimas 2 semanas",
 			"item": [
 				{
-					"name": "Obtener lista de publicaciones realizadas en las ultimas 2 semanas",
+					"name": "Ok - Obtener lista de publicaciones realizadas en las ultimas 2 semanas",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/products/followed/{userId}/list",
+							"raw": "http://localhost:8080/products/followed/1/list",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -179,7 +308,29 @@
 							"path": [
 								"products",
 								"followed",
-								"{userId}",
+								"1",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Error - Obtener lista de publicaciones realizadas en las ultimas 2 semanas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/followed/3425/list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"followed",
+								"3425",
 								"list"
 							]
 						}
@@ -192,12 +343,12 @@
 			"name": "US 0007 - Dejar de seguir a un vendedor",
 			"item": [
 				{
-					"name": "Dejar de seguir a un vendedor",
+					"name": "Ok - Dejar de seguir a un vendedor",
 					"request": {
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/users/{userId}/unfollow/{userIdToUnfollow}",
+							"raw": "http://localhost:8080/users/1/unfollow/2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -205,9 +356,31 @@
 							"port": "8080",
 							"path": [
 								"users",
-								"{userId}",
+								"1",
 								"unfollow",
-								"{userIdToUnfollow}"
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Error - Dejar de seguir a un vendedor",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users/324/unfollow/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"324",
+								"unfollow",
+								"1"
 							]
 						}
 					},
@@ -219,12 +392,12 @@
 			"name": "US 0008 - Ordenamiento ascendente y descendente para US-003 y US-004",
 			"item": [
 				{
-					"name": "Ordenamiento ascendente para US-003",
+					"name": "Ok - Ordenamiento ascendente para US-003",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/users/{UserID}/followers/list?order=name_asc",
+							"raw": "http://localhost:8080/users/2/followers/list?order=name_desc",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -232,7 +405,35 @@
 							"port": "8080",
 							"path": [
 								"users",
-								"{UserID}",
+								"2",
+								"followers",
+								"list"
+							],
+							"query": [
+								{
+									"key": "order",
+									"value": "name_desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Error - Ordenamiento ascendente para US-003",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users/321/followers/list?order=name_asc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"321",
 								"followers",
 								"list"
 							],
@@ -247,7 +448,7 @@
 					"response": []
 				},
 				{
-					"name": "Ordenamiento ascendente para US-004",
+					"name": "Ok - Ordenamiento ascendente para US-004",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -273,6 +474,34 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Error - Ordenamiento ascendente para US-004",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users/355/followed/list?order=name_asc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"355",
+								"followed",
+								"list"
+							],
+							"query": [
+								{
+									"key": "order",
+									"value": "name_asc"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -280,12 +509,12 @@
 			"name": "US 0009 - Ordenamiento por fecha ascendente y descendente para US-006",
 			"item": [
 				{
-					"name": "Ordenamiento por fecha ascendente y descendente para US-006",
+					"name": "Ok - Ordenamiento por fecha ascendente y descendente para US-006",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/products/followed/{userId}/list?order=date_asc",
+							"raw": "http://localhost:8080/products/followed/1/list?order=date_asc",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -294,7 +523,7 @@
 							"path": [
 								"products",
 								"followed",
-								"{userId}",
+								"1",
 								"list"
 							],
 							"query": [
@@ -308,12 +537,12 @@
 					"response": []
 				},
 				{
-					"name": "Ordenamiento por fecha descendiente",
+					"name": "Error - Ordenamiento por fecha ascendente y descendente para US-006",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/products/followed/{userId}/list?order=date_desc",
+							"raw": "http://localhost:8080/products/followed/1342/list?order=date_asc",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -322,7 +551,63 @@
 							"path": [
 								"products",
 								"followed",
-								"{userId}",
+								"1342",
+								"list"
+							],
+							"query": [
+								{
+									"key": "order",
+									"value": "date_asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ok - Ordenamiento por fecha descendiente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/followed/1/list?order=date_desc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"followed",
+								"1",
+								"list"
+							],
+							"query": [
+								{
+									"key": "order",
+									"value": "date_desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Error - Ordenamiento por fecha descendiente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/followed/2435/list?order=date_desc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"followed",
+								"2435",
 								"list"
 							],
 							"query": [
@@ -341,13 +626,42 @@
 			"name": "US 0010 -  Llevar a cabo la publicación de un nuevo producto en promoción",
 			"item": [
 				{
-					"name": "Llevar a cabo la publicación de un nuevo producto en promoción",
+					"name": "Ok - Llevar a cabo la publicación de un nuevo producto en promoción",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"user_id\": 1,\n    \"date\": \"29-04-2021\",\n    \"product\": {\n        \"product_id\": 1,\n        \"product_name\": \"Silla Gamer\",\n        \"type\": \"Gamer\",\n        \"brand\": \"Racer\",\n        \"color\": \"Red & Black\",\n        \"notes\": \"Special Edition\"\n    },\n    \"category\": 100,\n    \"price\": 1500.50,\n    \"has_promo\": true,\n    \"discount\": 0.25\n}",
+							"raw": "{\n    \"user_id\": 1,\n    \"date\": \"21-04-2025\",\n    \"product\": {\n        \"product_id\": 3,\n        \"product_name\": \"Silla Gamer\",\n        \"type\": \"Gamer\",\n        \"brand\": \"Racer\",\n        \"color\": \"Red y Black\",\n        \"notes\": \"Special Edition\"\n    },\n    \"category\": 100,\n    \"price\": 1500.50,\n    \"has_promo\": true,\n    \"discount\": 0.25\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/products/promo-post",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"promo-post"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Error - Llevar a cabo la publicación de un nuevo producto en promoción",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": 1,\n    \"date\": \"29-04-2021\",\n    \"product\": {\n        \"product_id\": 1,\n        \"product_name\": \"Silla Gamer\",\n        \"type\": \"Gamer\",\n        \"brand\": \"Racer\",\n        \"color\": \"Red y Black\",\n        \"notes\": \"Special Edition\"\n    },\n    \"category\": 100,\n    \"price\": 1500.50,\n    \"has_promo\": true,\n    \"discount\": 0\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -375,7 +689,7 @@
 			"name": "US 0011 - Obtener la cantidad de productos en promoción de un vendedor",
 			"item": [
 				{
-					"name": "Obtener la cantidad de productos en promoción de un vendedor",
+					"name": "Ok - Obtener la cantidad de productos en promoción de un vendedor",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -400,6 +714,33 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Error - Obtener la cantidad de productos en promoción de un vendedor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/promo-post/count?user_id=23293",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"promo-post",
+								"count"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "23293"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -407,7 +748,7 @@
 			"name": "US 0012 - Obtener un listado de todos los productos en promoción de un determinado vendedor",
 			"item": [
 				{
-					"name": "Obtener un listado de todos los productos en promoción de un determinado vendedor",
+					"name": "Ok - Obtener un listado de todos los productos en promoción de un determinado vendedor",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -432,6 +773,33 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Error - Obtener un listado de todos los productos en promoción de un determinado vendedor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/promo-post/list?user_id=234",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"promo-post",
+								"list"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "234"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -439,13 +807,42 @@
 			"name": "US 0013 - Usuario valora post",
 			"item": [
 				{
-					"name": "Usuario valora post",
+					"name": "Ok - Usuario valora post",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"user_id\": 3,\n    \"post_id\": 1,\n    \"valoration\": 4\n}",
+							"raw": "{\n    \"user_id\": 1,\n    \"post_id\": 1,\n    \"valoration\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/products/valoration",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"valoration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Error - Usuario valora post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": 3,\n    \"post_id\": 1,\n    \"valoration\": 9\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -473,12 +870,12 @@
 			"name": "US 0014 - Obtener valoraciones de un post",
 			"item": [
 				{
-					"name": "Obtener valoraciones por post",
+					"name": "Ok - Obtener valoraciones por post",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/products/{post_id}/valorations",
+							"raw": "http://localhost:8080/products/1/valorations",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -486,7 +883,7 @@
 							"port": "8080",
 							"path": [
 								"products",
-								"{post_id}",
+								"1",
 								"valorations"
 							]
 						}
@@ -494,10 +891,77 @@
 					"response": []
 				},
 				{
-					"name": "Obtener valoraciones por post específico",
+					"name": "Error - Obtener valoraciones por post",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/132/valorations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"132",
+								"valorations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ok - Obtener valoraciones por post específico",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/1/valorations?valoration_number=5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"1",
+								"valorations"
+							],
+							"query": [
+								{
+									"key": "valoration_number",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Error - Obtener valoraciones por post específico",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/123/valorations?valoration_number=234",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"123",
+								"valorations"
+							],
+							"query": [
+								{
+									"key": "valoration_number",
+									"value": "234"
+								}
+							]
+						}
 					},
 					"response": []
 				}
@@ -507,12 +971,12 @@
 			"name": "US 0015 - Obtener lista de las valoraciones de los usuarios",
 			"item": [
 				{
-					"name": "Obtener valoraciones de un usuario",
+					"name": "Ok - Obtener valoraciones de un usuario",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/products/{user_id}/user/valorations",
+							"raw": "http://localhost:8080/products/1/user/valorations",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -520,7 +984,29 @@
 							"port": "8080",
 							"path": [
 								"products",
-								"{user_id}",
+								"1",
+								"user",
+								"valorations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Error - Obtener valoraciones de un usuario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/134/user/valorations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"134",
 								"user",
 								"valorations"
 							]
@@ -534,12 +1020,12 @@
 			"name": "US 0016 - Obtener promedio de valoraciones de un producto",
 			"item": [
 				{
-					"name": "Obtener promedio de valoraciones de un producto",
+					"name": "Ok - Obtener promedio de valoraciones de un producto",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/products/{product_id}/valorations/average",
+							"raw": "http://localhost:8080/products/1/valorations/average",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -547,7 +1033,29 @@
 							"port": "8080",
 							"path": [
 								"products",
-								"{product_id}",
+								"1",
+								"valorations",
+								"average"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Error - Obtener promedio de valoraciones de un producto",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/2134/valorations/average",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"2134",
 								"valorations",
 								"average"
 							]

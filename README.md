@@ -122,4 +122,44 @@ mvn spring-boot:run
 | US0014  | Listar valoraciones de un posteo por puntuación especifica (**BONUS**) | GET    | `/products/{post_id}/valorations?valoration_number={number}`| Todos (reunión)|
 | US0015  | Listar las valoraciones que realizó un usuario (**BONUS**)             | GET    | `products/{user_id}/user/valorations`                       | Todos (reunión)|
 | US0016  | Obtener el promedio de valoraciones de un producto (**BONUS**)         | GET    | `products/{product_id}/valorations/average`                 | Todos (reunión)|
+<<<<<<< HEAD
+=======
+
+### Validaciones de datos
+Se implementaron validaciones utilizando anotaciones de `jakarta.validation` en los DTOs, para garantizar integridad y coherencia en los datos recibidos por los endpoints. Entre las principales validaciones:
+- **IDs** (`user_id`, `product_id`, `post_id`): deben ser obligatorios y mayores a cero.
+- **Campos de texto** (`product_name`, `type`, `brand`, `color`, `notes`): deben cumplir con restricciones de longitud máxima y no contener caracteres especiales.
+- **Fechas** (`date`): no deben ser nulas y deben cumplir con el formato `dd-MM-yyyy`.
+- **Precio** (`price`): obligatorio, no negativo, con un tope de 10.000.000.
+- Se devolvieron mensajes de error personalizados y códigos HTTP acordes (`400 Bad Request`, etc.).
+
+---
+
+### Pruebas realizadas
+Se llevaron a cabo **pruebas unitarias** y de **integración** para garantizar el correcto comportamiento del sistema.
+
+### 🧪 Pruebas Implementadas
+
+| ID Test  | Descripción                                                                                                                           | Tipo           | Responsable    |
+|----------|---------------------------------------------------------------------------------------------------------------------------------------|----------------|----------------|
+| T-0001   | Verificar que el usuario a seguir exista. (US-0001)                                                                                   | Unitario + Int | Abril          |
+| T-0002   | Verificar que el usuario a dejar de seguir exista. (US-0007)                                                                          | Unitario + Int | Manuela        |
+| T-0003   | Verificar que el tipo de ordenamiento alfabético exista (US-0008)                                                                     | Unitario + Int | Ornella        |
+| T-0004   | Verificar el correcto ordenamiento ascendente y descendente por nombre. (US-0008)                                                     | Unitario + Int | Yoana          |
+| T-0005   | Verificar que el tipo de ordenamiento por fecha exista (US-0009)                                                                      | Unitario + Int | Juan           |
+| T-0006   | Verificar el correcto ordenamiento ascendente y descendente por fecha. (US-0009)                                                      | Unitario + Int | Andrés         |
+| T-0007   | Verificar que la cantidad de seguidores de un determinado usuario sea correcta. (US-0002)                                             | Unitario + Int | Yoana          |
+| T-0008   | Verificar que la consulta de publicaciones realizadas en las últimas 2 semanas de un determinado vendedor sean de ese plazo. (US-0006)| Unitario + Int | Andres         |
+| T-0009   | Verificar que se registre la valoracion que hizo un usuario a un posteo (US0013)                                                      | Unitario + Int | Yoana          |
+| T-0010   | Verificar que se listen todas las valoraciones de un determinado posteo (US0014.1)                                                    | Unitario + Int | Abril          |
+| T-0012   | Verificar que se listen todas las valoraciones de un determinado posteo y una determinada puntuacion (US0014.2)                       | Unitario + Int | Manuela        |
+| T-0012   | Verificar que se listen todas las valoraciones que realizo un determinado usuario (US0015)                                            | Unitario + Int | Andres         |
+| T-0013   | Verificar que el promedio de valoracion de un producto sea el correcto (US0016)                                                       | Unitario + Int | Ornella        |
+
+
+
+---
+
+
+>>>>>>> develop
 

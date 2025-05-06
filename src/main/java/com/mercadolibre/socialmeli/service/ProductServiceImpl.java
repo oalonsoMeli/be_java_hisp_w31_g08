@@ -11,6 +11,7 @@ import com.mercadolibre.socialmeli.repository.IProductRepository;
 import com.mercadolibre.socialmeli.repository.IUserRepository;
 import com.mercadolibre.socialmeli.exception.IllegalArgumentException;
 import com.mercadolibre.socialmeli.utilities.OrderType;
+import com.mercadolibre.socialmeli.utilities.PostMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,45 +24,50 @@ public class ProductServiceImpl implements IProductService {
     private IUserRepository userRepository;
     private IProductRepository productRepository;
     private Integer countId = 1;
+
     @Autowired
     public ProductServiceImpl(IUserRepository userRepository, IProductRepository productRepository) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
     }
 
+    // Crea un nuevo post, y permite al vendedor de alta una nueva publicación.
+    // Además de que tiene una validación para saber si esa promo esta activ o no.
 
     @Override
     public void createPost(PostDto postDto) {
         validationUser(postDto.getUserId());
-        Post post = getPost(postDto);
-        if (postDto instanceof PromoPostDto promoPostDto) {
-            if (promoPostDto.getHasPromo() != null && promoPostDto.getHasPromo()) {
-                if (promoPostDto.getDiscount() == null || promoPostDto.getDiscount() <= 0 || promoPostDto.getDiscount() >= 1) {
-                    throw new BadRequestException("Descuento inválido.");
-                }
-                post.setDiscount(promoPostDto.getDiscount());
-                post.setHasPromo(true);
-            }
+        Post post = PostMapper.toPost(postDto);
+        if (isPromoActive(postDto)) {
+            applyPromotion((PromoPostDto) postDto, post);
         }
         productRepository.save(post);
     }
 
+    private boolean isPromoActive(PostDto postDto) {
+        if (postDto instanceof PromoPostDto promo) {
+            return Boolean.TRUE.equals(promo.getHasPromo());
+        }
+        return false;
+    }
+
+    private void applyPromotion(PromoPostDto promoPostDto, Post post) {
+        Double discount = promoPostDto.getDiscount();
+        if (discount == null || discount <= 0 || discount >= 1) {
+            throw new BadRequestException("Descuento inválido.");
+        }
+        post.setDiscount(discount);
+        post.setHasPromo(true);
+    }
+
+    // Valida que el usuario exista.
     private User validationUser(Integer userId) {
         return userRepository.getUserById(userId)
                 .orElseThrow(() -> new BadRequestException("Usuario no encontrado."));
     }
 
-    private Post getPost(PostDto postDto) {
-        ProductDto productDto = postDto.getProduct();
-        Product product = new Product( productDto.getProduct_id(), productDto.getProduct_name(), productDto.getType(),
-                productDto.getBrand(), productDto.getColor(), productDto.getNotes());
-        Post post = new Post(postDto.getUserId(), postDto.getDate(), product,
-                postDto.getCategory(), postDto.getPrice());
-        post.setPostId(countId);
-        countId++;
-        return post;
-    }
 
+    // Obtiene la cantidad de productos en promoción de un determinado vendedor.
     @Override
     public PromoProductsCountDto getQuantityOfProducts(Integer userId) {
         User user = validationUser(userId);
@@ -72,6 +78,7 @@ public class ProductServiceImpl implements IProductService {
         return new PromoProductsCountDto(userId, user.getUserName(), count);
     }
 
+    // Obtiene la lista de Post de los vendedores que un usuario sigue.
     @Override
     public PostsDto getListOfPublicationsByUser(Integer userId, String order) {
         User user = validationUser(userId);
@@ -89,9 +96,10 @@ public class ProductServiceImpl implements IProductService {
         List<PostDto> postDtos = posts.stream()
                 .map(post -> mapper.convertValue(post, PostDto.class))
                 .toList();
-         return new PostsDto(userId, postDtos);
+        return new PostsDto(userId, postDtos);
     }
 
+    //Obtiene el listado de los productos que un vendedor tiene en promoción.
     @Override
     public PromoProductsDto getPromotionalProductsFromSellers(Integer userId){
         ObjectMapper mapper = new ObjectMapper();
@@ -103,6 +111,7 @@ public class ProductServiceImpl implements IProductService {
         return new PromoProductsDto(user.getUserId(),user.getUserName(),promoPostDtoList);
     }
 
+    // Registra una valoración (1 a 5) de un usuario sobre un post.
     @Override
     public void valorateAPost(ValorationDTO valorationDTO) {
         Post post = getPostById(valorationDTO.getPost_id());
@@ -136,6 +145,7 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
+    // Todas las valoraciones de un usuario.
     public List<ValorationDTO> getAllValorationsByUser(Integer userId) {
         User user = validationUser(userId);
         return this.productRepository.getAll().stream()
@@ -148,11 +158,11 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
+    //Valoración promedio de un post.
     public ValorationAverageDto getValorationsAverageByPost(Integer postId) {
         Post post = getPostById(postId);
         Map<Integer, Integer> valorations = post.getValorations();
         Double average = valorations.values().stream().mapToDouble(v -> v).average().orElse(0.0);
         return new ValorationAverageDto(average);
     }
-
 }
